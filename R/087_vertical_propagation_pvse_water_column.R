@@ -7,24 +7,9 @@
 
 rm(list = ls())
 
+source(here::here("R/propagate_fun.R"))
 
-propagate_vertically <- function(df, x, y, depth_m) {
-  x1 <- df %>%
-    pull({{ x }})
-
-  y1 <- df %>%
-    pull({{ y }})
-
-  res <- approx(x1, y1, xout = depth_m, rule = 2) %>%
-    as_tibble() %>%
-    select(
-      {{ y }} := y
-    )
-
-  return(res)
-}
-
-depth_m <- seq(1, 100, by = 1)
+depth_m <- seq(1, 50, by = 1)
 
 station <- fread("data/clean/ctd.csv") %>%
   distinct(station, transect, longitude, latitude) %>%
@@ -56,17 +41,7 @@ pvse %>%
   scale_y_reverse() +
   facet_wrap(~transect, scales = "free_x")
 
-ggsave(
-  "~/Desktop/pvse_depth_locations.pdf",
-  device = cairo_pdf
-)
-
-df <- pvse %>%
-  filter(station %in% c(102, 115))
-
-df
-
-res <- df %>%
+res <- pvse %>%
   group_nest(station, transect) %>%
   mutate(interpolated_ps = map(data, ~ propagate_vertically(., depth_m, ps, depth_m = depth_m))) %>%
   mutate(interpolated_alpha_b = map(
@@ -80,27 +55,27 @@ res <- df %>%
   mutate(interpolated_ek = map(data, ~ propagate_vertically(., depth_m, ek, depth_m = depth_m))) %>%
   mutate(depth_grid_m = list(depth_m)) %>%
   unnest(cols = c(depth_grid_m, starts_with("interpolated"))) %>%
-  relocate(depth_grid_m, .after = transect)
+  relocate(depth_grid_m, .after = transect) %>%
+  rename(depth_m = depth_grid_m)
 
 # Plot --------------------------------------------------------------------
 
-p <- pvse %>%
-  filter(station %in% c(102, 115)) %>%
+pvse %>%
   ggplot(aes(x = pb_max, y = depth_m)) +
   geom_point(size = 5) +
   facet_wrap(~station, scales = "free_x") +
   scale_y_reverse() +
-  geom_path(data = res, aes(x = pb_max, y = depth_grid_m), color = "red") +
+  geom_path(data = res, aes(x = pb_max, y = depth_m), color = "red") +
   labs(
     title = "Vertical propagation into the water column",
-    subtitle = str_wrap("For station 115, PvsE were measured only between 0-20 m. The extrapolation deeper than this point is risky. The red line is the data inter/extrapolated at 1 m resolution.", 90),
     y = "Depth (m)"
   ) +
   theme(
     plot.subtitle = element_text(lineheight = 1.25)
   )
 
-ggsave(
-  "~/Desktop/pbmax_station_115.pdf",
-  device = cairo_pdf
-)
+# Export ------------------------------------------------------------------
+
+res %>%
+  select(-data) %>%
+  write_csv(here::here("data/clean/propagated_pvse_water_column.csv"))
