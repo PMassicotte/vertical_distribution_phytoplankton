@@ -6,16 +6,16 @@
 
 rm(list = ls())
 
-cops <- fread("/media/4TB/work-ulaval/projects/green_edge/cops/data/raw/cops/amundsen/2016/RES.EXCEL/GE2016.AMOW_COPS_160609_CAST_001/d.fit.v.01.txt", na.strings = "-999") %>%
-  as_tibble() %>%
-  janitor::clean_names()
-
-range(cops$par_d_fit_percent_percent)
-
-cops %>%
-  ggplot(aes(y = depth_edz_m, x = par_d_fit_percent_percent)) +
-  geom_line() +
-  scale_y_reverse()
+# cops <- fread("/media/4TB/work-ulaval/projects/green_edge/cops/data/raw/cops/amundsen/2016/RES.EXCEL/GE2016.AMOW_COPS_160609_CAST_001/d.fit.v.01.txt", na.strings = "-999") %>%
+#   as_tibble() %>%
+#   janitor::clean_names()
+#
+# range(cops$par_d_fit_percent_percent)
+#
+# cops %>%
+#   ggplot(aes(y = depth_edz_m, x = par_d_fit_percent_percent)) +
+#   geom_line() +
+#   scale_y_reverse()
 
 files <- fs::dir_ls(
   "/media/4TB/work-ulaval/projects/green_edge/cops/data/raw/cops/amundsen/2016/RES.EXCEL/",
@@ -58,6 +58,14 @@ df <- df %>%
   filter(par_d_fit_percent_percent <= 1) %>%
   filter(depth_m <= 50)
 
+df %>%
+  ggplot(aes(x = par_d_fit_percent_percent)) +
+  geom_histogram(binwidth = 0.05) +
+  scale_x_continuous(
+    labels = scales::label_percent(),
+    breaks = scales::breaks_pretty(n = 10)
+  )
+
 # Calculate Kd PAR and extract transmittance ------------------------------
 
 df <- df %>%
@@ -87,10 +95,25 @@ p <- df %>%
   geom_point(color = "black") +
   geom_line(aes(x = pred, color = r2_ok)) +
   scale_y_reverse() +
-  facet_wrap(~filename, scales = "free")
+  scale_x_continuous(labels = scales::label_percent()) +
+  labs(
+    title = "Vertical profiles of PAR transmittance and fitted model to calculate KdPAR",
+    subtitle = "Only models with R2 >= 0.98 are kept for further analyses.",
+    color = "R2 >= 0.98",
+    x = "PAR transmittance (%)",
+    y = "Depth (m)"
+  ) +
+  facet_wrap(~glue("{basename(dirname(filename))}"), scales = "free") +
+  theme(
+    strip.text = element_text(size = 4),
+    legend.position = "top"
+  ) +
+  guides(
+    color = guide_legend(override.aes = list(size = 2))
+  )
 
 ggsave(
-  here::here("graphs/082_cops_kd_par_and_transmittance.pdf"),
+  here::here("graphs/082_01_cops_kd_par_and_transmittance.pdf"),
   device = cairo_pdf,
   width = 20,
   height = 20
@@ -151,7 +174,6 @@ df %>%
   geom_point(size = 3) +
   geom_point(aes(x = longitude.y, y = latitude.y), color = "black")
 
-
 # Averaging ---------------------------------------------------------------
 
 # There are many cast per station, is it ok to average Kd PAR and PAR
@@ -164,6 +186,9 @@ p1 <- df %>%
   ggplot(aes(x = cast, y = kd_par)) +
   geom_col() +
   facet_wrap(~station, scales = "free") +
+  labs(
+    y = bquote(Kd[PAR]~(m^{-1}))
+  ) +
   theme(
     panel.border = element_blank(),
     axis.ticks = element_blank(),
@@ -174,6 +199,10 @@ p2 <- df %>%
   ggplot(aes(x = cast, y = par_transmittance)) +
   geom_col() +
   facet_wrap(~station, scales = "free") +
+  scale_y_continuous(labels = scales::label_percent()) +
+  labs(
+    y = "PAR transmittance (%)"
+  ) +
   theme(
     panel.border = element_blank(),
     axis.ticks = element_blank(),
@@ -192,12 +221,13 @@ p <- p1 / p2 +
   )
 
 ggsave(
-  here::here("graphs/082_barplots_comparing_kdpar_transmittance_per_station.pdf"),
+  here::here("graphs/082_02_barplots_comparing_kdpar_transmittance_per_station.pdf"),
   device = cairo_pdf,
   width = 20,
   height = 20
 )
 
+# Average
 df <- df %>%
   select(-contains(".y"), -filename) %>%
   rename(
@@ -246,7 +276,7 @@ p <- p1 / p2 +
   )
 
 ggsave(
-  here::here("graphs/082_boxplot_comparing_kdpar_transmittance_per_deployment.pdf"),
+  here::here("graphs/082_03_boxplot_comparing_kdpar_transmittance_per_deployment.pdf"),
   width = 6,
   height = 6
 )
@@ -256,7 +286,7 @@ p3 <- df %>%
   ggplot() +
   geom_sf(aes(color = deployement)) +
   labs(
-    title = "Localisation of the COPS measurements"
+    title = glue("Localisation of the {nrow(df)} COPS measurements")
   ) +
   theme(
     legend.position = "bottom",
@@ -266,8 +296,8 @@ p3 <- df %>%
   )
 
 ggsave(
-  here::here("graphs/082_map_cops_type_of_deployment.pdf"),
-  width = 6,
+  here::here("graphs/082_04_map_cops_type_of_deployment.pdf"),
+  width = 8,
   height = 6
 )
 

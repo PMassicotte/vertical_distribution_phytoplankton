@@ -25,6 +25,7 @@ pvse <-
   mutate(station = parse_number(station)) %>%
   mutate(transect = station %/% 100 * 100) %>%
   inner_join(station, by = c("station", "transect")) %>%
+  filter(str_starts(curve_id, "\\d+")) %>%
   select(station, transect, depth_m = depth, model_type, ps, alpha_b, pb_max, ek) %>%
   filter(model_type == "model1")
 

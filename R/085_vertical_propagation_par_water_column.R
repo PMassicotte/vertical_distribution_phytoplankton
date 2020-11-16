@@ -147,4 +147,4 @@ ggsave(
 # Export ------------------------------------------------------------------
 
 df %>%
-  write_csv(here::here("data/clean/hourly_par_z_umol_m2_s1.csv"))
+  write_csv(here::here("data/clean/propagated_hourly_par_water_column.csv"))

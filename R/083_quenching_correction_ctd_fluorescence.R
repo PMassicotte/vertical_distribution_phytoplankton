@@ -61,7 +61,7 @@ sunpos <- ctd %>%
   mutate(altitude_degrees = units::set_units(altitude_degrees, "degrees")) %>%
   mutate(altitude_degrees = as.numeric(altitude_degrees))
 
-sunpos %>%
+p <- sunpos %>%
   ggplot(aes(x = altitude_degrees)) +
   geom_histogram(bins = 30) +
   labs(
@@ -75,7 +75,7 @@ sunpos %>%
   )
 
 ggsave(
-  here::here("graphs/083_sun_altitude.pdf"),
+  here::here("graphs/083_01_histogram_sun_altitude.pdf"),
   device = cairo_pdf,
   width = 7.44,
   height = 5.2
@@ -223,7 +223,7 @@ pp <- df %>%
   mutate(p = map2(data, station, plot_function2))
 
 pdf(
-  here::here("graphs/083_ctd_fluorescence_npq_corrected.pdf"),
+  here::here("graphs/083_02_ctd_fluorescence_npq_corrected.pdf"),
   width = 6,
   height = 5
 )
