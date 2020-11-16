@@ -7,7 +7,7 @@
 
 rm(list = ls())
 
-df <- read_csv(here::here("data/clean/hourly_par_z_umol_m2_s1.csv"))
+df <- read_csv(here::here("data/clean/propagated_hourly_par_water_column.csv"))
 
 df
 
@@ -77,7 +77,16 @@ p2 <- depth_m_0.1 %>%
 p <- p1 / p2 +
   plot_layout(heights = c(1, 0.5)) +
   plot_annotation(
-    tag_levels = "A"
+    tag_levels = "A",
+    title = str_wrap(
+      "These graphs serve as helpers to determine the depth at which primary production should be integrated",
+      60
+    ),
+    theme = theme(plot.title = element_text(
+      size = 24,
+      lineheight = 1.25,
+      hjust = 0.5
+    ))
   ) &
   theme(plot.tag = element_text(size = 20, face = "bold"))
 
