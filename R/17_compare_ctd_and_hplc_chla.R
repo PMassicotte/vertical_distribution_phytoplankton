@@ -90,6 +90,6 @@ p <- df_viz %>%
   )
 
 ggsave(
-  here::here("graphs/09_scatterplot_ctd_vs_hplc_chla.pdf"),
+  here::here("graphs/17_scatterplot_ctd_vs_hplc_chla.pdf"),
   device = cairo_pdf
 )

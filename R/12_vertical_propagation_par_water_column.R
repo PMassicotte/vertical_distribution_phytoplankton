@@ -89,7 +89,7 @@ p <- df %>%
   )
 
 ggsave(
-  here::here("graphs/085_01_hourly_par_z_umol_m2_s1.pdf"),
+  here::here("graphs/12_01_hourly_par_z_umol_m2_s1.pdf"),
   device = cairo_pdf,
   width = 12,
   height = 26
@@ -141,7 +141,7 @@ p <- df %>%
   )
 
 ggsave(
-  here::here("graphs/085_02_ourly_par_z_umol_m2_s1_averaged_by_station.pdf"),
+  here::here("graphs/12_02_ourly_par_z_umol_m2_s1_averaged_by_station.pdf"),
   device = cairo_pdf,
   width = 10,
   height = 10

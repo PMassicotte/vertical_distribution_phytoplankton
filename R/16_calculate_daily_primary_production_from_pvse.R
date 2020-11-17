@@ -102,7 +102,7 @@ p <- daily_pp %>%
   )
 
 ggsave(
-  here::here("graphs/089_histograms_daily_primary_production.pdf"),
+  here::here("graphs/16_histograms_daily_primary_production.pdf"),
   device = cairo_pdf,
   height = 3.5,
   width = 7

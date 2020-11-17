@@ -48,7 +48,7 @@ p <- df %>%
     strip.text = element_text(face = "bold", size = 10)
   )
 
-plot_file <- here::here("graphs/084_map_spatial_distribution_primary_production_parameters.pdf")
+plot_file <- here::here("graphs/11_map_spatial_distribution_primary_production_parameters.pdf")
 
 ggsave(
   plot_file,

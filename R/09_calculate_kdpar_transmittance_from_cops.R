@@ -113,7 +113,7 @@ p <- df %>%
   )
 
 ggsave(
-  here::here("graphs/082_01_cops_kd_par_and_transmittance.pdf"),
+  here::here("graphs/09_01_cops_kd_par_and_transmittance.pdf"),
   device = cairo_pdf,
   width = 20,
   height = 20
@@ -221,7 +221,7 @@ p <- p1 / p2 +
   )
 
 ggsave(
-  here::here("graphs/082_02_barplots_comparing_kdpar_transmittance_per_station.pdf"),
+  here::here("graphs/09_02_barplots_comparing_kdpar_transmittance_per_station.pdf"),
   device = cairo_pdf,
   width = 20,
   height = 20
@@ -276,7 +276,7 @@ p <- p1 / p2 +
   )
 
 ggsave(
-  here::here("graphs/082_03_boxplot_comparing_kdpar_transmittance_per_deployment.pdf"),
+  here::here("graphs/09_03_boxplot_comparing_kdpar_transmittance_per_deployment.pdf"),
   width = 6,
   height = 6
 )
@@ -296,7 +296,7 @@ p3 <- df %>%
   )
 
 ggsave(
-  here::here("graphs/082_04_map_cops_type_of_deployment.pdf"),
+  here::here("graphs/09_04_map_cops_type_of_deployment.pdf"),
   width = 8,
   height = 6
 )
