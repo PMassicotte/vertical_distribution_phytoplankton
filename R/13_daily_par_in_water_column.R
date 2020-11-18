@@ -11,6 +11,7 @@ df <- read_csv(here::here("data/clean/propagated_hourly_par_water_column.csv"))
 
 df
 
+# Check that we have 24 observations (1 per hour)
 df <- df %>%
   group_by(station, deployement, depth_m) %>%
   summarise(
@@ -24,6 +25,16 @@ depth_m_0.1 <- df %>%
   group_by(station, deployement) %>%
   slice(which.min(abs(0.1 - daily_par))) %>%
   ungroup()
+
+# Save the integration depths ---------------------------------------------
+
+# Will reuse this data to determine the depth at which PP integration should be
+# done.
+
+depth_m_0.1 %>%
+  rename(maximum_integration_depth_m = depth_m) %>%
+  select(-deployement, -daily_par, -n) %>%
+  write_csv(here::here("data/clean/isolume_0.1_mol_day.csv"))
 
 # Plot --------------------------------------------------------------------
 
@@ -67,7 +78,8 @@ p2 <- depth_m_0.1 %>%
   labs(
     x = "Depth (m)",
     y = "Count",
-    title = bquote(bold("Histograms of depths at which PAR is 0.1"~mol~photons~m^{-2}~day^{-1}))
+    title =
+      bquote(bold("Histograms of depths at which PAR is 0.1"~mol~photons~m^{-2}~day^{-1}))
   ) +
   theme(
     panel.border = element_blank(),

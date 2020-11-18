@@ -9,7 +9,7 @@ rm(list = ls())
 
 source(here::here("R/propagate_fun.R"))
 
-depth_m <- seq(1, 50, by = 1)
+depth_m <- seq(1, 100, by = 1)
 
 station <- fread("data/clean/ctd.csv") %>%
   distinct(station, transect, longitude, latitude) %>%

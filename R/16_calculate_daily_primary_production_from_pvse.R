@@ -10,6 +10,17 @@ rm(list = ls())
 pvse <- read_csv(here::here("data/clean/propagated_pvse_water_column.csv"))
 ctd <- read_csv(here::here("data/clean/propagated_fluorescence_water_column.csv"))
 hourly_par <- read_csv(here::here("data/clean/propagated_hourly_par_water_column.csv"))
+isolume <- read_csv(here::here("data/clean/isolume_0.1_mol_day.csv"))
+
+
+# Keep the observations within the 0.1 mol day isolume --------------------
+
+hourly_par <- hourly_par %>%
+  inner_join(isolume) %>%
+  group_by(station) %>%
+  filter(between(depth_m, 0, maximum_integration_depth_m)) %>%
+  ungroup() %>%
+  select(-maximum_integration_depth_m)
 
 # Convert planar PAR to scalar PAR ----------------------------------------
 
@@ -51,12 +62,7 @@ df <- df %>%
   ))) %>%
   mutate(hourly_primary_production = hourly_primary_production * flor_mg_m3_rollmedian)
 
-df %>%
-  filter(depth_m <= 5) %>%
-  ggplot(aes(x = hourly_primary_production)) +
-  geom_histogram() +
-  facet_wrap(~station) +
-  scale_x_log10()
+df
 
 # Compute daily primary production ----------------------------------------
 
@@ -69,6 +75,11 @@ df <- df %>%
 
 df
 
+# Export the data
+df %>%
+  select(-data) %>%
+  write_csv(here::here("data/clean/daily_primary_production_at_depth_from_pvse.csv"))
+
 # Vertically integrated primary production --------------------------------
 
 daily_pp <- df %>%
@@ -80,6 +91,10 @@ daily_pp <- df %>%
 
 daily_pp
 
+daily_pp %>%
+  select(-data) %>%
+  write_csv(here::here("data/clean/daily_integrated_primary_production_from_pvse.csv"))
+
 p <- daily_pp %>%
   ggplot(aes(x = daily_primary_production_m2)) +
   geom_histogram(bins = 20) +
@@ -87,14 +102,10 @@ p <- daily_pp %>%
   facet_wrap(~deployement) +
   annotation_logticks(sides = "b") +
   labs(
-    x = bquote("Primary production" ~ (mgC ~ m^{
-      -2
-    } ~ d^{
-      -1
-    })),
+    x = bquote("Primary production" ~ (mgC ~ m^{-2} ~ d^{-1})),
     y = "Count",
     title = "Daily primary production calculated from PvsE",
-    subtitle = "Primary production was integrated between 1-50 meters."
+    subtitle = "Primary production was integrated between 1 meter and the depth of 0.1 mol day isolume."
   ) +
   scale_y_continuous(breaks = seq(0, 1e4)) +
   theme(

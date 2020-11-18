@@ -10,7 +10,7 @@ source(here::here("R/propagate_fun.R"))
 
 df <- fread(here::here("data/clean/ctd_fluorescence_npq_corrected.csv")) %>%
   as_tibble() %>%
-  filter(depth_m <= 50)
+  filter(depth_m <= 100)
 
 df
 
@@ -21,7 +21,7 @@ df
 
 # Propagate all the fluorescence variables --------------------------------
 
-depth_m <- seq(1, 50, by = 1)
+depth_m <- seq(1, 100, by = 1)
 
 res <- df %>%
   group_nest(station, transect, cast) %>%
