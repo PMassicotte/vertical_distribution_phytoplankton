@@ -8,8 +8,6 @@ rm(list = ls())
 
 source(here::here("R/propagate_fun.R"))
 
-depth_m <- seq(1, 50, by = 1)
-
 df <- fread(here::here("data/clean/ctd_fluorescence_npq_corrected.csv")) %>%
   as_tibble() %>%
   filter(depth_m <= 50)
@@ -17,12 +15,24 @@ df <- fread(here::here("data/clean/ctd_fluorescence_npq_corrected.csv")) %>%
 df
 
 df <- df %>%
-  select(station, transect, cast, depth_m, flor_mg_m3_rollmedian_npq_corrected)
+  select(station, transect, cast, depth_m, contains("flor"))
 
 df
 
+# Propagate all the fluorescence variables --------------------------------
+
+depth_m <- seq(1, 50, by = 1)
+
 res <- df %>%
   group_nest(station, transect, cast) %>%
+  mutate(interpolated_flor_mg_m3 = map(
+    data,
+    ~ propagate_vertically(., depth_m, flor_mg_m3, depth_m = depth_m)
+  )) %>%
+  mutate(interpolated_flor_mg_m3_rollmedian = map(
+    data,
+    ~ propagate_vertically(., depth_m, flor_mg_m3_rollmedian, depth_m = depth_m)
+  )) %>%
   mutate(interpolated_flor_mg_m3_rollmedian_npq_corrected = map(
     data,
     ~ propagate_vertically(., depth_m, flor_mg_m3_rollmedian_npq_corrected, depth_m = depth_m)
