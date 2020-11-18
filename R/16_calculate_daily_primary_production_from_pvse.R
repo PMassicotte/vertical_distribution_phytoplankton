@@ -46,9 +46,10 @@ df %>%
 # Compute hourly primary production ---------------------------------------
 
 df <- df %>%
-  mutate(hourly_primary_production = pb_max * (1 - exp(
+  mutate(hourly_primary_production = pb_max  * (1 - exp(
     -alpha_b * (hourly_par_z_umol_m2_s1 / pb_max)
-  )))
+  ))) %>%
+  mutate(hourly_primary_production = hourly_primary_production * flor_mg_m3_rollmedian)
 
 df %>%
   filter(depth_m <= 5) %>%
@@ -102,40 +103,52 @@ p <- daily_pp %>%
   )
 
 ggsave(
-  here::here("graphs/16_histograms_daily_primary_production.pdf"),
+  here::here("graphs/16_01_histograms_daily_primary_production.pdf"),
   device = cairo_pdf,
   height = 3.5,
   width = 7
 )
 
-
 # Exploration -------------------------------------------------------------
 
-
 df2 <- daily_pp %>%
-  filter(station %in% c(102, 115)) %>%
-  filter(cast %in% c(6, 24)) %>%
-  mutate(station = factor(station))
+  slice_max(daily_primary_production_m2, n = 10) %>%
+  distinct(station, .keep_all = TRUE) %>%
+  mutate(
+    station =
+      fct_reorder(as.character(station),
+        daily_primary_production_m2,
+        .desc = TRUE
+      )
+  )
 
 df2
 
+# pdftools::pdf_subset("/media/4TB/work-ulaval/projects/green_edge/green_edge/graphs/pe-curves/ge2016-amundsen_fitted.pdf",
+#   pages = c(1, 24),
+#   output = "~/Desktop/pvse_amundsen_stations_102_115.pdf"
+# )
 
-pdftools::pdf_subset("/media/4TB/work-ulaval/projects/green_edge/green_edge/graphs/pe-curves/ge2016-amundsen_fitted.pdf",
-  pages = c(1, 24),
-  output = "~/Desktop/pvse_amundsen_stations_102_115.pdf"
-)
-
-p1 <- daily_pp %>%
-  filter(station %in% c(102, 115)) %>%
-  filter(cast %in% c(6, 24)) %>%
-  ggplot(aes(x = factor(station), y = daily_primary_production_m2, fill = factor(station))) +
+p1 <- df2 %>%
+  ggplot(aes(x = station, y = daily_primary_production_m2, fill = station)) +
   geom_col() +
   labs(
     x = "Station",
-    title = "Daily primary production"
+    title = "Daily primary production",
+    subtitle = "Integrated over 50 meters along the water column."
   )
 
 p2 <- df2 %>%
+  unnest(data) %>%
+  ggplot(aes(x = daily_primary_production_at_depth, y = depth_m, color = station)) +
+  geom_path() +
+  scale_y_reverse() +
+  labs(
+    title = "Daily PP(z)",
+    y = "Depth (m)"
+  )
+
+p3 <- df2 %>%
   unnest(data) %>%
   unnest(data) %>%
   filter(depth_m == 1) %>%
@@ -145,38 +158,17 @@ p2 <- df2 %>%
     title = "Hourly PP at 1 meter"
   )
 
-p3 <- df2 %>%
+p4 <- df2 %>%
   unnest(data) %>%
   unnest(data) %>%
   filter(depth_m == 1) %>%
   ggplot(aes(x = hour, y = hourly_par_z_umol_m2_s1, color = station)) +
   geom_line() +
   labs(
-    title = "PAR at 1 meter"
+    title = "Hourly PAR at 1 meter"
   )
 
-p4 <- df %>%
-  filter(station %in% c(102, 115)) %>%
-  filter(cast %in% c(6, 24)) %>%
-  ggplot(aes(x = daily_primary_production_at_depth, y = depth_m, color = factor(station))) +
-  geom_path() +
-  scale_y_reverse() +
-  labs(
-    title = "Vertical profiles daily PP"
-  )
-
-p5 <- read_csv(here::here("data/clean/propagated_fluorescence_water_column.csv")) %>%
-  filter(station %in% c(102, 115)) %>%
-  filter(cast %in% c(6, 24)) %>%
-  filter(depth_m <= 50) %>%
-  ggplot(aes(x = flor_mg_m3_rollmedian_npq_corrected, y = depth_m, color = factor(station))) +
-  geom_path() +
-  scale_y_reverse() +
-  labs(
-    title = "Vertical profiles fluorescence"
-  )
-
-p6 <- df2 %>%
+p5 <- df2 %>%
   unnest(data) %>%
   unnest(data) %>%
   distinct(station, depth_m, alpha_b, pb_max, ek) %>%
@@ -189,12 +181,28 @@ p6 <- df2 %>%
   ) +
   facet_wrap(~name, scales = "free_x")
 
+p6 <- df2 %>%
+  unnest(data) %>%
+  unnest(data) %>%
+  distinct(station, cast, depth_m, flor_mg_m3_rollmedian) %>%
+  ggplot(aes(x = flor_mg_m3_rollmedian, y = depth_m, color = station)) +
+  geom_path() +
+  scale_y_reverse() +
+  labs(
+    title = "Vertical profils of Chla (from the CTD)",
+    y = "Depth (m)"
+  )
+
 p <- wrap_plots(p1, p2, p3, p4, p5, p6, ncol = 2) +
-  plot_annotation(tag_levels = "A") &
+  plot_annotation(
+    tag_levels = "A",
+    title = "Stations with the highest daily PP rate",
+    theme = theme(plot.title = element_text(size = 24))
+  ) &
   theme(plot.tag = element_text(face = "bold"))
 
 ggsave(
-  "~/Desktop/pp_amundsen_stations_102_115.pdf",
+  here::here("graphs/16_02_stations_with_highest_daily_pp.pdf"),
   device = cairo_pdf,
   height = 10,
   width = 12
