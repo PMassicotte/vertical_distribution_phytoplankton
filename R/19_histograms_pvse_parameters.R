@@ -35,7 +35,7 @@ p <- pvse %>%
   )
 
 ggsave(
-  here::here("graphs/histograms_pb_max.pdf"),
+  here::here("graphs/19_histograms_pb_max.pdf"),
   device = cairo_pdf,
   width = 6,
   height = 2
