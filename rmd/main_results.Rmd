@@ -1,0 +1,251 @@
+---
+title: "Vertical distribution of the phytoplankton in the water column in the Baffin Bay"
+description: |
+  Presentation of the main results.
+author:
+  - name: Philippe Massicotte
+date: "`r Sys.Date()`"
+output: 
+  distill::distill_article:
+    toc: true
+    toc_float: true
+    theme: theme.css
+bibliography: /home/filoche/Documents/library.bib
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE,
+  fig.pos = "center"
+)
+
+library(here)
+library(pdftools)
+```
+
+This project aims at exploring how various metrics/proxies can give insights on the vertical distribution of the phytoplankton biomass in the water column using the data measured during the Green Edge oceanographic cruise conducted in the Baffin Bay in 2016. *Four main indicators were considered to get insights about the phytoplankton biomass in the water column:*
+
+1.  Fluorescence
+2.  Pigments
+3.  Particle beam attenuation coefficient (CP)
+4.  Particle backscattering coefficient (bbp)
+
+Most of the data is presented as a function of open water days (OWD) that were calculated in @Randelhoff2019.
+
+# Fluorescence
+
+This section shows the vertical distribution of phytoplankton based on fluorescence.
+
+## Fluorescence from the CTD
+
+```{r}
+tf <- tempfile(fileext = ".png")
+res <- pdf_convert(
+  here("graphs/02_phytoplankton_biomass_ctd.pdf"),
+  filenames = tf,
+  format = "png",
+  dpi = 200,
+  verbose = FALSE,
+  antialias = TRUE
+)
+knitr::include_graphics(tf)
+```
+
+## Fluorescence from the MVP
+
+*Note that because the MVP is measuring continually, there are no stations associated with each measurement. This is why that the MVP data is not presented as a function of OWD.*
+
+```{r}
+tf <- tempfile(fileext = ".png")
+res <- pdf_convert(
+  here("graphs/05_phytoplankton_biomass_mvp_fluo.pdf"),
+  filenames = tf,
+  format = "png",
+  dpi = 200,
+  verbose = FALSE,
+  antialias = TRUE
+)
+knitr::include_graphics(tf)
+```
+
+# Pigments
+
+These graphs were made using the pigments data from the rosette. Pigments were summed into two groups:
+
+1. Photoprotection pigments
+2. Accessory pigments
+
+```{r}
+tf <- tempfile(fileext = ".png")
+res <- pdf_convert(
+  here("graphs/04_phytoplankton_biomass_pigments.pdf"),
+  filenames = tf,
+  format = "png",
+  dpi = 200,
+  verbose = FALSE,
+  antialias = TRUE
+)
+knitr::include_graphics(tf)
+```
+
+# Particle beam attenuation coefficient (CP)
+
+## CP from the CTD
+
+The CP visualization based on the CTD can be seen above. There is a clear relationship between fluorescence and CP as seen below.
+
+```{r}
+tf <- tempfile(fileext = ".png")
+res <- pdf_convert(
+  here("graphs/02_scatterplot_fluorescence_vs_cp.pdf"),
+  filenames = tf,
+  format = "png",
+  dpi = 200,
+  verbose = FALSE,
+  antialias = TRUE
+)
+knitr::include_graphics(tf)
+```
+
+## CP from the MVP
+
+```{r}
+tf <- tempfile(fileext = ".png")
+res <- pdf_convert(
+  here("graphs/05_phytoplankton_biomass_mvp_cp.pdf"),
+  filenames = tf,
+  format = "png",
+  dpi = 200,
+  verbose = FALSE,
+  antialias = TRUE
+)
+knitr::include_graphics(tf)
+```
+
+# Particle backscattering coefficient (bbp)
+
+## bbp from the hydroscat
+
+These graphs show bbp at six different wavelengths measured by the hydroscat.
+
+```{r}
+tf <- tempfile(fileext = ".png")
+res <- pdf_convert(
+  here("graphs/03_phytoplankton_biomass_hydroscat.pdf"),
+  filenames = tf,
+  format = "png",
+  dpi = 200,
+  verbose = FALSE,
+  antialias = TRUE
+)
+knitr::include_graphics(tf)
+```
+
+# Primary production
+
+## in-situ primary production
+
+Visualization of in-situ primary production based on the data from Patrick Rimbault.
+
+```{r}
+tf <- tempfile(fileext = ".png")
+res <- pdf_convert(
+  here("graphs/07_insitu_primary_production.pdf"),
+  filenames = tf,
+  format = "png",
+  dpi = 200,
+  verbose = FALSE,
+  antialias = TRUE
+)
+knitr::include_graphics(tf)
+```
+
+## Estimated primary production
+
+A lot of work has been done for this section. *The goal was to calculate primary production based on photosynthetic parameters.* Note that estimation of daily primary production was calculated between the surface and the isolume depth corresponding to the 0.1 mol photons $m^{-2} d^{-1}$.
+
+This is the list of data used to estimate primary production:
+
+1. Photosynthetic parameters
+2. Incident PAR calculated from SBDART.
+3. PAR transmittance in the water column calculated from the C-OPS.
+4. Chla from the CTD.
+
+The next graph shows these intermediate parameters used to estimate primary production for four different stations.
+
+```{r}
+tf <- tempfile(fileext = ".png")
+res <- pdf_convert(
+  here("graphs/16_02_stations_with_highest_daily_pp.pdf"),
+  filenames = tf,
+  format = "png",
+  dpi = 200,
+  verbose = FALSE,
+  antialias = TRUE
+)
+knitr::include_graphics(tf)
+```
+
+Finally, we can visualize estimated primary production as a function of OWD.
+
+```{r}
+tf <- tempfile(fileext = ".png")
+res <- pdf_convert(
+  here("graphs/20_02_primary_production_pvse_vs_owd.pdf"),
+  filenames = tf,
+  format = "png",
+  dpi = 200,
+  verbose = FALSE,
+  antialias = TRUE
+)
+knitr::include_graphics(tf)
+```
+
+## Comparing in-situ and estimated primary production
+
+Interestingly, we can see that there is a good relationship between measured and estimated primary production (considering that both in-situ and estimated values are independent). We can also observe that at low values, estimated primary production is somehow underestimated compared to in-situ measurements.
+
+```{r}
+tf <- tempfile(fileext = ".png")
+res <- pdf_convert(
+  here("graphs/21_01_scatterplot_primary_production_insitu_vs_pvse.pdf"),
+  filenames = tf,
+  format = "png",
+  dpi = 200,
+  verbose = FALSE,
+  antialias = TRUE
+)
+knitr::include_graphics(tf)
+```
+
+To get more insights, I have divided the data into three main categories: Amundsen, barge and ice-covered stations.
+
+```{r}
+tf <- tempfile(fileext = ".png")
+res <- pdf_convert(
+  here("graphs/21_01_scatterplot_primary_production_insitu_vs_pvse_by_deployment.pdf"),
+  filenames = tf,
+  format = "png",
+  dpi = 200,
+  verbose = FALSE,
+  antialias = TRUE
+)
+knitr::include_graphics(tf)
+```
+
+# Particulate organic carbon (POC)
+
+```{r}
+tf <- tempfile(fileext = ".png")
+res <- pdf_convert(
+  here("graphs/18_poc_vs_owd.pdf"),
+  filenames = tf,
+  format = "png",
+  dpi = 200,
+  verbose = FALSE,
+  antialias = TRUE
+)
+knitr::include_graphics(tf)
+```

@@ -1,0 +1,35 @@
+@import url('https://fonts.googleapis.com/css2?family=Fira+Mono');
+/* base variables */
+
+/* Edit the CSS properties in this file to create a custom
+   Distill theme. Only edit values in the right column
+   for each row; values shown are the CSS defaults.
+   To return any property to the default,
+   you may set its value to: unset
+   All rows must end with a semi-colon.                      */
+
+/* Optional: embed custom fonts here with `@import`          */
+/* This must remain at the top of this file.                 */
+
+d-article div.sourceCode code,
+d-article pre code {
+	font-family: "DM Mono", monospace;
+	font-size: 1rem;
+}
+
+.gradient-underline {
+    background-image: linear-gradient(rgb(217, 242, 228), rgb(217, 242, 228));
+    background-repeat: no-repeat;
+    background-position: 0 88%;
+    background-size: 100% 0.2em;
+    text-decoration: none;
+}
+
+em {
+  background-image: linear-gradient(rgb(217, 242, 228), rgb(217, 242, 228));
+    background-repeat: no-repeat;
+    background-position: 0 88%;
+    background-size: 100% 0.2em;
+    text-decoration: none;
+    font-style: normal;
+}
