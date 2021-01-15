@@ -16,6 +16,7 @@ library(glue)
 library(MBA)
 library(sf)
 library(patchwork)
+library(ggtext)
 # library(dtplyr)
 
 # Set default ggplot2 font size and font family
