@@ -1,8 +1,8 @@
 name: "site"
-title: "sdfsdf"
+title: "sdfsdfdffffffffffffffff"
 description: |
   sdfsdf
-output_dir: "docs"
+output_dir: "../docs"
 navbar:
   right:
     - text: "Home"
