@@ -17,5 +17,3 @@ Four main indicators that can give insights into the phytoplankton biomass in th
 4.  Particle backscattering coefficient (bbp)
 
 This project is based on the data measured during the Green Edge oceanographic cruise conducted in the Baffin Bay in 2016.
-
-[Main results](rmd/main_results.html)
