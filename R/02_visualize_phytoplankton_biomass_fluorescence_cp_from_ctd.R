@@ -27,7 +27,7 @@ p1 <- ctd %>%
   distinct(station, transect, longitude, latitude, owd) %>%
   st_as_sf(coords = c("longitude", "latitude"), crs = 4326) %>%
   ggplot(aes(color = owd)) +
-  geom_sf() +
+  geom_sf(size = 3) +
   scale_color_binned(
     breaks = scales::breaks_pretty(n = 6),
     type = "viridis",
@@ -46,6 +46,13 @@ p1 <- ctd %>%
 
 p1
 
+ggsave(
+  here::here("graphs/02_map_owd.pdf"),
+  device = cairo_pdf
+)
+
+knitr::plot_crop(here::here("graphs/02_map_owd.pdf"))
+
 # CTD fluorescence --------------------------------------------------------
 
 # Summarize by depth and open water day
@@ -57,6 +64,47 @@ df_viz <- ctd %>%
   drop_na() %>%
   filter(depth_m <= 100)
 
+
+# Just an idea, we could use boxplot/manova to determine if there are
+# differences in the data.
+
+isolume2 <- isolume %>%
+  rename(isolume_depth_m = depth_m)
+
+res <- df_viz %>%
+  inner_join(isolume2, by = "owd") %>%
+  mutate(
+    above_isolume = case_when(
+      depth_m < isolume_depth_m ~ "Above the 0.1 isolume",
+      TRUE ~ "Below the 0.1 isolume"
+    )
+  ) %>%
+  mutate(ice_covered = case_when(
+    owd < 0 ~ "Ice covered",
+    TRUE ~ "Open water"
+  ))
+
+res
+
+res %>%
+  filter(isolume == "isolume_01") %>%
+  ggplot(aes(x = above_isolume, y = mean_fluo, fill = ice_covered)) +
+  geom_boxplot(size = 0.25, outlier.size = 0.5) +
+  scale_y_log10() +
+  annotation_logticks(sides = "l") +
+  labs(
+    x = NULL,
+    y = "Mean fluorescence (CTD)",
+    fill = NULL
+  ) +
+  paletteer::scale_fill_paletteer_d("nord::aurora")
+
+
+ggsave(
+  here::here("graphs/02_boxplot_ctd_fluorescence_isolume_owd.pdf"),
+  device = cairo_pdf
+)
+
 # Maybe bin the depths before interpolation? Use the mean between certain ranges
 # of depths?
 
@@ -64,6 +112,7 @@ df_viz <- df_viz %>%
   nest(data = everything()) %>%
   mutate(res = map(data, interpolate_2d, owd, depth_m, mean_fluo))
 
+# Do the plot
 p2 <- df_viz %>%
   unnest(res) %>%
   rename(owd = x, depth_m = y, mean_fluo = z) %>%

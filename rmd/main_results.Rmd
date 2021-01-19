@@ -25,6 +25,8 @@ library(here)
 library(pdftools)
 ```
 
+# Context
+
 This project aims at exploring how various metrics/proxies can give insights on the vertical distribution of the phytoplankton biomass in the water column using the data measured during the Green Edge oceanographic cruise conducted in the Baffin Bay in 2016. *Four main indicators were considered to get insights about the phytoplankton biomass in the water column:*
 
 1.  Fluorescence
@@ -32,7 +34,21 @@ This project aims at exploring how various metrics/proxies can give insights on 
 3.  Particle beam attenuation coefficient (CP)
 4.  Particle backscattering coefficient (bbp)
 
-Most of the data is presented as a function of open water days (OWD) that were calculated in @Randelhoff2019.
+Most of the data is presented as a function of open water days (OWD) that were calculated in @Randelhoff2019. The first graph shows the OWD of each station.
+
+```{r}
+tf <- tempfile(fileext = ".png")
+res <- pdf_convert(
+  here("graphs/02_map_owd.pdf"),
+  filenames = tf,
+  format = "png",
+  dpi = 200,
+  verbose = FALSE,
+  antialias = TRUE
+)
+knitr::include_graphics(tf)
+```
+
 
 # Fluorescence
 
@@ -44,6 +60,21 @@ This section shows the vertical distribution of phytoplankton based on fluoresce
 tf <- tempfile(fileext = ".png")
 res <- pdf_convert(
   here("graphs/02_phytoplankton_biomass_ctd.pdf"),
+  filenames = tf,
+  format = "png",
+  dpi = 200,
+  verbose = FALSE,
+  antialias = TRUE
+)
+knitr::include_graphics(tf)
+```
+
+Using boxplots can be one interesting alternative way to present the data. For example, I have divided the CTD fluorescence data presented in the above graphic into ice-free/ice-covered and above/below the 0.1 isolume.
+
+```{r}
+tf <- tempfile(fileext = ".png")
+res <- pdf_convert(
+  here("graphs/02_boxplot_ctd_fluorescence_isolume_owd.pdf"),
   filenames = tf,
   format = "png",
   dpi = 200,
