@@ -280,3 +280,73 @@ res <- pdf_convert(
 )
 knitr::include_graphics(tf)
 ```
+
+# Phytoplankton absorption
+
+Maybe we could use absorption information to get some additional insights.
+
+## Vertical profiles
+
+This graph shows the vertical profiles of phytoplankton absorption at 440 nm. It seems that open water stations have subsurface maximum more apparent than the profiles of the ice-covered stations.
+
+```{r}
+tf <- tempfile(fileext = ".png")
+res <- pdf_convert(
+  here("graphs/22_vertical_profiles_aphy.pdf"),
+  filenames = tf,
+  format = "png",
+  dpi = 200,
+  verbose = FALSE,
+  antialias = TRUE
+)
+knitr::include_graphics(tf)
+```
+
+## Spectral profiles
+
+By looking at the spectral profiles, we can also notice that there are indeed differences in the water column. 
+
+```{r}
+tf <- tempfile(fileext = ".png")
+res <- pdf_convert(
+  here("graphs/22_spectral_profiles_phyto_absorption_isolume_owd.pdf"),
+  filenames = tf,
+  format = "png",
+  dpi = 200,
+  verbose = FALSE,
+  antialias = TRUE
+)
+knitr::include_graphics(tf)
+```
+
+Finally, I have averaged the spectral profiles in four categories. I think these can be seen as end-members spectra.
+
+```{r}
+tf <- tempfile(fileext = ".png")
+res <- pdf_convert(
+  here("graphs/22_spectral_profiles_phyto_absorption_averaged_isolume_owd.pdf"),
+  filenames = tf,
+  format = "png",
+  dpi = 200,
+  verbose = FALSE,
+  antialias = TRUE
+)
+knitr::include_graphics(tf)
+```
+
+<!-- ## Boxplot -->
+
+<!-- This is an attempt to visualize if there are differences in phytoplankton absorption at 440 nm between open and ice-covered stations. -->
+
+<!-- ```{r} -->
+<!-- tf <- tempfile(fileext = ".png") -->
+<!-- res <- pdf_convert( -->
+<!--   here("graphs/22_boxplot_phyto_absorption_isolume_owd.pdf"), -->
+<!--   filenames = tf, -->
+<!--   format = "png", -->
+<!--   dpi = 200, -->
+<!--   verbose = FALSE, -->
+<!--   antialias = TRUE -->
+<!-- ) -->
+<!-- knitr::include_graphics(tf) -->
+<!-- ``` -->
