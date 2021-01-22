@@ -23,14 +23,35 @@ isolume <-
 
 ctd <- vroom::vroom(here::here("data/clean/ctd.csv"), altrep = TRUE)
 
+transect <- ctd %>%
+  distinct(transect, latitude) %>%
+  group_by(transect) %>%
+  summarise(latitude = median(latitude)) %>%
+  mutate(longitude = -65)
+
 p1 <- ctd %>%
   distinct(station, transect, longitude, latitude, owd) %>%
   st_as_sf(coords = c("longitude", "latitude"), crs = 4326) %>%
   ggplot(aes(color = owd)) +
   geom_sf(size = 3) +
-  scale_color_binned(
+  geom_label(
+    data = transect,
+    aes(
+      x = longitude,
+      y = latitude,
+      label = glue("T {transect}")
+    ),
+    inherit.aes = FALSE,
+    size = 2,
+    color = "gray50",
+    label.size = NA
+  ) +
+  scale_colour_gradient2(
+    low = "#A84222",
+    mid = "#DBD3C5",
+    high = "#326391",
     breaks = scales::breaks_pretty(n = 6),
-    type = "viridis",
+    midpoint = 0,
     guide =
       guide_colorbar(
         barwidth = unit(8, "cm"),
@@ -40,8 +61,12 @@ p1 <- ctd %>%
         title.hjust = 0.5
       )
   ) +
+  scale_x_continuous(expand = expansion(mult = c(0.05, 0.05))) +
   theme(
-    legend.position = "bottom"
+    legend.position = "bottom",
+    axis.title = element_blank(),
+    panel.border = element_blank(),
+    axis.ticks = element_blank()
   )
 
 p1
