@@ -89,7 +89,6 @@ df_viz <- ctd %>%
   drop_na() %>%
   filter(depth_m <= 100)
 
-
 # Just an idea, we could use boxplot/manova to determine if there are
 # differences in the data.
 
@@ -123,7 +122,6 @@ res %>%
     fill = NULL
   ) +
   paletteer::scale_fill_paletteer_d("nord::aurora")
-
 
 ggsave(
   here::here("graphs/02_boxplot_ctd_fluorescence_isolume_owd.pdf"),
@@ -163,7 +161,11 @@ p2 <- df_viz %>%
     expand = expansion(mult = c(0.01, 0.05)),
     breaks = scales::breaks_pretty(n = 8)
   ) +
-  geom_line(data = isolume, size = 1, aes(x = owd, y = depth_m, color = isolume), inherit.aes = FALSE) +
+  geom_line(
+    data = isolume,
+    size = 1,
+    aes(x = owd, y = depth_m, color = isolume),
+    inherit.aes = FALSE) +
   paletteer::scale_color_paletteer_d("wesanderson::GrandBudapest1") +
   labs(
     y = "Depth (m)"
@@ -233,7 +235,7 @@ ctd %>%
   scale_y_reverse() +
   facet_wrap(~station, scales = "free")
 
-# After a discussion with Pascal, he told me to rescale the transmittance data
+# After a discussion with Pascal, he told me to re-scale the transmittance data
 # between 0-100%.
 
 ctd <- ctd %>%
@@ -410,9 +412,11 @@ ggsave(
 
 # Correlation between CP and fluorescence ---------------------------------
 
-p <- ctd %>%
+df_viz <- ctd %>%
   filter(depth_m <= 100) %>%
-  mutate(cp = -(1 / r) * log10(tran_percent / 100)) %>%
+  mutate(cp = -(1 / r) * log10(tran_percent / 100))
+
+p <- df_viz %>%
   ggplot(aes(x = flor_mg_m3, y = cp)) +
   geom_hex(bins = 100) +
   scale_y_log10() +
@@ -427,49 +431,71 @@ p <- ctd %>%
   ) +
   geom_smooth(method = "lm", color = "red", size = 0.25) +
   theme(
-    legend.position = "none"
+    legend.position = "none",
+    aspect.ratio = 1
   )
 
 ggsave(
   here::here("graphs/02_scatterplot_fluorescence_vs_cp.pdf"),
-  device = cairo_pdf
+  device = cairo_pdf,
+  width = 7,
+  height = 7
 )
 
-# More exploration. Attention, there are quite a lot of CTD data with an OWD
-# that are not found in the isolume provided by Achim.
+# Scatterplot by transect -------------------------------------------------
 
-df_viz <- ctd %>%
-  filter(depth_m <= 100) %>%
-  mutate(cp = -(1 / r) * log10(tran_percent / 100)) %>%
+p +
+  facet_wrap(~transect) +
+  ggsave(
+    here("graphs/02_scatterplot_fluorescence_vs_cp_by_transect.pdf"),
+    device = cairo_pdf,
+    width = 7,
+    height = 7
+  )
+
+# Scatterplot by groups ---------------------------------------------------
+
+# Attention, there are quite a lot of CTD data with an OWD that are not found in
+# the isolume provided by Achim.
+
+df_viz2 <- df_viz %>%
   inner_join(isolume %>% rename(isolume_depth_m = depth_m), by = "owd") %>%
-  mutate(is_water_open = ifelse(owd < 0, "Ice covered", "Open water"))
+  mutate(is_water_open = ifelse(owd < 0, "Ice covered", "Open water")) %>%
+  mutate(
+    above_isolume = case_when(
+      depth_m < isolume_depth_m ~ "Above the 0.1 isolume",
+      TRUE ~ "Below the 0.1 isolume"
+    )
+  )
 
-df_viz
+df_viz2
 
-p <- df_viz %>%
+p <- df_viz2 %>%
+  filter(isolume == "isolume_01") %>%
   ggplot(aes(x = flor_mg_m3, y = cp, color = isolume_depth_m)) +
-  geom_point(size = 0.25) +
-  # geom_hex(bins = 100) +
+  geom_hex(bins = 50) +
   scale_y_log10() +
   scale_x_log10() +
-  scale_color_viridis_c() +
+  scale_fill_viridis_c() +
   annotation_logticks() +
   labs(
     x = bquote("Fluorescence"~(mg~m^{-3})),
     y = bquote("Particle beam attenuation coefficient"~(m^{-1})),
     title = "CP vs fluorescence",
-    subtitle = str_wrap("For the first 100 meters of the water column. Data from the CTD. Observations were divided into two groups: ice covered with OWD < 0 or open water when OWD >= 0.", 120)
+    subtitle = str_wrap("For the first 100 meters of the water column. Data from the CTD.", 120)
   ) +
+  facet_grid(above_isolume~is_water_open) +
   geom_smooth(method = "lm", color = "red", size = 0.5) +
   theme(
-    legend.position = "bottom",
-    plot.subtitle = element_text(size = 8)
-  ) +
-  facet_grid(isolume~is_water_open)
+    legend.position = "none",
+    plot.subtitle = element_text(size = 8),
+    aspect.ratio = 1
+  )
 
 ggsave(
-  here::here("graphs/02_scatterplot_fluorescence_vs_cp_isolume_depth.pdf"),
+  here("graphs/02_scatterplot_fluorescence_vs_cp_isolume_depth.pdf"),
   device = cairo_pdf,
-  height = 6,
+  height = 8,
   width = 8
 )
+

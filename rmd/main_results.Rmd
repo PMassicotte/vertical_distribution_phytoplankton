@@ -123,6 +123,8 @@ knitr::include_graphics(tf)
 
 # Particle beam attenuation coefficient (CP)
 
+> The increase of cp during the lighted portion of the day is usually explained by the accumulation of intracellular carbon concentration associated with photosynthetic processes [@Kheireddine2014].
+
 ## CP from the CTD
 
 The CP visualization based on the CTD can be seen above. There is a clear relationship between fluorescence and CP as seen below.
@@ -131,6 +133,36 @@ The CP visualization based on the CTD can be seen above. There is a clear relati
 tf <- tempfile(fileext = ".png")
 res <- pdf_convert(
   here("graphs/02_scatterplot_fluorescence_vs_cp.pdf"),
+  filenames = tf,
+  format = "png",
+  dpi = 200,
+  verbose = FALSE,
+  antialias = TRUE
+)
+knitr::include_graphics(tf)
+```
+
+The next graph shows the same data but divided differently. The best relation can be seen for the observations below the 0.1 isolume and located in open water. *I think the bottom left panel is the most interesting where **we can see the L shape**.*
+
+```{r}
+tf <- tempfile(fileext = ".png")
+res <- pdf_convert(
+  here("graphs/02_scatterplot_fluorescence_vs_cp_isolume_depth.pdf"),
+  filenames = tf,
+  format = "png",
+  dpi = 200,
+  verbose = FALSE,
+  antialias = TRUE
+)
+knitr::include_graphics(tf)
+```
+
+Finally, the same data by transect.
+
+```{r}
+tf <- tempfile(fileext = ".png")
+res <- pdf_convert(
+  here("graphs/02_scatterplot_fluorescence_vs_cp_by_transect.pdf"),
   filenames = tf,
   format = "png",
   dpi = 200,
