@@ -7,7 +7,7 @@
 rm(list = ls())
 
 df <- readxl::read_excel(
-  here::here("data/raw/GE-Amundsen-phyto_absorption_120517.xlsx"),
+  here("data/raw/GE-Amundsen-phyto_absorption_120517.xlsx"),
   sheet = "Discrete"
 ) %>%
   janitor::clean_names() %>%
@@ -19,8 +19,7 @@ names(df)
 df <- df %>%
   select(station, ctd, bottle, depth_m, total_chlorophyll_a, wavelength, aphy) %>%
   mutate(station = parse_number(station)) %>%
-  drop_na(station) %>%
-  drop_na(aphy)
+  drop_na(station)
 
 # df %>%
 #   count(station, ctd, depth_m) %>%
@@ -74,6 +73,19 @@ absorption <- absorption %>%
   mutate(aphy_specific = aphy / total_chlorophyll_a, .after = aphy)
 
 absorption
+
+# Export the data ---------------------------------------------------------
+
+# Add an ID to each spectra
+absorption %>%
+  count(station, ctd, bottle) %>%
+  assertr::verify(n == 551)
+
+absorption <- absorption %>%
+  group_by(station, ctd, bottle) %>%
+  mutate(spectra_id = cur_group_id(), .before = 1)
+
+write_csv(absorption, here("data/clean/phtyplankton_absorption.csv"))
 
 # Visualize the spectral profiles -----------------------------------------
 
