@@ -47,9 +47,9 @@ p1 <- ctd %>%
     label.size = NA
   ) +
   scale_colour_gradient2(
-    low = "#A84222",
+    low = "#326391",
     mid = "#DBD3C5",
-    high = "#326391",
+    high = "#A84222",
     breaks = scales::breaks_pretty(n = 6),
     midpoint = 0,
     guide =
@@ -499,3 +499,42 @@ ggsave(
   width = 8
 )
 
+# Is there variability deep in the water ----------------------------------
+
+df_viz <- ctd %>%
+  mutate(cp = -(1 / r) * log10(tran_percent / 100))
+
+df_viz
+
+# Divide into class of depths
+
+df_viz <- df_viz %>%
+  filter(depth_m >= 1000) %>%
+  select(station, transect, longitude, depth_m, flor_mg_m3, cp) %>%
+  mutate(
+    bin_depth_m = chop_equally(depth_m,
+      groups = 9,
+      lbl_intervals(raw = TRUE)
+    ),
+    .after = depth_m
+  )
+
+df_viz
+
+df_viz %>%
+  count(bin_depth_m)
+
+df_viz %>%
+  ggplot(aes(x = longitude, y = cp)) +
+  geom_point() +
+  # scale_y_log10() +
+  facet_grid(bin_depth_m ~ transect, scales = "free")
+
+
+df_viz %>%
+  drop_na(cp) %>%
+  group_by(station, transect, longitude) %>%
+  filter(depth_m == max(depth_m)) %>%
+  ggplot(aes(x = longitude, y = depth_m, size = cp)) +
+  geom_point() +
+  facet_wrap(~transect)
