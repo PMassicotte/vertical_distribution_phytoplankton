@@ -93,3 +93,44 @@ ggsave(
 )
 
 knitr::plot_crop(here("graphs/24_scatterplot_hydroscat_bbp_fluo_chla_by_group.pdf"))
+
+# Spectral dependency ------------------------------------------------------
+
+# Marcel wanted to have a look at the relationship between 532 and 700 nm
+
+hydroscat
+
+df_viz <- hydroscat %>%
+  filter(wavelength %in% c(532, 700)) %>%
+  pivot_wider(names_from = wavelength, values_from = bbp) %>%
+  janitor::clean_names()
+
+df_viz
+
+p <- df_viz %>%
+  ggplot(aes(x = x532, y = x700)) +
+  geom_point(color = "#393E41") +
+  labs(
+    title = "Comparing bbp at two wavelengths",
+    subtitle = "Data from the Hydroscat.",
+    x = quote(bbp[532~nm] ~ (m^{-1})),
+    y = quote(bbp[700~nm] ~ (m^{-1}))
+  ) +
+  geom_smooth(method = "lm", color = "#bf1d28", size = 0.5)
+
+ggsave(
+  here("graphs/24_scatterplot_hydroscat_bbp_532nm_vs_700nm.pdf"),
+  device = cairo_pdf,
+  width = 7,
+  height = 5
+)
+
+p <- p +
+  facet_grid(ice_covered ~ above_isolume, scales = "free")
+
+ggsave(
+  here("graphs/24_scatterplot_hydroscat_bbp_532nm_vs_700nm_by_group.pdf"),
+  device = cairo_pdf,
+  width = 7,
+  height = 5
+)

@@ -280,6 +280,37 @@ res <- pdf_convert(
 knitr::include_graphics(tf)
 ```
 
+# Comparing bbp at two wavelengths (Hydroscat)
+
+Scatterplot between bbp measured at 532 nm and 700 nm.
+
+```{r}
+tf <- tempfile(fileext = ".png")
+res <- pdf_convert(
+  here("graphs/24_scatterplot_hydroscat_bbp_532nm_vs_700nm.pdf"),
+  filenames = tf,
+  format = "png",
+  dpi = 200,
+  verbose = FALSE,
+  antialias = TRUE
+)
+knitr::include_graphics(tf)
+```
+
+Same data presented differently.
+
+```{r}
+tf <- tempfile(fileext = ".png")
+res <- pdf_convert(
+  here("graphs/24_scatterplot_hydroscat_bbp_532nm_vs_700nm_by_group.pdf"),
+  filenames = tf,
+  format = "png",
+  dpi = 200,
+  verbose = FALSE,
+  antialias = TRUE
+)
+knitr::include_graphics(tf)
+```
 
 # Phytoplankton absorption
 
