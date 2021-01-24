@@ -23,6 +23,8 @@ knitr::opts_chunk$set(
 
 library(here)
 library(pdftools)
+library(data.table)
+library(tidyverse)
 ```
 
 # Context
@@ -49,6 +51,31 @@ res <- pdf_convert(
 knitr::include_graphics(tf)
 ```
 
+# Data processing for 3D plots
+
+During the meeting we had on 2021-01-22, it was questioned why I was averaging data by `owd` and `depth` before doing the interpolation. This is simply because it is possible that there are many observations for a specific pair of `owd` and `depth`. For example, it can be seen here that there are 9 values (i.e. 9 stations) that have an `owd = 2` and `depth = 1.980`.
+
+```{r count-duplicated-owd-depth, cache=TRUE}
+ctd <- fread(here::here("data/clean/ctd.csv"))
+
+ctd[, .N, by = .(owd, depth_m)][N > 5] %>% 
+  as_tibble() %>% 
+  arrange(desc(N)) %>% 
+  head(6) %>% 
+  knitr::kable()
+```
+
+Here are 9 stations in the CTD data with `owd = 2` and `depth = 1.980`.
+
+```{r count-duplicated-owd-depth2, cache=TRUE}
+ctd %>%
+  as_tibble() %>%
+  filter(owd == 2 & depth_m == 1.98) %>%
+  select(station, depth_m, owd, flor_mg_m3) %>%
+  rmarkdown::paged_table()
+```
+
+Hence, before performing the interpolation, data has to be averaged by OWD and depth.
 
 # Fluorescence
 
@@ -366,19 +393,34 @@ res <- pdf_convert(
 knitr::include_graphics(tf)
 ```
 
-<!-- ## Boxplot -->
+## Comparing blue vs red regions
 
-<!-- This is an attempt to visualize if there are differences in phytoplankton absorption at 440 nm between open and ice-covered stations. -->
+With all the data
 
-<!-- ```{r} -->
-<!-- tf <- tempfile(fileext = ".png") -->
-<!-- res <- pdf_convert( -->
-<!--   here("graphs/22_boxplot_phyto_absorption_isolume_owd.pdf"), -->
-<!--   filenames = tf, -->
-<!--   format = "png", -->
-<!--   dpi = 200, -->
-<!--   verbose = FALSE, -->
-<!--   antialias = TRUE -->
-<!-- ) -->
-<!-- knitr::include_graphics(tf) -->
-<!-- ``` -->
+```{r}
+tf <- tempfile(fileext = ".png")
+res <- pdf_convert(
+  here("graphs/23_scatterplot_phytoplankton_specific_absorption_blue_red.pdf"),
+  filenames = tf,
+  format = "png",
+  dpi = 200,
+  verbose = FALSE,
+  antialias = TRUE
+)
+knitr::include_graphics(tf)
+```
+
+By groups
+
+```{r}
+tf <- tempfile(fileext = ".png")
+res <- pdf_convert(
+  here("graphs/23_scatterplot_phytoplankton_specific_absorption_blue_red_by_group.pdf"),
+  filenames = tf,
+  format = "png",
+  dpi = 200,
+  verbose = FALSE,
+  antialias = TRUE
+)
+knitr::include_graphics(tf)
+```
