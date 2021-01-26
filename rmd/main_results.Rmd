@@ -246,6 +246,21 @@ res <- pdf_convert(
 knitr::include_graphics(tf)
 ```
 
+The next graphs show the longitudinal variability of CP at the deepest locations within each transect. The left column shows how the MVP was moving in the water column whereas the right column shows how CP varied along the transect. For example, we can see that the MVP followed the 300 meters line at transect 100.
+
+```{r}
+tf <- tempfile(fileext = ".png")
+res <- pdf_convert(
+  here("graphs/05_deepest_cp_longitudinal_profil.pdf"),
+  filenames = tf,
+  format = "png",
+  dpi = 200,
+  verbose = FALSE,
+  antialias = TRUE
+)
+knitr::include_graphics(tf)
+```
+
 # Particle backscattering coefficient (bbp)
 
 ## bbp from the hydroscat

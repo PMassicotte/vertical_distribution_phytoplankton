@@ -45,7 +45,6 @@ df %>%
   scale_y_reverse() +
   facet_wrap(~transect, scales = "free_x")
 
-
 # Fluorescence ------------------------------------------------------------
 
 df_viz <- df %>%
@@ -202,4 +201,56 @@ ggsave(
   device = cairo_pdf,
   height = 4,
   width = 8
+)
+
+# Explore CP deeply in the water column -----------------------------------
+
+r <- 0.25
+
+df_viz <- df %>%
+  mutate(cp = -(1 / r) * log10(trans / 100))
+
+df_viz
+
+# df_viz %>%
+#   ggplot(aes(x = longitude, y = pres)) +
+#   geom_point(size = 0.1) +
+#   scale_y_reverse() +
+#   facet_wrap(~transect, scales = "free_x")
+
+p1 <- df_viz %>%
+  group_by(transect, longitude) %>%
+  filter(pres == max(pres)) %>%
+  ggplot(aes(x = longitude, y = pres)) +
+  geom_line() +
+  scale_y_reverse(limits = c(NA, 0)) +
+  facet_wrap(~transect, scales = "free_x", ncol = 1) +
+  labs(
+    x = "Longitude",
+    y = "Depth (m)",
+    title = "Bottom profiles of the MVP"
+  ) +
+  theme(plot.title = element_text(size = 10))
+
+p2 <- df_viz %>%
+  group_by(transect, longitude) %>%
+  filter(pres == max(pres)) %>%
+  ggplot(aes(x = longitude, y = cp)) +
+  geom_line() +
+  scale_y_reverse() +
+  facet_wrap(~transect, scales = "free_x", ncol = 1) +
+  labs(
+    x = "Longitude",
+    y = quote("Particle beam attenuation coefficient" ~ (m^{-1})),
+    title = "Bottom CP profiles"
+  ) +
+  theme(plot.title = element_text(size = 10))
+
+p <- p1 + p2
+
+ggsave(
+  here("graphs/05_deepest_cp_longitudinal_profil.pdf"),
+  device = cairo_pdf,
+  width = 6,
+  height = 8
 )
