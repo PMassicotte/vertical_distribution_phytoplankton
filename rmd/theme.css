@@ -41,3 +41,13 @@ d-article h1 {
 d-article h2 {
   font-size: 32px;
 }
+
+code {
+  font-size: 90%;
+  font-family: "Roboto Mono", monospace;
+  font-weight: 600;
+  color: #231f20;
+  background: #e8edee;
+  border-radius: 3px;
+  padding: 1px 1px 1px 1px;
+}

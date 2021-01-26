@@ -47,6 +47,11 @@ owd <- read_csv("https://raw.githubusercontent.com/poplarShift/ice-edge/master/n
 df <- df %>%
   inner_join(owd, by = "station")
 
+# Export clean hydroscat data ---------------------------------------------
+
+df %>%
+  write_csv(here("data/clean/hydroscat.csv"))
+
 # Visualize the data ------------------------------------------------------
 
 df %>%

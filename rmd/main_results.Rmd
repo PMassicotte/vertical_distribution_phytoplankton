@@ -51,6 +51,23 @@ res <- pdf_convert(
 knitr::include_graphics(tf)
 ```
 
+# A note on the CTD data
+
+After exploring the CTD data, I found out that there were some unwanted peaks in both the florescence and transmittance data. Therefore, I have used a median moving window to smooth the data (both transmittance and fluorescence).
+
+```{r}
+tf <- tempfile(fileext = ".png")
+res <- pdf_convert(
+  here("graphs/01_ctd_transmittance_with_peaks.pdf"),
+  filenames = tf,
+  format = "png",
+  dpi = 200,
+  verbose = FALSE,
+  antialias = TRUE
+)
+knitr::include_graphics(tf)
+```
+
 # Data processing for 3D plots
 
 During the meeting we had on 2021-01-22, it was questioned why I was averaging data by `owd` and `depth` before doing the interpolation. This is simply because it is possible that there are many observations for a specific pair of `owd` and `depth`. For example, it can be seen here that there are 9 values (i.e. 9 stations) that have an `owd = 2` and `depth = 1.980`.
@@ -190,6 +207,21 @@ Finally, the same data by transect.
 tf <- tempfile(fileext = ".png")
 res <- pdf_convert(
   here("graphs/02_scatterplot_fluorescence_vs_cp_by_transect.pdf"),
+  filenames = tf,
+  format = "png",
+  dpi = 200,
+  verbose = FALSE,
+  antialias = TRUE
+)
+knitr::include_graphics(tf)
+```
+
+The next graphic shows CP vertical profiles for some of the deepest stations below 500 meters. Any ideas why there are almost always a bump in the data in the very last portion of the profiles?
+
+```{r}
+tf <- tempfile(fileext = ".png")
+res <- pdf_convert(
+  here("graphs/02_vertical_profiles_cp.pdf"),
   filenames = tf,
   format = "png",
   dpi = 200,
@@ -367,7 +399,7 @@ knitr::include_graphics(tf)
 
 ## Comparing blue vs red regions
 
-With all the data
+With all the data.
 
 ```{r}
 tf <- tempfile(fileext = ".png")
@@ -382,7 +414,7 @@ res <- pdf_convert(
 knitr::include_graphics(tf)
 ```
 
-By groups
+By groups.
 
 ```{r}
 tf <- tempfile(fileext = ".png")

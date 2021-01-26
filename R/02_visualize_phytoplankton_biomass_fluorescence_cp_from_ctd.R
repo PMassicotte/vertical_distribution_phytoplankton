@@ -184,89 +184,28 @@ p2 <- df_viz %>%
     legend.title = element_text(size = 8)
   )
 
-# Particle beam attenuation coefficient (CP) ------------------------------
 
-# ftp://ftp.nodc.noaa.gov/nodc/archive/arc0022/0001155/1.1/data/1-data/docs/PI-NOTES/arabian/Gardner-beamcp.htm
-
-# Beam transmission was converted to beam attenuation coefficients using
-# c=-(1/r)*ln(%Tr/100) where c=beam attenuation coefficient (m^-1), r=beam path
-# length (m), and Tr=% beam transmission.
-
-# Check Table 1 for an idea of the range of Cp.
-# https://agupubs.onlinelibrary.wiley.com/doi/full/10.1002/2015JC010878
-
-# 25 cm beam, confirmed by Pascal Guillot
-r <- 0.25
-
-# From Pascal:
-
-# Voici les infos (Thomas, un des techs de AS a contacté SeaBird):
-#
-# All the instruments listed have a wavelength of 657nm (using a red LED):
-#
-# CST-558DR – 657nm
-# CST-671DR – 657nm
-# CST-2021 – 657nm
-# CST-2022 - 657nm
-
-ctd %>%
-  drop_na(tran_percent) %>%
-  ggplot(aes(x = tran_percent)) +
-  geom_histogram(binwidth = 1)
-
-# A lot of transmittance >= 100, problem! Email sent to Pascal Guillot to
-# understand what is going on.
-ctd %>%
-  drop_na(tran_percent) %>%
-  filter(tran_percent > 100) %>%
-  ggplot(aes(x = tran_percent)) +
-  geom_histogram()
-
-ctd %>%
-  drop_na(tran_percent) %>%
-  count(tran_percent >= 100) %>%
-  mutate(prop = n / sum(n))
-
-ctd %>%
-  drop_na(tran_percent) %>%
-  filter(depth_m <= 100, transect == 100) %>%
-  ggplot(aes(x = tran_percent, y = depth_m, group = interaction(station, transect))) +
-  geom_path(size = 0.25) +
-  scale_y_reverse() +
-  facet_wrap(~station, scales = "free")
-
-# After a discussion with Pascal, he told me to re-scale the transmittance data
-# between 0-100%.
-
-ctd <- ctd %>%
-  mutate(tran_percent = scales::rescale(tran_percent, to = c(0.001, 99.999)))
+# Particle beam attenuation (CP) ------------------------------------------
 
 # Summarize by depth and open water day
 df_viz <- ctd %>%
   dtplyr::lazy_dt() %>%
   group_by(owd, depth_m) %>%
-  summarise(mean_tran_percent = mean(tran_percent, na.rm = TRUE), n = n()) %>%
+  summarise(mean_cp = mean(cp, na.rm = TRUE), n = n()) %>%
   as_tibble() %>%
   drop_na() %>%
   filter(depth_m <= 100)
 
-# Calculate the beam attenuation coefficient
-df_viz <- df_viz %>%
-  mutate(cp = -(1 / r) * log10(mean_tran_percent / 100))
-
 df_viz %>%
-  ggplot(aes(x = cp)) +
+  ggplot(aes(x = mean_cp)) +
   geom_histogram()
-
-df_viz <- df_viz %>%
-  filter(cp <= 5)
 
  # Maybe bin the depths before interpolation? Use the mean between certain ranges
 # of depths?
 
 df_viz <- df_viz %>%
   nest(data = everything()) %>%
-  mutate(res = map(data, interpolate_2d, owd, depth_m, cp))
+  mutate(res = map(data, interpolate_2d, owd, depth_m, mean_cp))
 
 p3 <- df_viz %>%
   unnest(res) %>%
@@ -275,12 +214,12 @@ p3 <- df_viz %>%
   mutate(mean_cp = ifelse(mean_cp < 0, 0, mean_cp)) %>%
   # filter(between(mean_cp, 0, 1)) %>%
   ggplot(aes(x = owd, y = depth_m, z = mean_cp, fill = mean_cp)) +
-  geom_isobands(color = NA, breaks = seq(0, 10, by = 0.05)) +
+  geom_isobands(color = NA, breaks = seq(0, 2, by = 0.02)) +
   paletteer::scale_fill_paletteer_c(
     "oompaBase::jetColors",
     trans = "sqrt",
     # oob = scales::squish,
-    breaks = scales::breaks_pretty(n = 10),
+    breaks = scales::breaks_pretty(n = 6),
     guide =
       guide_colorbar(
         barwidth = unit(8, "cm"),
@@ -318,8 +257,7 @@ p3 <- df_viz %>%
 # Ratio chla/cp -----------------------------------------------------------
 
 df_viz <- ctd %>%
-  filter(depth_m <= 100) %>%
-  mutate(cp = -(1 / r) * log10(tran_percent / 100))
+  filter(depth_m <= 100)
 
 df_viz
 
@@ -332,8 +270,7 @@ df_viz <- df_viz %>%
     n = n()) %>%
   as_tibble() %>%
   drop_na(mean_fluo, mean_cp) %>%
-  mutate(mean_chla_cp_ratio = mean_fluo / mean_cp) %>%
-  filter(depth_m <= 100)
+  mutate(mean_chla_cp_ratio = mean_fluo / mean_cp)
 
 df_viz <- df_viz %>%
   nest(data = everything()) %>%
@@ -413,12 +350,11 @@ ggsave(
 # Correlation between CP and fluorescence ---------------------------------
 
 df_viz <- ctd %>%
-  filter(depth_m <= 100) %>%
-  mutate(cp = -(1 / r) * log10(tran_percent / 100))
+  filter(depth_m <= 100)
 
 p <- df_viz %>%
   ggplot(aes(x = flor_mg_m3, y = cp)) +
-  geom_hex(bins = 100) +
+  geom_hex(bins = 50) +
   scale_y_log10() +
   scale_x_log10() +
   scale_fill_viridis_c() +
@@ -501,40 +437,44 @@ ggsave(
 
 # Is there variability deep in the water ----------------------------------
 
+#TODO
+
 df_viz <- ctd %>%
   mutate(cp = -(1 / r) * log10(tran_percent / 100))
 
 df_viz
 
-# Divide into class of depths
-
 df_viz <- df_viz %>%
-  filter(depth_m >= 1000) %>%
-  select(station, transect, longitude, depth_m, flor_mg_m3, cp) %>%
-  mutate(
-    bin_depth_m = chop_equally(depth_m,
-      groups = 9,
-      lbl_intervals(raw = TRUE)
-    ),
-    .after = depth_m
+  filter(depth_m >= 500) %>%
+  group_nest(station) %>%
+  mutate(n = map_int(data, nrow)) %>%
+  slice_max(order_by = n, n = 25) %>%
+  unnest(data)
+
+p <- df_viz %>%
+  ggplot(aes(x = cp, y = depth_m)) +
+  # geom_path(size = 0.1, color = "gray50") +
+  geom_path(aes(x = RcppRoll::roll_median(
+    cp,
+    n = 100, fill = NA
+  )), color = "#393E41") +
+  geom_vline(xintercept = 0, lty = 2, color = "red") +
+  scale_y_reverse() +
+  scale_x_continuous(breaks = scales::breaks_pretty(n = 4)) +
+  facet_wrap(~station, scales = "fixed") +
+  labs(
+    title = "CP vertical profiles",
+    subtitle = "Showing the 25 deepest stations (only starting at 500 meters). Data from the CTD.",
+    x = bquote("Particle beam attenuation coefficient"~(m^{-1})),
+    y = "Depth (m)"
+  ) +
+  theme(
+    panel.spacing = unit(1.25, "lines")
   )
 
-df_viz
-
-df_viz %>%
-  count(bin_depth_m)
-
-df_viz %>%
-  ggplot(aes(x = longitude, y = cp)) +
-  geom_point() +
-  # scale_y_log10() +
-  facet_grid(bin_depth_m ~ transect, scales = "free")
-
-
-df_viz %>%
-  drop_na(cp) %>%
-  group_by(station, transect, longitude) %>%
-  filter(depth_m == max(depth_m)) %>%
-  ggplot(aes(x = longitude, y = depth_m, size = cp)) +
-  geom_point() +
-  facet_wrap(~transect)
+ggsave(
+  here("graphs/02_vertical_profiles_cp.pdf"),
+  device = cairo_pdf,
+  height = 8,
+  width = 9
+)
