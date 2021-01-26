@@ -443,3 +443,33 @@ res <- pdf_convert(
 )
 knitr::include_graphics(tf)
 ```
+
+# POC vs CP
+
+The next graphs show the relationships between POC and CP.
+
+```{r}
+tf <- tempfile(fileext = ".png")
+res <- pdf_convert(
+  here("graphs/25_scatterplot_poc_vs_cp.pdf"),
+  filenames = tf,
+  format = "png",
+  dpi = 200,
+  verbose = FALSE,
+  antialias = TRUE
+)
+knitr::include_graphics(tf)
+```
+
+```{r}
+tf <- tempfile(fileext = ".png")
+res <- pdf_convert(
+  here("graphs/25_scatterplot_poc_vs_cp_by_group.pdf"),
+  filenames = tf,
+  format = "png",
+  dpi = 200,
+  verbose = FALSE,
+  antialias = TRUE
+)
+knitr::include_graphics(tf)
+```

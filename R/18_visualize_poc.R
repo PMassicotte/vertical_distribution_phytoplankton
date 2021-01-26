@@ -87,6 +87,8 @@ poc %>%
 poc <- poc %>%
   left_join(owd)
 
+poc %>%
+  write_csv(here("data/clean/poc.csv"))
 
 # Average by depth and OWD ------------------------------------------------
 
