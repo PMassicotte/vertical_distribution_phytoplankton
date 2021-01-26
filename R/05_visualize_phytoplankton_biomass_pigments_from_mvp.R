@@ -237,7 +237,6 @@ p2 <- df_viz %>%
   filter(pres == max(pres)) %>%
   ggplot(aes(x = longitude, y = cp)) +
   geom_line() +
-  scale_y_reverse() +
   facet_wrap(~transect, scales = "free_x", ncol = 1) +
   labs(
     x = "Longitude",
