@@ -444,6 +444,23 @@ res <- pdf_convert(
 knitr::include_graphics(tf)
 ```
 
+## blue/red ratio of specific absorption
+
+We can see that there is a an increase of the ratio after owd = 0. I am not sure to understand why the ratio is also higher at depth when owd < 0. Is there a shift when the ice is melting?
+
+```{r}
+tf <- tempfile(fileext = ".png")
+res <- pdf_convert(
+  here("graphs/23_visualize_phytoplankton_specific_absorption_blue_red_ratio_owd.pdf"),
+  filenames = tf,
+  format = "png",
+  dpi = 200,
+  verbose = FALSE,
+  antialias = TRUE
+)
+knitr::include_graphics(tf)
+```
+
 # POC vs CP
 
 The next graphs show the relationships between POC and CP.
