@@ -202,8 +202,6 @@ p <- df_viz %>%
     legend.title = element_text(size = 8)
   )
 
-p
-
 ggsave(
   here("graphs/23_visualize_phytoplankton_specific_absorption_blue_red_ratio_owd.pdf"),
   device = cairo_pdf,
