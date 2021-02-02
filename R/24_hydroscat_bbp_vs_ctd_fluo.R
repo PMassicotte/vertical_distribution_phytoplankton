@@ -6,7 +6,7 @@
 
 rm(list = ls())
 
-ctd <- vroom::vroom(here::here("data/clean/ctd.csv"), altrep = TRUE)
+source("R/interpolate_fun.R")
 
 hydroscat <- vroom::vroom(here::here("data/clean/hydroscat.csv"), altrep = TRUE) %>%
   rename(depth_m = depth)
@@ -133,4 +133,93 @@ ggsave(
   device = cairo_pdf,
   width = 7,
   height = 5
+)
+
+# 3D plot of bbp/chla -----------------------------------------------------
+
+isolume <-
+  read_csv(
+    "https://raw.githubusercontent.com/poplarShift/ice-edge/master/nb_data/FIGURE_9-c-d-e.csv"
+  ) %>%
+  janitor::clean_names() %>%
+  select(owd, starts_with("isolume")) %>%
+  pivot_longer(starts_with("isolume"), names_to = "isolume", values_to = "depth_m")
+
+hydroscat
+
+df_viz <- hydroscat %>%
+  filter(bbp >= 0) %>%
+  filter(fchla >= 0) %>%
+  mutate(bbp_chla_ratio = bbp / fchla) %>%
+  dtplyr::lazy_dt() %>%
+  group_by(wavelength, owd, depth_m) %>%
+  summarise(mean_bbp_chla_ratio = mean(bbp_chla_ratio, na.rm = TRUE), n = n()) %>%
+  as_tibble() %>%
+  drop_na() %>%
+  filter(depth_m <= 100)
+
+df_viz <- df_viz %>%
+  group_nest(wavelength)  %>%
+  mutate(res = map(data, interpolate_2d, owd, depth_m, mean_bbp_chla_ratio))
+
+res <- df_viz %>%
+  unnest(res) %>%
+  rename(owd = x, depth_m = y, mean_bbp_chla_ratio = z) %>%
+  select(-data) %>%
+  drop_na(mean_bbp_chla_ratio) %>%
+  mutate(mean_bbp_chla_ratio = ifelse(mean_bbp_chla_ratio < 0, 0, mean_bbp_chla_ratio)) %>%
+  mutate(wavelength = glue("{wavelength} (nm)"))
+
+p <- res %>%
+  ggplot(aes(x = owd, y = depth_m, z = mean_bbp_chla_ratio, fill = mean_bbp_chla_ratio)) +
+  geom_isobands(color = NA, breaks = seq(0, 20, by = 0.1)) +
+  paletteer::scale_fill_paletteer_c(
+    "oompaBase::jetColors",
+    trans = "sqrt",
+    breaks = scales::breaks_pretty(n = 8),
+    guide =
+      guide_colorbar(
+        barwidth = unit(8, "cm"),
+        barheight = unit(0.2, "cm"),
+        direction = "horizontal",
+        title.position = "top",
+        title.hjust = 0.5
+      )
+  ) +
+  geom_line(
+    data = isolume,
+    size = 1,
+    aes(x = owd, y = depth_m, color = isolume),
+    inherit.aes = FALSE) +
+  scale_y_reverse(expand = c(0, 0)) +
+  scale_x_continuous(
+    expand = expansion(mult = c(0.01, 0.05)),
+    breaks = scales::breaks_pretty(n = 8)
+  ) +
+  paletteer::scale_color_paletteer_d("wesanderson::GrandBudapest1") +
+  labs(
+    y = "Depth (m)",
+    title = "bbp/chla ratio at different wavelengths",
+    subtitle = "Data from the Hydroscat."
+  ) +
+  facet_wrap(~wavelength, ncol = 2) +
+  theme(
+    panel.grid = element_line(color = "gray60", size = 0.1),
+    panel.background = element_rect(fill = NA),
+    panel.ontop = TRUE,
+    strip.background = element_blank(),
+    strip.text = element_text(hjust = 0, size = 10, face = "bold"),
+    panel.border = element_blank(),
+    axis.ticks = element_blank(),
+    legend.position = "bottom",
+    legend.box = "vertical",
+    legend.text = element_text(size = 6),
+    legend.title = element_text(size = 8)
+  )
+
+ggsave(
+  here("graphs/24_bbp_fchla_by_wavelength_hydroscat.pdf"),
+  device = cairo_pdf,
+  width = 8,
+  height = 8
 )

@@ -473,3 +473,35 @@ res <- pdf_convert(
 )
 knitr::include_graphics(tf)
 ```
+
+# bbp vs chla (Hydroscat)
+
+Note that I have used chla fluorescence from the Hydroscat which is given as raw counts. If we decide to go further with this data, I guess we could convert it in actual biomass/stock quantities.
+
+```{r}
+tf <- tempfile(fileext = ".png")
+res <- pdf_convert(
+  here("graphs/24_bbp_fchla_by_wavelength_hydroscat.pdf"),
+  filenames = tf,
+  format = "png",
+  dpi = 200,
+  verbose = FALSE,
+  antialias = TRUE
+)
+knitr::include_graphics(tf)
+```
+
+# bbp vs cp
+
+```{r}
+tf <- tempfile(fileext = ".png")
+res <- pdf_convert(
+  here("graphs/26_bbp_cp_by_wavelength.pdf"),
+  filenames = tf,
+  format = "png",
+  dpi = 200,
+  verbose = FALSE,
+  antialias = TRUE
+)
+knitr::include_graphics(tf)
+```
