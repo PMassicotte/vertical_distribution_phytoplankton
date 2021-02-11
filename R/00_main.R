@@ -18,6 +18,7 @@ library(sf)
 library(patchwork)
 library(ggtext)
 library(here)
+# library(ggfortify)
 
 # Set default ggplot2 font size and font family
 # devtools::install_github("PMassicotte/ggpmthemes")
