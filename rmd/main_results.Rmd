@@ -31,13 +31,27 @@ library(furrr)
 plan(multiprocess(workers = availableCores() - 1))
 ```
 
-```{r convert-pdf-to-png, cache=TRUE, cache.extra = fs::file_info(fs::dir_ls(here("graphs"), glob = "*.pdf"))}
+```{r convert-pdf-to-png, cache=FALSE}
+
+# Only convert PDF files that have been modified since the last compilation.
 
 files <- fs::dir_ls(here("graphs"), glob = "*.pdf")
 
+pdf_list <- here("graphs", "png", "pdf_list.RData")
+
+if (!fs::file_exists(pdf_list)) {
+  p <- tibble(name = NA, value = NA)
+  save(p, file = pdf_list)
+} else {
+  load(pdf_list)
+}
+
+files <- tools::md5sum(fs::dir_ls(here("graphs"), glob = "*.pdf")) %>% 
+  enframe() %>% 
+  setdiff(p) %>% 
+  pull(name)
+
 future_walk(files, function(file) {
-  
-  # file <- files[1]
   
   # File path where the png file will be created
   png_file <- fs::path_ext_set(file, "png") %>% 
@@ -53,6 +67,12 @@ future_walk(files, function(file) {
     antialias = TRUE
   )
 })
+
+p <- tools::md5sum(fs::dir_ls(here("graphs"), glob = "*.pdf")) %>% 
+  enframe()
+
+save(p, file = pdf_list)
+
 ```
 
 # Context
@@ -305,7 +325,7 @@ knitr::include_graphics(here("graphs/png/26_bbp_cp_by_wavelength.png"))
 
 # xxx
 
-This index was calculated as folow:
+This index was calculated as follow:
 
 $$
 \frac{\log(\frac{\text{bbp}(532)}{\text{bbp}(700)})}{0.274}
