@@ -8,7 +8,7 @@ rm(list = ls())
 
 source("R/interpolate_fun.R")
 
-pvse <- read_csv("/media/4TB/work-ulaval/projects/green_edge/green_edge/data/pe-curves/photosynthetic_parameters_amundsen_2016.csv")
+pvse <- read_csv("/media/LaCie16TB/work/projects/green_edge/green_edge/data/pe-curves/photosynthetic_parameters_amundsen_2016.csv")
 
 glimpse(pvse)
 

@@ -125,7 +125,9 @@ res %>%
 
 ggsave(
   here::here("graphs/02_boxplot_ctd_fluorescence_isolume_owd.pdf"),
-  device = cairo_pdf
+  device = cairo_pdf,
+  width = 7,
+  height = 4
 )
 
 # Maybe bin the depths before interpolation? Use the mean between certain ranges
@@ -183,7 +185,6 @@ p2 <- df_viz %>%
     legend.text = element_text(size = 6),
     legend.title = element_text(size = 8)
   )
-
 
 # Particle beam attenuation (CP) ------------------------------------------
 
@@ -435,29 +436,21 @@ ggsave(
   width = 8
 )
 
-# Is there variability deep in the water ----------------------------------
+# Vertical profiles of CP at the deepest stations -------------------------
 
-#TODO
+ctd
 
 df_viz <- ctd %>%
-  mutate(cp = -(1 / r) * log10(tran_percent / 100))
-
-df_viz
-
-df_viz <- df_viz %>%
   filter(depth_m >= 500) %>%
   group_nest(station) %>%
   mutate(n = map_int(data, nrow)) %>%
   slice_max(order_by = n, n = 25) %>%
-  unnest(data)
+  unnest(data) %>%
+  mutate(station = glue("{station} ({as.Date(date_time)})"))
 
 p <- df_viz %>%
   ggplot(aes(x = cp, y = depth_m)) +
-  # geom_path(size = 0.1, color = "gray50") +
-  geom_path(aes(x = RcppRoll::roll_median(
-    cp,
-    n = 100, fill = NA
-  )), color = "#393E41") +
+  geom_path(size = 0.25) +
   geom_vline(xintercept = 0, lty = 2, color = "red") +
   scale_y_reverse() +
   scale_x_continuous(breaks = scales::breaks_pretty(n = 4)) +

@@ -67,6 +67,10 @@ absorption <- absorption %>%
     TRUE ~ "Open water"
   ))
 
+absorption %>%
+  filter(wavelength == 254) %>%
+  count(above_isolume, ice_covered)
+
 # Calculate phytoplankton specific absorption -----------------------------
 
 absorption <- absorption %>%
@@ -130,7 +134,7 @@ ggsave(
 df_viz <- absorption %>%
   filter(between(wavelength, 400, 700)) %>%
   group_by(wavelength, above_isolume, ice_covered) %>%
-  summarise(mean_aphy = mean(aphy)) %>%
+  summarise(mean_aphy = mean(aphy, na.rm = TRUE)) %>%
   ungroup()
 
 p <- df_viz %>%
@@ -206,6 +210,7 @@ ggsave(
 
 df_viz <- absorption %>%
   filter(wavelength == 440) %>%
+  drop_na(aphy) %>%
   group_by(station) %>%
   filter(any((depth_m >= 50))) %>%
   ungroup()

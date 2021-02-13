@@ -47,6 +47,7 @@ ctd <- ctd %>%
   select(station, transect, cast, depth_m, flor_mg_m3) %>%
   mutate(depth2_m = depth_m)
 
+ctd
 
 # Match CTD and HPLC fluorescence -----------------------------------------
 

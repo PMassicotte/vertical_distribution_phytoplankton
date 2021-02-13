@@ -51,7 +51,7 @@ df_viz <- df %>%
 
 df_viz <- df_viz %>%
   group_nest(wavelength)  %>%
-  mutate(res = map(data, interpolate_2d, owd, depth_m, mean_bbp_cp_ratio))
+  mutate(res = map(data, interpolate_2d, owd, depth_m, mean_bbp_cp_ratio, h = 6))
 
 res <- df_viz %>%
   unnest(res) %>%

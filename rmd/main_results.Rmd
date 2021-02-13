@@ -46,6 +46,7 @@ if (!fs::file_exists(pdf_list)) {
   load(pdf_list)
 }
 
+# Find which files have changed since the last compilation.
 files <- tools::md5sum(fs::dir_ls(here("graphs"), glob = "*.pdf")) %>% 
   enframe() %>% 
   setdiff(p) %>% 
@@ -92,10 +93,10 @@ knitr::include_graphics(here("graphs/png/02_map_owd.png"))
 
 # A note on the CTD data
 
-After exploring the CTD data, I found out that there were some unwanted peaks in both the florescence and transmittance data. Therefore, I have used a median moving window to smooth the data (both transmittance and fluorescence).
+After exploring the CTD data, I found out that there were some unwanted peaks in both the florescence and transmittance data. Therefore, I have used a median moving median window ($n = 25$) to smooth the data (both transmittance and fluorescence).
 
 ```{r}
-knitr::include_graphics(here("graphs/png/01_ctd_transmittance_with_peaks.png"))
+knitr::include_graphics(here("graphs/png/01_ctd_smoothed_fluorescence_vertical_profiles.png"))
 ```
 
 # Data processing for 3D plots
@@ -183,6 +184,8 @@ Finally, the same data by transect.
 knitr::include_graphics(here("graphs/png/02_scatterplot_fluorescence_vs_cp_by_transect.png"))
 ```
 
+### Vertical CP profiles (deepest CTD cast)
+
 The next graphic shows CP vertical profiles for some of the deepest stations below 500 meters. Any ideas why there are almost always a bump in the data in the very last portion of the profiles?
 
 ```{r}
@@ -194,6 +197,8 @@ knitr::include_graphics(here("graphs/png/02_vertical_profiles_cp.png"))
 ```{r}
 knitr::include_graphics(here("graphs/png/05_phytoplankton_biomass_mvp_cp.png"))
 ```
+
+### Bottom profiles
 
 The next graphs show the longitudinal variability of CP at the deepest locations within each transect. The left column shows how the MVP was moving in the water column whereas the right column shows how CP varied along the transect. For example, we can see that the MVP followed the 300 meters line at transect 100.
 
