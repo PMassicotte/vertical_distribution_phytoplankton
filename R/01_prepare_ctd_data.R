@@ -6,13 +6,6 @@
 
 rm(list = ls())
 
-owd <- read_csv(
-  "https://raw.githubusercontent.com/poplarShift/ice-edge/master/nb_data/Randelhoff-et-al-2019_GreenEdge_per-station_v1.0.csv",
-  na = "NaN"
-) %>%
-  janitor::clean_names() %>%
-  select(station, owd)
-
 ctd <- fread(here::here("data/raw/ctd.csv")) %>%
   as_tibble()
 
@@ -20,16 +13,15 @@ ctd <- ctd %>%
   filter(str_detect(mission, "amundsen")) %>%
   filter(str_detect(station, "^G\\d*")) %>%
   mutate(station = parse_number(station)) %>%
-  mutate(transect = station %/% 100 * 100, .after = station)
+  mutate(transect = station %/% 100 * 100, .after = station) %>%
+  filter(between(transect, 100, 700))
 
 ctd
 
 ctd %>%
   distinct(station)
 
-# Select a subset of data -------------------------------------------------
-
-# Let's select only the variables needed for this study
+# Select a subset variables needed for this study -------------------------
 
 ctd <- ctd %>%
   select(
@@ -40,17 +32,80 @@ ctd <- ctd %>%
     longitude,
     cast,
     depth_m,
+    # starts_with("sig"),
     flor_mg_m3,
     tran_percent
   )
 
-ctd <- ctd %>%
-  inner_join(owd, by = "station")
+ctd
 
+# Visualize the raw data --------------------------------------------------
+
+# This is a subset of stations I will use to visualize the effect of
+# preprocessing steps.
+
+subset_stations <- c(108, 300, 107, 207, 501, 413, 301, 321, 702)
+
+p <- ctd %>%
+  # filter(station %in% subset_stations) %>%
+  group_by(station) %>%
+  mutate(n_cast = n_distinct(cast)) %>%
+  ungroup() %>%
+  mutate(station = glue("{station} (# of cast: {n_cast})")) %>%
+  mutate(station = fct_reorder(
+    station,
+    cast,
+    .fun = n_distinct,
+    .desc = TRUE
+  )) %>%
+  ggplot(aes(
+    x = flor_mg_m3,
+    y = depth_m,
+    group = cast,
+    color = factor(cast)
+  )) +
+  geom_path(size = 0.1) +
+  scale_y_reverse() +
+  facet_wrap(~station, scales = "free") +
+  theme(legend.position = "none")
+
+ggsave(
+  here("graphs/01_ctd_raw_fluorescence_vertical_profiles.pdf"),
+  device = cairo_pdf,
+  height = 20,
+  width = 20
+)
+
+# Select the cast closest to the middle day -------------------------------
+
+# TODO:
+# 1 - Find a better strategy to deal with multiple casts at the same station.
+# 2 - If we merge cast, which depth grid should be used?
+
+# 195 stations/casts
+ctd %>%
+  distinct(station, date_time, cast) %>%
+  add_count(station)
+
+# After filtering, there are 136 stations (only 1 cast per station)
 ctd <- ctd %>%
-  group_by(station, cast) %>%
-  arrange(depth_m) %>%
-  ungroup()
+  mutate(middle_day_time = as.Date(date_time) + hms("12:00:00")) %>%
+  mutate(timediff = abs(date_time - middle_day_time) ) %>%
+  group_by(station) %>%
+  filter(timediff == min(timediff)) %>%
+  ungroup() %>%
+  select(-middle_day_time, -timediff)
+
+ctd
+
+ctd %>%
+  distinct(station, cast)
+
+# Make sure there is now only 1 cast per station/day
+ctd %>%
+  distinct(station, date_time, cast) %>%
+  add_count(station) %>%
+  assertr::verify(n == 1)
 
 # Smooth the vertical profiles --------------------------------------------
 
@@ -65,39 +120,61 @@ ctd <- ctd %>%
   arrange(station, cast, depth_m) %>%
   ungroup()
 
+
+# Check the effect of smoothing -------------------------------------------
+
 p1 <- ctd %>%
-  filter(station == 115) %>%
+  filter(station %in% subset_stations) %>%
   ggplot(aes(
     x = tran_percent,
     y = depth_m,
     group = interaction(station, cast)
-
-      )) +
-  geom_path(, size = 0.25) +
-  geom_path(aes(x = roll_tran_percent),
+  )) +
+  geom_path(size = 0.25) +
+  geom_path(
+    aes(x = roll_tran_percent),
     color = "red",
     size = 0.25
   ) +
   scale_y_reverse() +
-  facet_wrap(~ glue("station {station} (cast {cast})"), scales = "free") +
+  facet_wrap(~ glue("station {station} (cast {cast})"), scales = "free", ncol = 3) +
   labs(
-    title = "Vertical profiles of CTD transmittance",
-    subtitle = str_wrap(
-      "We can clearly see unwanted peaks in the data. The red line is a median rolling window using 25 observations.",
-      80
-    ),
     x = "Transmittance (%)",
-    y = "Depth (m)"
+    y = "Depth (m)",
+    title = "Transmittance"
   )
 
-ggsave(
-  here("graphs/01_ctd_transmittance_with_peaks.pdf"),
-  device = cairo_pdf,
-  height = 4,
-  width = 7
-)
+p2 <- ctd %>%
+  filter(station %in% subset_stations) %>%
+  ggplot(aes(
+    x = flor_mg_m3,
+    y = depth_m
+  )) +
+  geom_path(size = 0.25) +
+  geom_path(aes(x = roll_flor_mg_m3), size = 0.25, color = "red") +
+  scale_y_reverse() +
+  facet_wrap(~ glue("station {station} (cast {cast})"), scales = "free", ncol = 3) +
+  labs(
+    x = "Fluorescence",
+    y = "Depth (m)",
+    title = "Fluorescence"
+  )
 
-ctd
+p <- p1 / p2 +
+  plot_annotation(
+    tag_levels = "A",
+    title = "Effect of vertical smoothing",
+    theme = theme(
+      plot.title = element_text(size = 30))
+  ) &
+  theme(plot.tag = element_text(face = "bold", size = 26))
+
+ggsave(
+  here("graphs/01_ctd_smoothed_fluorescence_vertical_profiles.pdf"),
+  device = cairo_pdf,
+  height = 20,
+  width = 10
+)
 
 # Rename smoothed columns to the original ones ----------------------------
 
@@ -107,6 +184,27 @@ ctd <- ctd %>%
     flor_mg_m3 = roll_flor_mg_m3,
     tran_percent = roll_tran_percent
   )
+
+ctd
+
+# Add OWD information -----------------------------------------------------
+
+owd <- read_csv(
+  "https://raw.githubusercontent.com/poplarShift/ice-edge/master/nb_data/Randelhoff-et-al-2019_GreenEdge_per-station_v1.0.csv",
+  na = "NaN"
+) %>%
+  janitor::clean_names() %>%
+  select(station, owd)
+
+ctd <- ctd %>%
+  inner_join(owd, by = "station")
+
+ctd <- ctd %>%
+  group_by(station, cast) %>%
+  arrange(depth_m) %>%
+  ungroup()
+
+ctd
 
 # Correct transmittance data ----------------------------------------------
 
@@ -140,35 +238,7 @@ mint <- min(ctd$tran_percent, na.rm = TRUE)
 ctd <- ctd %>%
   mutate(tran_percent = scales::rescale(tran_percent, to = c(mint, 99.999)))
 
-range(ctd$tran_percent, na.rm = TRUE)
-
-# Average data because multiple casts -------------------------------------
-
-# There are at least two cast per station.
-ctd %>%
-  mutate(date = as.Date(date_time)) %>%
-  distinct(station, cast, date) %>%
-  count(station, sort = TRUE)
-
-# Is it ok to average?
-ctd %>%
-  filter(station == 207) %>%
-  ggplot(aes(x = flor_mg_m3, y = depth_m, group = cast, color = factor(cast))) +
-  geom_path() +
-  scale_y_reverse() +
-  facet_wrap(~glue("station {station} / {date_time}"), scales = "fixed")
-
-setDT(ctd)
-
-ctd <- ctd[,
-  lapply(.SD, mean, na.rm = TRUE),
-  by = .(station, transect, longitude, latitude, depth_m),
-  .SDcols = c("owd", "flor_mg_m3", "tran_percent")
-] %>%
-  as_tibble()
-
-# The minimun transmittance was at 19.34, but is now around 43% because of
-# station 713 cast 194 seems to be an outlier
+# Just the maximum value of the transmittance has changed
 range(ctd$tran_percent, na.rm = TRUE)
 
 # Particle beam attenuation coefficient (CP) ------------------------------
