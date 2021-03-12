@@ -12,37 +12,41 @@ em {
 }
 
 d-title h1 {
+  font-size: 30px;
   font-family: "Open Sans", sans-serif;
-  font-size: 40px;
   font-weight: 800;
+  line-height: 1.25;
 }
 
 d-article h1 {
+  font-size: 26px;
   font-family: "Open Sans", sans-serif;
-  font-size: 36px;
   font-weight: 800;
   line-height: 1.25;
   background-color: #ececec;
   border-radius: 8px;
+  border: none;
   padding: 10px 10px 10px 10px;
 }
 
 d-article h2 {
-  font-family: "Open Sans", sans-serif;
   font-size: 24px;
+  font-family: "Open Sans", sans-serif;
   font-weight: 700;
   line-height: 1.25;
   background-color: #ececec;
+  border: none;
   border-radius: 8px;
   padding: 5px 5px 5px 10px;
 }
 
 d-article h3 {
-  font-family: "Open Sans", sans-serif;
   font-size: 20px;
+  font-family: "Open Sans", sans-serif;
   font-weight: 700;
   line-height: 1.25;
   background-color: #ececec;
+  border: none;
   border-radius: 8px;
   padding: 5px 5px 5px 10px;
 }
@@ -64,4 +68,5 @@ code {
 html {
   /*-- Specify custom fonts ~~~ must be imported above   --*/
   --body-font: "Montserrat", sans-serif;
+  --title-size: 30px;
 }
