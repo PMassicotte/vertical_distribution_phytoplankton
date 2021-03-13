@@ -1,13 +1,13 @@
 ---
 title: "Vertical distribution of the phytoplankton in the water column in the Baffin Bay"
-author:
-  - name: Philippe Massicotte
-date: "`r Sys.Date()`"
-output: 
-  distill::distill_article:
+date: "Last compiled on `r format(Sys.time(), '%d %B, %Y')`"
+output:
+  html_document:
+    highlight: zenburn
+    css: "theme.css"
     toc: true
-    toc_float: true
-    theme: theme.css
+    toc_float:
+      collapsed: false
 ---
 
 ```{r setup, include=FALSE}
@@ -73,7 +73,7 @@ save(p, file = pdf_list)
 
 ```
 
-# Context
+## Context
 
 This project aims at exploring how various metrics/proxies can give insights on the vertical distribution of the phytoplankton biomass in the water column using the data measured during the Green Edge oceanographic cruise conducted in the Baffin Bay in 2016. *Four main indicators were considered to get insights about the phytoplankton biomass in the water column:*
 
@@ -88,7 +88,7 @@ Most of the data is presented as a function of open water days (OWD) that were c
 knitr::include_graphics(here("graphs/png/02_map_owd.png"))
 ```
 
-# A note on the CTD data
+## A note on the CTD data
 
 After exploring the CTD data, I found out that there were some unwanted peaks in both the fluorescence and transmittance data. Therefore, I have used a median moving median window ($n = 25$) to smooth the data (both transmittance and fluorescence).
 
@@ -96,7 +96,7 @@ After exploring the CTD data, I found out that there were some unwanted peaks in
 knitr::include_graphics(here("graphs/png/01_ctd_smoothed_fluorescence_vertical_profiles.png"))
 ```
 
-# Data processing for 3D plots
+## Data processing for 3D plots
 
 During the meeting we had on 2021-01-22, it was questioned why I was averaging data by `owd` and `depth` before doing the interpolation. This is simply because there may be many observations for a specific pair of `owd` and `depth`. For example, it can be seen here that there are 9 values (i.e. 9 stations) that have an `owd = 2` and `depth = 1.980`.
 
@@ -122,11 +122,11 @@ ctd %>%
 
 Hence, before performing the interpolation, data has to be averaged by OWD and depth.
 
-# Fluorescence
+## Fluorescence
 
 This section shows the vertical distribution of phytoplankton based on fluorescence.
 
-## Fluorescence from the CTD
+### Fluorescence from the CTD
 
 ```{r}
 knitr::include_graphics(here("graphs/png/02_phytoplankton_biomass_ctd.png"))
@@ -138,7 +138,7 @@ Using boxplots can be one interesting alternative way to present the data. For e
 knitr::include_graphics(here("graphs/png/02_boxplot_ctd_fluorescence_isolume_owd.png"))
 ```
 
-## Fluorescence from the MVP
+### Fluorescence from the MVP
 
 *Note that because the MVP is measuring continually, there are no stations associated with each measurement. This is why that the MVP data is not presented as a function of OWD.*
 
@@ -146,7 +146,7 @@ knitr::include_graphics(here("graphs/png/02_boxplot_ctd_fluorescence_isolume_owd
 knitr::include_graphics(here("graphs/png/05_phytoplankton_biomass_mvp_fluo.png"))
 ```
 
-# Pigments
+## Pigments
 
 These graphs were made using the pigments data from the rosette. Pigments were summed into two groups:
 
@@ -157,11 +157,11 @@ These graphs were made using the pigments data from the rosette. Pigments were s
 knitr::include_graphics(here("graphs/png/04_phytoplankton_biomass_pigments.png"))
 ```
 
-# Particle beam attenuation coefficient (CP)
+## Particle beam attenuation coefficient (CP)
 
 > The increase of cp during the lighted portion of the day is usually explained by the accumulation of intracellular carbon concentration associated with photosynthetic processes [@Kheireddine2014].
 
-## CP from the CTD
+### CP from the CTD
 
 The CP visualization based on the CTD can be seen above. There is a clear relationship between fluorescence and CP as seen below.
 
@@ -189,7 +189,7 @@ The next graphic shows CP vertical profiles for some of the deepest stations bel
 knitr::include_graphics(here("graphs/png/02_vertical_profiles_cp.png"))
 ```
 
-## CP from the MVP
+### CP from the MVP
 
 ```{r}
 knitr::include_graphics(here("graphs/png/05_phytoplankton_biomass_mvp_cp.png"))
@@ -203,9 +203,9 @@ The next graphs show the longitudinal variability of CP at the deepest locations
 knitr::include_graphics(here("graphs/png/05_deepest_cp_longitudinal_profil.png"))
 ```
 
-# Particle backscattering coefficient (bbp)
+## Particle backscattering coefficient (bbp)
 
-## bbp from the hydroscat
+### bbp from the hydroscat
 
 These graphs show bbp at six different wavelengths measured by the hydroscat.
 
@@ -213,13 +213,13 @@ These graphs show bbp at six different wavelengths measured by the hydroscat.
 knitr::include_graphics(here("graphs/png/03_phytoplankton_biomass_hydroscat.png"))
 ```
 
-# Particulate organic carbon (POC)
+## Particulate organic carbon (POC)
 
 ```{r}
 knitr::include_graphics(here("graphs/png/18_poc_vs_owd.png"))
 ```
 
-# bbp vs chlorophyll-a fluorescence (Hydroscat)
+## bbp vs chlorophyll-a fluorescence (Hydroscat)
 
 The next graphs explore the relationships between bbp and chlorophyll-a fluorescence from the Hydroscat device.
 
@@ -233,7 +233,7 @@ The same data divided differently.
 knitr::include_graphics(here("graphs/png/24_scatterplot_hydroscat_bbp_fluo_chla_by_group.png"))
 ```
 
-# Comparing bbp at two wavelengths (Hydroscat)
+## Comparing bbp at two wavelengths (Hydroscat)
 
 Scatterplot between bbp measured at 532 nm and 700 nm.
 
@@ -247,11 +247,11 @@ The same data presented differently.
 knitr::include_graphics(here("graphs/png/24_scatterplot_hydroscat_bbp_532nm_vs_700nm_by_group.png"))
 ```
 
-# Phytoplankton absorption
+## Phytoplankton absorption
 
 Maybe we could use absorption information to get some additional insights.
 
-## Vertical profiles
+### Vertical profiles
 
 This graph shows the vertical profiles of phytoplankton absorption at 440 nm. It seems that open water stations have subsurface maximum more apparent than the profiles of the ice-covered stations.
 
@@ -259,7 +259,7 @@ This graph shows the vertical profiles of phytoplankton absorption at 440 nm. It
 knitr::include_graphics(here("graphs/png/22_vertical_profiles_aphy.png"))
 ```
 
-## Spectral profiles
+### Spectral profiles
 
 By looking at the spectral profiles, we can also notice that there are indeed differences in the water column. 
 
@@ -273,7 +273,7 @@ Finally, I have averaged the spectral profiles in four categories. I think these
 knitr::include_graphics(here("graphs/png/22_spectral_profiles_phyto_absorption_averaged_isolume_owd.png"))
 ```
 
-## Comparing blue vs red regions
+### Comparing blue vs red regions
 
 With all the data.
 
@@ -287,7 +287,7 @@ By groups.
 knitr::include_graphics(here("graphs/png/23_scatterplot_phytoplankton_specific_absorption_blue_red_by_group.png"))
 ```
 
-## blue/red ratio of specific absorption
+### blue/red ratio of specific absorption
 
 We can see that there is an increase in the ratio after owd = 0. I am not sure to understand why the ratio is also higher at depth when owd < 0. Is there a shift when the ice is melting?
 
@@ -295,7 +295,7 @@ We can see that there is an increase in the ratio after owd = 0. I am not sure t
 knitr::include_graphics(here("graphs/png/23_visualize_phytoplankton_specific_absorption_blue_red_ratio_owd.png"))
 ```
 
-# POC vs CP
+## POC vs CP
 
 The next graphs show the relationships between POC and CP.
 
@@ -307,7 +307,7 @@ knitr::include_graphics(here("graphs/png/25_scatterplot_poc_vs_cp.png"))
 knitr::include_graphics(here("graphs/png/25_scatterplot_poc_vs_cp_by_group.png"))
 ```
 
-# bbp vs chla (Hydroscat)
+## bbp vs chla (Hydroscat)
 
 Note that I have used chla fluorescence from the Hydroscat which is given as raw counts. If we decide to go further with this data, I guess we could convert it into actual biomass/stock quantities.
 
@@ -315,7 +315,7 @@ Note that I have used chla fluorescence from the Hydroscat which is given as raw
 knitr::include_graphics(here("graphs/png/24_bbp_fchla_by_wavelength_hydroscat.png"))
 ```
 
-# bbp vs cp
+## bbp vs cp
 
 > The ratio bbp(532)/cp(660) could be considered as a proxy of particle size and composition, increasing when small or inorganic particles become relatively more abundant than large or organic particles [@Xing2014].
 
@@ -325,7 +325,7 @@ So, based on the next graphs, larger particles are more abundant at depth than a
 knitr::include_graphics(here("graphs/png/26_bbp_cp_by_wavelength.png"))
 ```
 
-# xxx
+## xxx
 
 This index was calculated as follow:
 
@@ -337,7 +337,7 @@ $$
 knitr::include_graphics(here("graphs/png/27_index_marcel.png"))
 ```
 
-# Particles in the water column (UVP)
+## Particles in the water column (UVP)
 
 In this section, we are exploring the size of the particles in the water column using the data from the UVP. Based on a suggestion from Marcel, we categorized the size of particle into three classes:
 
@@ -374,7 +374,7 @@ The next table shows the different UPV particle size ranges that were classified
 | 16.4-20.6 mm        	| particle_class_large  	|
 | 20.6-26 mm          	| particle_class_large  	|
 
-## Particle biovolume and concentration
+### Particle biovolume and concentration
 
 This simple boxplot shows how particle biovolume and concentration vary as a function of the three-class sizes. The particle concentration decreases with increasing particle size whereas the biovolume is rather stable.
 

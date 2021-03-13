@@ -3,7 +3,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Montserrat&display=swap");
 
 em {
-  background-image: linear-gradient(rgb(217, 242, 228), rgb(217, 242, 228));
+  background-image: linear-gradient(rgb(255, 94, 0), rgb(255, 94, 0));
   background-repeat: no-repeat;
   background-position: 0 88%;
   background-size: 100% 0.2em;
@@ -11,14 +11,24 @@ em {
   font-style: normal;
 }
 
-d-title h1 {
+pre {
+  background-color: #ffffff;
+  border: 1px solid #c2c2c2;
+  border-radius: 10px;
+}
+
+div.tocify {
+    font-size: 14px;
+}
+
+h1.title {
   font-size: 30px;
   font-family: "Open Sans", sans-serif;
   font-weight: 800;
   line-height: 1.25;
 }
 
-d-article h1 {
+h1 {
   font-size: 26px;
   font-family: "Open Sans", sans-serif;
   font-weight: 800;
@@ -29,7 +39,7 @@ d-article h1 {
   padding: 10px 10px 10px 10px;
 }
 
-d-article h2 {
+h2 {
   font-size: 24px;
   font-family: "Open Sans", sans-serif;
   font-weight: 700;
@@ -40,7 +50,7 @@ d-article h2 {
   padding: 5px 5px 5px 10px;
 }
 
-d-article h3 {
+h3 {
   font-size: 20px;
   font-family: "Open Sans", sans-serif;
   font-weight: 700;
@@ -65,8 +75,7 @@ code {
   padding: 0 4px 1px;
 }
 
-html {
-  /*-- Specify custom fonts ~~~ must be imported above   --*/
-  --body-font: "Montserrat", sans-serif;
-  --title-size: 30px;
+body {
+  font-family: "Montserrat", sans-serif;
+  font-size: 18px;
 }
