@@ -89,7 +89,7 @@ absorption <- absorption %>%
   group_by(station, ctd, bottle) %>%
   mutate(spectra_id = cur_group_id(), .before = 1)
 
-write_csv(absorption, here("data/clean/phtyplankton_absorption.csv"))
+write_csv(absorption, here("data/clean/phytoplankton_absorption.csv"))
 
 # Visualize the spectral profiles -----------------------------------------
 
