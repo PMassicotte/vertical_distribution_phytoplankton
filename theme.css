@@ -17,10 +17,31 @@ pre {
   border-radius: 10px;
 }
 
-div.tocify {
-    font-size: 14px;
+body {
+  font-family: "Montserrat", sans-serif;
+  font-size: 18px;
 }
 
+blockquote {
+    font-style: italic;
+    color: #7c7c7c;
+}
+
+/*
+Table of content
+*/
+#TOC>ul>li {
+  font-weight: 500;
+}
+
+#TOC {
+  font-family: "Montserrat", sans-serif;
+  font-size: 14px;
+}
+
+/*
+Titles
+*/
 h1.title {
   font-size: 30px;
   font-family: "Open Sans", sans-serif;
@@ -61,10 +82,6 @@ h3 {
   padding: 5px 5px 5px 10px;
 }
 
-.d-contents nav h3 {
-    background: transparent;
-}
-
 code {
   font-size: 90%;
   font-family: "Roboto Mono", monospace;
@@ -75,7 +92,27 @@ code {
   padding: 0 4px 1px;
 }
 
-body {
-  font-family: "Montserrat", sans-serif;
-  font-size: 18px;
+span.citation {
+  color: #4c4a4a;
+  font-weight: 500;
+  background: #dbe8fb;
+  border-radius: 8px;
+  padding: 0 4px 1px;
+}
+
+/*Citations*/
+.csl-entry em {
+  background-image:none;
+}
+
+.csl-entry {
+  padding-bottom: 20px;
+}
+
+p.caption {
+  color: #808080;
+  text-align: center;
+  font-family: Open Sans;
+  font-size: 1em;
+  font-weight: lighter;
 }
