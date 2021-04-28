@@ -36,7 +36,6 @@ df_avw <- df %>%
 
 df_avw
 
-
 # Visualize spectra colored by AVW ----------------------------------------
 
 df_avw %>%
@@ -87,6 +86,15 @@ df_viz <- df_avw %>%
   ) %>%
   filter(n > 1)
 
+# Check where is the isolume, maybe this can explain why AVW increases after ~
+# 50m
+
+unique(df$isolume)
+range(df$isolume_depth_m)
+mean(df$isolume_depth_m)
+median(df$isolume_depth_m)
+sd(df$isolume_depth_m)
+
 df_viz %>%
   ggplot(aes(x = mean_avw, y = depth_m)) +
   geom_pointrange(
@@ -121,3 +129,56 @@ df_avw %>%
   paletteer::scale_color_paletteer_c("grDevices::Spectral") +
   facet_wrap(~depth_m)
 
+
+# Only with the data above the isolume ------------------------------------
+
+isolume <- df %>%
+  ungroup() %>%
+  distinct(spectra_id, above_isolume, ice_covered)
+
+df_viz <- df_avw %>%
+  inner_join(isolume) %>%
+  group_by(depth_m, above_isolume) %>%
+  summarise(
+    mean_avw = mean(avw, na.rm = TRUE),
+    sd_avw = sd(avw, na.rm = TRUE) / sqrt(n()),
+    n = n()
+  ) %>%
+  ungroup() %>%
+  filter(n > 1)
+
+df_viz
+
+df_viz <- df_viz %>%
+  filter(str_detect(above_isolume, "Above"))
+
+df_viz <- df_viz %>%
+  group_nest() %>%
+  mutate(mod = map(data, ~mgcv::gam(mean_avw ~ s(depth_m), data = .))) %>%
+  mutate(pred = map(mod, predict)) %>%
+  unnest(c(data, pred))
+
+df_viz$mod[[1]]
+summary(df_viz$mod[[1]])
+
+df_viz %>%
+  ggplot(aes(x = mean_avw, y = depth_m)) +
+  geom_pointrange(
+    aes(xmin = mean_avw - sd_avw, xmax = mean_avw + sd_avw),
+    shape = 20,
+    fatten = 20,
+    size = 0.25
+  ) +
+  geom_line(aes(x = pred), color = "red") +
+  # geom_smooth() +
+  scale_y_reverse() +
+  scale_x_continuous(breaks = scales::breaks_pretty(n = 6)) +
+  labs(
+    x = "Apparent visible wavelength (nm)",
+    y = "Depth (m)"
+  )
+
+ggsave(
+  here("graphs","32_average_apparent_visible_wavelength_by_depth_only_above_isolume.pdf"),
+  device = cairo_pdf
+)

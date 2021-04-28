@@ -431,4 +431,10 @@ Using the above data, I calculated the average AVW by depth. We can see that the
 knitr::include_graphics(here("graphs", "png", "32_average_apparent_visible_wavelength_by_depth.png"))
 ```
 
+If we only keep observations above the isolume, the relationship is even clearer.
+
+```{r}
+knitr::include_graphics(here("graphs", "png", "32_average_apparent_visible_wavelength_by_depth_only_above_isolume.png"))
+```
+
 ## References
