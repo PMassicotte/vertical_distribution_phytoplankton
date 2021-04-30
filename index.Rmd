@@ -457,4 +457,19 @@ knitr::include_graphics(here("graphs", "png", "fig02.png"))
 knitr::include_graphics(here("graphs", "png", "fig03.png"))
 ```
 
+### Figure 4
+
+### Figure 5
+
+```{r}
+knitr::include_graphics(here("graphs", "png", "fig05.png"))
+```
+
+### Figure 5
+
+### Figure 6
+
+### Figure 7
+
+### Figure 8
 ## References

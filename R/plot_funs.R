@@ -10,14 +10,14 @@
 #' @param nbreaks How many breaks for the isobands
 #'
 #' @return A ggplot2
-gg3d <- function(df, x, y, z, iso_breaks, fill_text, isolume, nbreaks) {
+gg3d <- function(df, x, y, z, iso_breaks, fill_text, isolume, nbreaks, trans_fun = "sqrt") {
   df %>%
     ggplot(aes(x = {{ x }}, y = {{ y }}, z = {{ z }}, fill = {{ z }}
     )) +
     geom_isobands(color = NA, breaks = iso_breaks) +
     paletteer::scale_fill_paletteer_c(
       "oompaBase::jetColors",
-      trans = "sqrt",
+      trans = trans_fun,
       breaks = scales::breaks_pretty(n = nbreaks),
       guide = guide_colorbar(
         title.hjust = 0.5,
