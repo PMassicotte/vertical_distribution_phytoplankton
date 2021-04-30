@@ -98,7 +98,8 @@ gg2dprofiles <- function(df, x, y, bin) {
     theme(
       legend.position = "top",
       legend.title = element_blank(),
-      panel.border = element_blank()
+      panel.border = element_blank(),
+      axis.ticks = element_blank()
     )
 
 
