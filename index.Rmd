@@ -471,5 +471,12 @@ knitr::include_graphics(here("graphs", "png", "fig05.png"))
 
 ### Figure 7
 
+Co-variability of fluorescence of chla, CP and bbp(620). At each OWD, the depth of the maximum value (ex.: chla) was extracted. Note that the depths at which each variable is maximum was calculated on *raw* data and not the interpolated data. The points are the raw data and the lines represent values fitted using loess.
+
+```{r}
+knitr::include_graphics(here("graphs", "png", "fig07.png"))
+```
+
 ### Figure 8
+
 ## References
