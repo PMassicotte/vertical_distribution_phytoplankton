@@ -437,4 +437,24 @@ If we only keep observations above the isolume, the relationship is even clearer
 knitr::include_graphics(here("graphs", "png", "32_average_apparent_visible_wavelength_by_depth_only_above_isolume.png"))
 ```
 
+## Figures
+
+### Figure 1
+
+```{r}
+knitr::include_graphics(here("graphs", "png", "fig01.png"))
+```
+
+### Figure 2
+
+```{r}
+knitr::include_graphics(here("graphs", "png", "fig02.png"))
+```
+
+### Figure 3
+
+```{r}
+knitr::include_graphics(here("graphs", "png", "fig03.png"))
+```
+
 ## References
