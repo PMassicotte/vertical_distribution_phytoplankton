@@ -28,6 +28,8 @@ df <- df %>%
   filter(sample_type == "water") %>%
   filter(sample_source == "rosette") %>%
   filter(str_starts(station, "G")) %>%
+  filter(method == "HPLC") %>%
+  filter(!str_detect(sample_code, regex("flash", ignore_case = TRUE))) %>%
   select(
     mission,
     station,
@@ -45,7 +47,13 @@ df <- df %>%
   mutate(station = parse_number(station)) %>%
   mutate(transect = station %/% 100 * 100) %>%
   drop_na(depth_m) %>%
-  select(-conc_mg_m2)
+  select(-conc_mg_m2, -conc_ug_l) %>%
+  drop_na(conc_mg_m3)
+
+# Should have only 1 measure per cast, station, depth and pigment
+df %>%
+  count(station, cast, depth_m, pigment, sort = TRUE) %>%
+  assertr::verify(n == 1)
 
 df
 
