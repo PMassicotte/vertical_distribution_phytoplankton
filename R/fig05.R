@@ -85,7 +85,8 @@ p1 <- gg3d(
   iso_breaks = seq(-5, 10, by = 0.05),
   fill_text = expression("Band~ratio~(Marcel~index)"),
   isolume = isolume,
-  nbreaks = 8, trans_fun = scales::trans_new("shift", function(x) x, identity)
+  nbreaks = 8,
+  trans_fun = scales::trans_new("shift", function(x) x, identity)
 )
 
 ## Average vertical profiles ----

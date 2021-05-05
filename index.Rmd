@@ -459,15 +459,25 @@ knitr::include_graphics(here("graphs", "png", "fig03.png"))
 
 ### Figure 4
 
+Rosette pigments were summed as follow:
+
+- `Photoprotection`: Zeaxanthin, Diatoxanthin, Diadinoxanthin, Antheraxanthin, Violaxanthin
+
+- `Photosynthetic`: Sum 19HF-like, Sum 19BF-like, Peridinin, Fucoxanthin, Chlorophyll c3, Chlorophyll c1+c2+MgDVP, Chlorophyll b, Lutein
+
+```{r}
+knitr::include_graphics(here("graphs", "png", "fig04.png"))
+```
+
 ### Figure 5
 
 ```{r}
 knitr::include_graphics(here("graphs", "png", "fig05.png"))
 ```
 
-### Figure 5
-
 ### Figure 6
+
+-   bbp/cp ratio (need to correct for CP first)
 
 ### Figure 7
 
@@ -478,5 +488,24 @@ knitr::include_graphics(here("graphs", "png", "fig07.png"))
 ```
 
 ### Figure 8
+
+## Appendix
+
+### Appendix 1 (MVP fluorescence)
+
+-   I have calculated the number of open water days using the same data an Achim. I have used a threshold of 15% at least for 3 consecutive days.
+
+-   We can see that there are not many observations with negative OWD because the MVP was deployed in open water.
+
+```{r}
+knitr::include_graphics(here("graphs", "png", "appendix01.png"))
+```
+
+## TODO
+
+-   Determine if CP correction (baseline shift) should be performed or not.
+
+-   Better way to bin OWD for the averaged vertical profiles (ex.: Fig. 02).
+    -   [-30, -10], [-10, 10], [10, 30]
 
 ## References

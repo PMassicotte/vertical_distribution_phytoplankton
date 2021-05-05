@@ -20,6 +20,7 @@ library(ggtext)
 library(here)
 library(lubridate)
 library(santoku)
+library(magrittr)
 # library(ggfortify)
 
 # Set default ggplot2 font size and font family
