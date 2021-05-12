@@ -12,6 +12,8 @@ source(here("R", "interpolate_fun.R"))
 source(here("R", "plot_funs.R"))
 source(here("R", "utils.R"))
 
+breaks <- c(-30, -10, 10, 40)
+
 # Hydroscat data ----------------------------------------------------------
 
 hydroscat <- vroom::vroom(here::here("data/clean/hydroscat.csv"), altrep = TRUE) %>%
@@ -91,7 +93,7 @@ p1 <- gg3d(
 
 ## Average vertical profiles ----
 
-df_average_profiles <- average_vertical_profiles(df_viz, mean_index_marcel, 3)
+df_average_profiles <- average_vertical_profiles(df_viz, mean_index_marcel, breaks = breaks)
 
 p2 <- gg2dprofiles(df_average_profiles, mean_index_marcel, depth_m, owd_bin)
 

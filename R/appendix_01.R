@@ -69,7 +69,10 @@ p1 <- gg3d(
   fill_text = expression("Chlorophyll-a"~(mg~m^{-3})),
   isolume = isolume,
   nbreaks = 8
-)
+) +
+  labs(
+    x = "Number of open water days (OWD)"
+  )
 
 ## Average vertical profiles ----
 
@@ -90,6 +93,6 @@ ggsave(
   here::here("graphs","appendix01.pdf"),
   device = cairo_pdf,
   width = 9,
-  height = 3
+  height = 4
 )
 

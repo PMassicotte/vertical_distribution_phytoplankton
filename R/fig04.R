@@ -11,6 +11,8 @@ source(here("R","interpolate_fun.R"))
 source(here("R","plot_funs.R"))
 source(here("R","utils.R"))
 
+breaks <- c(-30, -10, 10, 40)
+
 # Isolume data ------------------------------------------------------------
 
 isolume <-
@@ -277,7 +279,7 @@ p1 <- gg3d(
 
 # Average vertical profiles
 
-df_average_profiles <- average_vertical_profiles(df_viz, mean_photoprotection, 3)
+df_average_profiles <- average_vertical_profiles(df_viz, mean_photoprotection, breaks = breaks)
 
 p2 <- gg2dprofiles(df_average_profiles, mean_photoprotection, depth_m, owd_bin)
 
@@ -300,7 +302,7 @@ p3 <- gg3d(
 
 # Average vertical profiles
 
-df_average_profiles <- average_vertical_profiles(df_viz, mean_photosynthetic_pigments, 3)
+df_average_profiles <- average_vertical_profiles(df_viz, mean_photosynthetic_pigments, breaks = breaks)
 
 p4 <- gg2dprofiles(df_average_profiles, mean_photosynthetic_pigments, depth_m, owd_bin)
 
@@ -324,7 +326,7 @@ p5 <- gg3d(
 
 # Average vertical profiles
 
-df_average_profiles <- average_vertical_profiles(df_viz, mean_chlorophyllide_a, 3)
+df_average_profiles <- average_vertical_profiles(df_viz, mean_chlorophyllide_a, breaks = breaks)
 
 p6 <- gg2dprofiles(df_average_profiles, mean_chlorophyllide_a, depth_m, owd_bin)
 
@@ -348,7 +350,7 @@ p7 <- gg3d(
 
 # Average vertical profiles
 
-df_average_profiles <- average_vertical_profiles(df_viz, mean_phaeophytin_a, 3)
+df_average_profiles <- average_vertical_profiles(df_viz, mean_phaeophytin_a, breaks = breaks)
 
 p8 <- gg2dprofiles(df_average_profiles, mean_phaeophytin_a, depth_m, owd_bin)
 
@@ -372,7 +374,7 @@ p9 <- gg3d(
 
 # Average vertical profiles
 
-df_average_profiles <- average_vertical_profiles(df_viz, mean_phaeophorbide_a, 3)
+df_average_profiles <- average_vertical_profiles(df_viz, mean_phaeophorbide_a, breaks = breaks)
 
 p10 <- gg2dprofiles(df_average_profiles, mean_phaeophorbide_a, depth_m, owd_bin)
 

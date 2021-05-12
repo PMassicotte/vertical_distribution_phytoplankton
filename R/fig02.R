@@ -11,6 +11,8 @@ source(here("R","interpolate_fun.R"))
 source(here("R","plot_funs.R"))
 source(here("R","utils.R"))
 
+breaks <- c(-30, -10, 10, 40)
+
 # Isolume data ------------------------------------------------------------
 
 isolume <-
@@ -63,7 +65,7 @@ p1 <- gg3d(
 
 ## Average vertical profiles ----
 
-df_average_profiles <- average_vertical_profiles(df_viz, mean_flor_mg_m3, 3)
+df_average_profiles <- average_vertical_profiles(df_viz, mean_flor_mg_m3, breaks = breaks)
 
 p2 <- gg2dprofiles(df_average_profiles, mean_flor_mg_m3, depth_m, owd_bin)
 
@@ -91,7 +93,7 @@ p3 <- gg3d(
 
 ## Average vertical profiles ----
 
-df_average_profiles <- average_vertical_profiles(df_viz, mean_cp, 3)
+df_average_profiles <- average_vertical_profiles(df_viz, mean_cp, breaks = breaks)
 
 p4 <- gg2dprofiles(df_average_profiles, mean_cp, depth_m, owd_bin)
 
@@ -134,7 +136,7 @@ p5 <- p5 +
 
 ## Average vertical profiles ----
 
-df_average_profiles <- average_vertical_profiles(df_viz, mean_chla_cp_ratio, 3)
+df_average_profiles <- average_vertical_profiles(df_viz, mean_chla_cp_ratio, breaks = breaks)
 
 p6 <- gg2dprofiles(df_average_profiles, mean_chla_cp_ratio, depth_m, owd_bin)
 

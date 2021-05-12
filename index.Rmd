@@ -489,6 +489,10 @@ knitr::include_graphics(here("graphs", "png", "fig07.png"))
 
 ### Figure 8
 
+```{r, fig.align='center'}
+knitr::include_graphics(here("graphs", "png", "fig08.png"))
+```
+
 ## Appendix
 
 ### Appendix 1 (MVP fluorescence)
