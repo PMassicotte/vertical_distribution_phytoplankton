@@ -17,7 +17,7 @@ ctd
 
 ctd <- ctd %>%
   group_by(station, cast) %>%
-  mutate(cp = cp - min(cp, na.rm = TRUE)) %>%
+  # mutate(cp = cp - min(cp, na.rm = TRUE)) %>%
   ungroup() %>%
   filter(depth_m <= 100)
 

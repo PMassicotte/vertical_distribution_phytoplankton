@@ -9,6 +9,7 @@
 # Setup -------------------------------------------------------------------
 
 library(tidyverse)
+# library(ggtern)
 library(ggpmthemes)
 library(ggisoband)
 library(data.table)
@@ -21,11 +22,16 @@ library(here)
 library(lubridate)
 library(santoku)
 library(magrittr)
-# library(ggfortify)
+library(tidymodels)
+library(ggfortify)
 
 # Set default ggplot2 font size and font family
 # devtools::install_github("PMassicotte/ggpmthemes")
 theme_set(theme_poppins(base_size = 10))
+
+theme_update(
+  strip.background = element_blank()
+)
 
 # Run all -----------------------------------------------------------------
 

@@ -36,6 +36,12 @@ df_avw <- df %>%
 
 df_avw
 
+df_avw %>%
+  add_count(station, depth_m, sort = TRUE) %>%
+  assertr::verify(n == 1) %>%
+  select(-n, -spectra_id) %>%
+  write_csv(here("data","clean","apparent_visible_wavelength.csv"))
+
 # Visualize spectra colored by AVW ----------------------------------------
 
 df_avw %>%

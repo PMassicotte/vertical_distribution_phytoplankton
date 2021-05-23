@@ -196,6 +196,9 @@ pigments %>%
   summarise(n = n_distinct(pigment_group)) %>%
   assertr::verify(n == 6)
 
+pigments %>%
+  write_csv(here("data/clean/pigments_grouped.csv"))
+
 # TODO: Not all station/depth_m pairs have the 6 groups of pigments. For
 # example, station 100 at depth 1.88, there is no sum Phbd a (Phaeophorbide a)
 
