@@ -83,6 +83,8 @@ uvp_clean <- uvp_clean %>%
 
 uvp_clean
 
+fwrite(uvp_clean, here("data/clean/uvp_tidy.csv"))
+
 # Keep only a subset of class size ----------------------------------------
 
 # Here are the class sizes Marcel wants to examine first:
