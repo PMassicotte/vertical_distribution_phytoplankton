@@ -83,6 +83,36 @@ uvp_clean <- uvp_clean %>%
 
 uvp_clean
 
+# Add size range label ----------------------------------------------------
+
+uvp_clean <- uvp_clean %>%
+  mutate(
+    particle_size_range_mm = glue("{particle_size_min_mm}-{particle_size_max_mm} mm"),
+    .after = particle_size_range
+  )
+
+# Visualize the particle size distribution --------------------------------
+
+p <- uvp_clean %>%
+  mutate(particle_size_range_mm = fct_inorder(particle_size_range_mm)) %>%
+  filter(count_per_liter != 0) %>%
+  count(particle_size_range_mm) %>%
+  ggplot(aes(x = n, y = fct_rev(particle_size_range_mm))) +
+  geom_col() +
+  labs(
+    x = "Number of observation",
+    y = NULL
+  )
+
+ggsave(
+  here("graphs/30_uvp_number_observations_by_classe_range.pdf"),
+  device = cairo_pdf,
+  width = 6,
+  height = 5
+)
+
+# Export ------------------------------------------------------------------
+
 fwrite(uvp_clean, here("data/clean/uvp_tidy.csv"))
 
 # Keep only a subset of class size ----------------------------------------
@@ -98,7 +128,7 @@ uvp_clean <- uvp_clean %>%
     particle_size_class = case_when(
       particle_size_min_mm >= 0.102 & particle_size_max_mm <= 0.323 ~ "particle_class_small",
       particle_size_min_mm >= 0.323 & particle_size_max_mm <= 1.02 ~ "particle_class_medium",
-      particle_size_min_mm >= 0.102 & particle_size_max_mm <= 26 ~ "particle_class_large",
+      particle_size_min_mm >= 1.02 & particle_size_max_mm <= 26 ~ "particle_class_large",
       TRUE ~ NA_character_
     )
   ) %>%

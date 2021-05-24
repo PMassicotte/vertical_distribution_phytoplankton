@@ -339,11 +339,17 @@ knitr::include_graphics(here("graphs", "png", "27_index_marcel.png"))
 
 ## Particles in the water column (UVP)
 
+This graph show how many observations (different than 0) there are for each particle class size measured by the UVP.
+
+```{r}
+knitr::include_graphics(here("graphs", "png", "30_uvp_number_observations_by_classe_range.png"))
+```
+
 In this section, we are exploring the size of the particles in the water column using the data from the UVP. Based on a suggestion from Marcel, we categorized the size of particle into three classes:
 
 1.  small (0.102-0.323 mm),
 2.  medium (0.323-1.02 mm)
-3.  large (0.102-26 mm)
+3.  large (1.02-26 mm)
 
 The next table shows the different UPV particle size ranges that were classified into the three end-member classes. Particle biovolume and concentration of the different UVP class sizes were summed up to calculate the total values within each of the three end-member classes.
 
