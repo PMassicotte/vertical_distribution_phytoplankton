@@ -461,9 +461,9 @@ knitr::include_graphics(here("graphs", "png", "fig03.png"))
 
 Rosette pigments were summed as follow:
 
-- `Photoprotection`: Zeaxanthin, Diatoxanthin, Diadinoxanthin, Antheraxanthin, Violaxanthin
+-   `Photoprotection`: Zeaxanthin, Diatoxanthin, Diadinoxanthin, Antheraxanthin, Violaxanthin
 
-- `Photosynthetic`: Sum 19HF-like, Sum 19BF-like, Peridinin, Fucoxanthin, Chlorophyll c3, Chlorophyll c1+c2+MgDVP, Chlorophyll b, Lutein
+-   `Photosynthetic`: Sum 19HF-like, Sum 19BF-like, Peridinin, Fucoxanthin, Chlorophyll c3, Chlorophyll c1+c2+MgDVP, Chlorophyll b, Lutein
 
 ```{r}
 knitr::include_graphics(here("graphs", "png", "fig04.png"))
@@ -479,6 +479,10 @@ knitr::include_graphics(here("graphs", "png", "fig05.png"))
 
 -   bbp/cp ratio (need to correct for CP first)
 
+```{r}
+knitr::include_graphics(here("graphs", "png", "fig06.png"))
+```
+
 ### Figure 7
 
 Co-variability of fluorescence of chla, CP and bbp(620). At each OWD, the depth of the maximum value (ex.: chla) was extracted. Note that the depths at which each variable is maximum was calculated on *raw* data and not the interpolated data. The points are the raw data and the lines represent values fitted using loess.
@@ -489,8 +493,30 @@ knitr::include_graphics(here("graphs", "png", "fig07.png"))
 
 ### Figure 8
 
+This graph is interesting:
+
+-   We can see that the relative proportion of small particles increase with increasing OWD.
+
+-   Change in the phytoplankton community?
+
+-   Can we use pigments to get insights on how the phtoplankton community change over time?
+
 ```{r, fig.align='center'}
 knitr::include_graphics(here("graphs", "png", "fig08.png"))
+```
+
+### Figure 9
+
+-   When bbp/cp increases, small particles become relatively more abundant than large particles.
+
+-   At low bbp/cp (i.e. higher contribution of small particle to the total pool):
+
+    -   There are more particles.
+    -   Chlorophyll-a concentration is higher.
+    -   There are more particles in open water than in ice-covered stations.
+
+```{r, fig.align='center'}
+knitr::include_graphics(here("graphs", "png", "fig09.png"))
 ```
 
 ## Appendix
@@ -505,11 +531,17 @@ knitr::include_graphics(here("graphs", "png", "fig08.png"))
 knitr::include_graphics(here("graphs", "png", "appendix01.png"))
 ```
 
+### Appendix 2
+
+Relationship between Cp and bbp.
+
+```{r}
+knitr::include_graphics(here("graphs", "png", "appendix02.png"))
+```
+
 ## TODO
 
 -   Determine if CP correction (baseline shift) should be performed or not.
-
--   Better way to bin OWD for the averaged vertical profiles (ex.: Fig. 02).
-    -   [-30, -10], [-10, 10], [10, 30]
+-   Check if there is a relation between particle size ratio and bbp/cp ratio (see figure 9).
 
 ## References

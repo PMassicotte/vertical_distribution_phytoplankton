@@ -37,8 +37,8 @@ p <- df_viz %>%
   as_tibble() %>%
   mutate(bbp_cp = bbp / cp) %>%
   drop_na(bbp_cp) %>%
-  ggplot(aes(x = bbp_cp, y = count_per_liter, color = owd <= 0)) +
-  geom_point(size = 1, alpha = 0.5, stroke = 0) +
+  ggplot(aes(x = bbp_cp, y = count_per_liter, color = owd <= 0, size = flor_mg_m3)) +
+  geom_point(alpha = 0.5, stroke = 0) +
   scale_x_log10() +
   scale_y_log10() +
   annotation_logticks(size = 0.1) +
@@ -48,7 +48,24 @@ p <- df_viz %>%
     values = c("#bb3e03", "#023047"),
     labels = c("Ice covered", "Open water"),
     guide = guide_legend(
-      override.aes = list(alpha = 1, size = 3)
+      override.aes = list(alpha = 1, size = 3),
+      title = element_blank(),
+      title.position = "top",
+      title.theme = element_text(size = 8, family = "Poppins"),
+      ncol = 1
+    )
+  ) +
+  scale_size_continuous(
+    breaks = scales::breaks_pretty(n = 6),
+    guide = guide_legend(
+      nrow = 1,
+      title.position = "top",
+      title = quote("Chlorophyll-a"~(mg~m^{-3})),
+      title.theme = element_text(
+        size = 8,
+        family = "Poppins",
+        margin = margin(t = 8),
+        hjust = 0.5)
     )
   ) +
   labs(
@@ -58,7 +75,7 @@ p <- df_viz %>%
   theme(
     panel.border = element_blank(),
     axis.ticks = element_blank(),
-    legend.title = element_blank(),
+    # legend.title = element_blank(),
     legend.position = "top"
   )
 

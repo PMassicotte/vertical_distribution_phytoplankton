@@ -1,105 +1,80 @@
-# <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
-# AUTHOR:       Philippe Massicotte
-#
-# DESCRIPTION:  Visualize the UVP data.
-# <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
-
-rm(list = ls())
-
-uvp <- read_csv(here("data", "clean", "uvp_small_medium_large_class_size.csv"))
+uvp <- vroom::vroom(here("data","clean","uvp_small_medium_large_class_size.csv"))
 
 uvp
 
-# Arrange particle size class (small -> large) ----------------------------
+uvp_wide <- uvp %>%
+  dtplyr::lazy_dt() %>%
+  filter(depth_m <= 100) %>%
+  group_by(station, owd, depth_m, particle_size_range) %>%
+  summarise(count_per_liter = mean(count_per_liter, na.rm = TRUE)) %>%
+  as_tibble() %>%
+  pivot_wider(names_from = particle_size_range, values_from = count_per_liter) %>%
+  rowwise() %>%
+  mutate(total_particle_count = sum(c_across(matches(" mm$")))) %>%
+  ungroup()
 
-uvp <- uvp %>%
+unique(uvp_wide$depth_m)
+
+# Average contribution as OWD increase ------------------------------------
+
+df_viz <- uvp_wide %>%
+  select(-total_particle_count) %>%
+  group_by(depth_m, owd) %>%
+  summarise(across(matches(" mm$"), ~ mean(., na.rm = TRUE))) %>%
+  arrange(depth_m, owd) %>%
+  rowwise() %>%
+  mutate(total_particle_count = sum(c_across(matches(" mm$")))) %>%
+  mutate(across(matches(" mm$"), ~ . / total_particle_count)) %>%
+  pivot_longer(matches(" mm$")) %>%
+  filter(depth_m <= 30) %>%
+  mutate(depth_label = glue("{depth_m} m"), .after = "depth_m") %>%
+  mutate(depth_label = fct_reorder(depth_label, depth_m))
+
+df_viz
+
+df_viz <- df_viz %>%
   mutate(
-    particle_size_class_label = case_when(
-      str_detect(particle_size_class, "small") ~ glue("Small particles ({particle_size_range})"),
-      str_detect(particle_size_class, "medium") ~ glue("Medium particles ({particle_size_range})"),
-      str_detect(particle_size_class, "large") ~ glue("Large particles ({particle_size_range})"),
+    class_label = case_when(
+      name == "0.102-0.323 mm" ~ "0.102-0.323 mm (small)",
+      name == "0.323-1.02 mm" ~ "0.323-1.02 mm (medium)",
+      name == "1.02-26 mm" ~ "1.02-26 mm (large)",
       TRUE ~ NA_character_
     )
   ) %>%
-  mutate(particle_size_class_label = factor(
-    particle_size_class_label,
+  mutate(class_label = factor(
+    class_label,
     levels = c(
-      "Small particles (0.102-0.323 mm)",
-      "Medium particles (0.323-1.02 mm)",
-      "Large particles (1.02-26 mm)"
+      "0.102-0.323 mm (small)",
+      "0.323-1.02 mm (medium)",
+      "1.02-26 mm (large)"
     )
-  ))
+  )) %>%
+  mutate(class_label = fct_rev(class_label))
 
-uvp %>%
-  distinct(particle_size_class, particle_size_class_label)
-
-# Looks like there are measurements only every 5 meters along the water column.
-
-uvp %>%
-  distinct(depth_m)
-
-uvp %>%
-  distinct(station)
-
-# Particle biovolume/concentration vs owd ---------------------------------
-
-# I think I will keep observations that are within the isoume layer to calculate
-# the average concentration.
-
-uvp
-
-mean(uvp$isolume_m_at_0_1_einm_2d_1, na.rm = TRUE)
-
-df_viz <- uvp %>%
-  # filter(between(depth_m, 0, 25)) %>%
-  # filter(between(depth_m, 0, isolume_m_at_0_1_einm_2d_1)) %>%
-  filter(between(depth_m, 0, mean(isolume_m_at_0_1_einm_2d_1, na.rm = TRUE))) %>%
-  group_by(owd, particle_size_class_label) %>%
-  summarise(across(c(count_per_liter, biovolume_ppm), ~ mean(., na.rm = TRUE)),
-    n = n()
-  ) %>%
-  ungroup()
-
-df_viz
-
-df_viz %>%
-  ggplot(aes(x = owd, y = count_per_liter)) +
-  geom_point(size = 1, color = "#393E41") +
-  facet_wrap(~particle_size_class_label, scales = "free_y", ncol = 1) +
-  geom_smooth(color = "#bf1d28", size = 0.5) +
+p <- df_viz %>%
+  ggplot(aes(x = owd, y = value, fill = class_label)) +
+  geom_area() +
+  facet_wrap(~depth_label, scales = "free_x") +
+  scale_x_continuous(expand = c(0, 0), breaks = scales::breaks_pretty(n = 8)) +
+  scale_y_continuous(expand = c(0, 0), labels = scales::label_percent()) +
+  # scale_fill_viridis_d(option = "D", direction = -1) +
+  paletteer::scale_fill_paletteer_d(
+    "ggthemes::wsj_rgby"
+  ) +
   labs(
     x = "Number of open water days (OWD)",
-    y = "Particle count per liter"
+    y = "Relative contribution"
   ) +
   theme(
+    legend.position = "top",
     panel.border = element_blank(),
-    axis.ticks = element_blank(),
-    strip.background = element_blank()
+    legend.title = element_blank(),
+    axis.ticks = element_blank()
   )
 
-ggsave(here("graphs", "fig08.pdf"),
+ggsave(
+  here("graphs","fig08.pdf"),
   device = cairo_pdf,
-  width = 4,
-  height = 5
+  width = 7.15,
+  height = 5.21
 )
-
-# Autocorrelation lag -----------------------------------------------------
-
-df_viz
-
-df_acf <- df_viz %>%
-  select(-n, -biovolume_ppm) %>%
-  pivot_wider(
-    names_from = particle_size_class_label,
-    values_from = count_per_liter,
-    names_repair = janitor::make_clean_names
-  )
-
-ccf(
-  df_acf$small_particles_0_102_0_323_mm,
-  df_acf$large_particles_1_02_26_mm,
-  lag.max = 30,
-  type = "correlation"
-)
-
-cor(df_acf$small_particles_0_102_0_323_mm, lag(df_acf$large_particles_1_02_26_mm, 20), use = "pair")
