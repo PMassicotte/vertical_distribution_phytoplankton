@@ -1,3 +1,14 @@
+# <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+# AUTHOR:       Philippe Massicotte
+#
+# DESCRIPTION:  Explore how the different classes of particle size change over
+# the time.
+# <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+
+rm(list = ls())
+
+# Read the UVP data -------------------------------------------------------
+
 uvp <- vroom::vroom(here("data","clean","uvp_small_medium_large_class_size.csv"))
 
 uvp
@@ -32,6 +43,9 @@ df_viz <- uvp_wide %>%
 
 df_viz
 
+# Plot --------------------------------------------------------------------
+
+# Make nice labels
 df_viz <- df_viz %>%
   mutate(
     class_label = case_when(
