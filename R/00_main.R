@@ -22,8 +22,9 @@ library(here)
 library(lubridate)
 library(santoku)
 library(magrittr)
-library(tidymodels)
 library(ggfortify)
+library(tidymodels)
+library(vip)
 
 # Set default ggplot2 font size and font family
 # devtools::install_github("PMassicotte/ggpmthemes")
