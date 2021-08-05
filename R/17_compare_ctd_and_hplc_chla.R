@@ -6,7 +6,7 @@
 
 rm(list = ls())
 
-pigments <- vroom::vroom(here::here("data/raw/nutrients.csv"))
+pigments <- read_csv(here::here("data/raw/nutrients.csv"))
 
 pigments <- pigments %>%
   filter(mission == "amundsen_2016") %>%

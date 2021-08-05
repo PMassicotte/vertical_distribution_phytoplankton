@@ -22,7 +22,7 @@ isolume <-
 
 # MVP ---------------------------------------------------------------------
 
-mvp <- vroom::vroom(here("data","clean","mvp_with_owd.csv")) %>%
+mvp <- read_csv(here("data","clean","mvp_with_owd.csv")) %>%
   arrange(measurement_id, pres) %>%
   select(
     measurement_id,

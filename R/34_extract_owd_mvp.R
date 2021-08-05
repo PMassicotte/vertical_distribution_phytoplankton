@@ -12,7 +12,7 @@ plan(multisession(workers = availableCores() - 1))
 
 # MVP data ----------------------------------------------------------------
 
-mvp <- vroom::vroom(here("data/raw/greenedge_mvp.csv")) %>%
+mvp <- read_csv(here("data/raw/greenedge_mvp.csv")) %>%
   mutate(initial_longitude_deg = -initial_longitude_deg) %>%
   group_by(initial_longitude_deg, initial_latitude_deg) %>%
   mutate(measurement_id = cur_group_id(), .before = 1) %>%

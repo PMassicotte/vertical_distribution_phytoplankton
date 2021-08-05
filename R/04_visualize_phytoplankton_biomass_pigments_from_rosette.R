@@ -21,7 +21,7 @@ isolume <-
 
 # Prepare the data --------------------------------------------------------
 
-df <- vroom::vroom(here::here("data/raw/nutrients.csv"))
+df <- read_csv(here::here("data/raw/nutrients.csv"))
 
 df <- df %>%
   filter(mission == "amundsen_2016") %>%

@@ -9,7 +9,7 @@ rm(list = ls())
 
 # Read the UVP data -------------------------------------------------------
 
-uvp <- vroom::vroom(here("data","clean","uvp_small_medium_large_class_size.csv"))
+uvp <- read_csv(here("data","clean","uvp_small_medium_large_class_size.csv"))
 
 uvp
 

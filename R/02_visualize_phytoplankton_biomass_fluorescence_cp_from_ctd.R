@@ -21,7 +21,7 @@ isolume <-
 
 # CTD data ----------------------------------------------------------------
 
-ctd <- vroom::vroom(here::here("data/clean/ctd.csv"), altrep = TRUE)
+ctd <- read_csv(here::here("data/clean/ctd.csv"))
 
 transect <- ctd %>%
   distinct(transect, latitude) %>%

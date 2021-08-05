@@ -28,7 +28,7 @@ files <-
     )
   )
 
-df <- vroom::vroom(files,
+df <- read_csv(files,
   id = "filename",
   col_select = list(filename, depth, fchla = FCHLa, starts_with("bb_p"))
 ) %>%

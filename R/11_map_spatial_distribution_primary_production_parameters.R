@@ -7,7 +7,7 @@
 
 rm(list = ls())
 
-station <- vroom::vroom("data/clean/ctd.csv") %>%
+station <- read_csv("data/clean/ctd.csv") %>%
   distinct(station, transect, longitude, latitude)
 
 kdpar_transmittance <- read_csv(here::here("data/clean/cops_kd_par_transmittance.csv")) %>%

@@ -8,7 +8,7 @@ rm(list = ls())
 
 # CTD data ----------------------------------------------------------------
 
-ctd <- vroom::vroom(here::here("data", "clean", "ctd.csv"), altrep = TRUE) %>%
+ctd <- read_csv(here::here("data", "clean", "ctd.csv")) %>%
   distinct(station, transect, longitude, latitude, owd)
 
 

@@ -6,7 +6,7 @@
 
 rm(list = ls())
 
-uvp <- vroom::vroom(here("data","raw","greenedge_uvp_particles.csv")) %>%
+uvp <- read_csv(here("data","raw","greenedge_uvp_particles.csv")) %>%
   filter(mission == "amundsen_2016")
 
 uvp

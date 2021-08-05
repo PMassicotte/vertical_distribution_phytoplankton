@@ -24,7 +24,7 @@ pvse %>%
 pvse <- pvse %>%
   filter(r2 >= 0.8)
 
-station <- vroom::vroom(
+station <- read_csv(
     here::here("data/clean/ctd.csv"),
     altrep = TRUE,
     col_select = c(station, transect, longitude, latitude)

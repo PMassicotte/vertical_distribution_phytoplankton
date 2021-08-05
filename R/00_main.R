@@ -9,7 +9,6 @@
 # Setup -------------------------------------------------------------------
 
 library(tidyverse)
-# library(ggtern)
 library(ggpmthemes)
 library(ggisoband)
 library(data.table)

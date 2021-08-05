@@ -515,11 +515,11 @@ knitr::include_graphics(here("graphs", "png", "fig08.png"))
 
 -   When bbp/cp increases, small particles become relatively more abundant than large particles.
 
--   At low bbp/cp (i.e. higher contribution of small particle to the total pool):
+-   At high bbp/cp (i.e. higher contribution of small particle to the total pool):
 
-    -   There are more particles.
-    -   Chlorophyll-a concentration is higher.
-    -   There are more particles in open water than in ice-covered stations.
+    -   There are less particles.
+    -   Chlorophyll-a concentration is lower.
+    -   There are less particles in open water than in ice-covered stations.
 
 ```{r, fig.align='center'}
 knitr::include_graphics(here("graphs", "png", "fig09.png"))
@@ -563,5 +563,7 @@ knitr::include_graphics(here("graphs", "png", "appendix02.png"))
 
 -   Determine if CP correction (baseline shift) should be performed or not.
 -   Check if there is a relation between particle size ratio and bbp/cp ratio (see figure 9).
+-   Add figure on correlation between CP and POC (see Fig. 4 in Behrenfeld 2006).
+-   Relation between bbp/cp and fluo (see Fig. 9).
 
 ## References

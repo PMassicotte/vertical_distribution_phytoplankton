@@ -9,7 +9,7 @@ rm(list = ls())
 
 # CTD data ----------------------------------------------------------------
 
-ctd <- vroom::vroom(here::here("data", "clean", "ctd.csv"), altrep = TRUE)
+ctd <- read_csv(here::here("data", "clean", "ctd.csv"))
 
 ctd
 
@@ -24,7 +24,7 @@ ctd <- ctd %>%
 # Hydroscat data (for bbp) ------------------------------------------------
 
 hydroscat <-
-  vroom::vroom(here::here("data", "clean", "hydroscat.csv"), altrep = TRUE) %>%
+  read_csv(here::here("data", "clean", "hydroscat.csv")) %>%
   rename(depth_m = depth) %>%
   filter(depth_m <= 100) %>%
   filter(wavelength == 620)

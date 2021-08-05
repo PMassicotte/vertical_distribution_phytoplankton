@@ -18,7 +18,7 @@ breaks <- c(-30, -10, 10, 40)
 # Hydroscat ---------------------------------------------------------------
 
 # For bbp data
-hydroscat <- vroom::vroom(here::here("data/clean/hydroscat.csv"), altrep = TRUE) %>%
+hydroscat <- read_csv(here::here("data/clean/hydroscat.csv")) %>%
   rename(depth_m = depth) %>%
   select(station, transect, owd, wavelength, depth_m, bbp) %>%
   filter(wavelength == 620)

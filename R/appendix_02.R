@@ -6,7 +6,7 @@
 
 rm(list = ls())
 
-uvp <- vroom::vroom(here("data","clean","uvp_small_medium_large_class_size.csv"))
+uvp <- read_csv(here("data","clean","uvp_small_medium_large_class_size.csv"))
 
 uvp <- uvp %>%
   select(station, owd, depth_m, particle_size_class, count_per_liter) %>%
@@ -78,7 +78,7 @@ ggsave(
 
 ## CTD data ----
 
-ctd <- vroom::vroom(here::here("data", "clean", "ctd.csv"), altrep = TRUE) %>%
+ctd <- read_csv(here::here("data", "clean", "ctd.csv")) %>%
   select(station, owd, depth_m, flor_mg_m3, cp) %>%
   filter(depth_m <= 100) %>%
   drop_na() %>%
@@ -95,7 +95,7 @@ ctd %>%
 
 ## Hydroscat data (for bbp) ----
 
-hydroscat <- vroom::vroom(here::here("data", "clean", "hydroscat.csv")) %>%
+hydroscat <- read_csv(here::here("data", "clean", "hydroscat.csv")) %>%
   rename(depth_m = depth) %>%
   filter(depth_m <= 100) %>%
   filter(wavelength == 620) %>%
