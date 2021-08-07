@@ -246,8 +246,7 @@ range(ctd$tran_percent, na.rm = TRUE)
 # ftp://ftp.nodc.noaa.gov/nodc/archive/arc0022/0001155/1.1/data/1-data/docs/PI-NOTES/arabian/Gardner-beamcp.htm
 
 # Beam transmission was converted to beam attenuation coefficients using
-# c=-(1/r)*ln(%Tr/100) where c=beam attenuation coefficient (m^-1), r=beam path
-# length (m), and Tr=% beam transmission.
+# c=-(1/r)*ln(%Tr/100) where c=beam attenuation coefficient (m^-1), r=beam path length (m), and Tr=% beam transmission.
 
 # Check Table 1 for an idea of the range of Cp.
 # https://agupubs.onlinelibrary.wiley.com/doi/full/10.1002/2015JC010878

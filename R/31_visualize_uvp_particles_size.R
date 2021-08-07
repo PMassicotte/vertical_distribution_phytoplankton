@@ -239,72 +239,6 @@ ggsave(
   height = 12
 )
 
-
-# Ratio of small to large particle ----------------------------------------
-
-# TODO: Check if the results are interesting.
-
-df_viz
-
-df_viz <- df_viz %>%
-  filter(particle_size_class != "particle_class_medium") %>%
-  pivot_wider(
-    names_from = particle_size_class,
-    values_from = c(biovolume_ppm, count_per_liter)
-  ) %>%
-  mutate(ratio_biovolume_ppm = biovolume_ppm_particle_class_small / biovolume_ppm_particle_class_large) %>%
-  mutate(ratio_count_per_liter = count_per_liter_particle_class_small / count_per_liter_particle_class_large) %>%
-  select(-starts_with("biovolume"), -starts_with("count"))
-
-
-df_viz
-
-df_viz %>%
-  # filter(between(ratio_biovolume_ppm, 0.01, 1)) %>%
-  filter(depth_m <= 150) %>%
-  ggplot(aes(x = owd, y = depth_m, z = ratio_count_per_liter, fill = ratio_count_per_liter)) +
-  geom_isobands(color = NA, bins = 50) +
-  paletteer::scale_fill_paletteer_c(
-    "oompaBase::jetColors",
-    trans = "sqrt",
-    oob = scales::squish,
-    breaks = scales::breaks_pretty(n = 10),
-    guide =
-      guide_colorbar(
-        barwidth = unit(8, "cm"),
-        barheight = unit(0.2, "cm"),
-        direction = "horizontal",
-        title.position = "top",
-        title.hjust = 0.5
-      )
-  ) +
-  scale_y_reverse(expand = c(0, 0)) +
-  scale_x_continuous(
-    expand = expansion(mult = c(0.01, 0.05)),
-    breaks = scales::breaks_pretty(n = 8)
-  ) +
-  # geom_line(data = isolume, size = 1, aes(x = owd, y = depth_m, color = isolume), inherit.aes = FALSE) +
-  paletteer::scale_color_paletteer_d("wesanderson::GrandBudapest1") +
-  labs(
-    y = "Depth (m)",
-    x = "OWD"
-    # fill = "ratio_biovolume_ppm",
-    # title = "ratio_biovolume_ppm"
-  ) +
-  theme(
-    panel.grid = element_line(color = "gray60", size = 0.1),
-    panel.background = element_rect(fill = NA),
-    panel.ontop = TRUE,
-    strip.background = element_blank(),
-    strip.text = element_text(hjust = 0, size = 10, face = "bold"),
-    panel.border = element_blank(),
-    axis.ticks = element_blank(),
-    legend.position = "bottom",
-    legend.box = "vertical",
-    legend.text = element_text(size = 6),
-    legend.title = element_text(size = 8)
-  )
-
 # Correlations ------------------------------------------------------------
 
 df_viz <- uvp %>%
@@ -332,7 +266,6 @@ ggsave(
   width = 8,
   height = 10
 )
-
 
 # Autocorrelation lag -----------------------------------------------------
 

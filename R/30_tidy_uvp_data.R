@@ -47,6 +47,63 @@ uvp %>%
   distinct(particle_size_range) %>%
   pull()
 
+# Visualize the geographic positions --------------------------------------
+
+uvp %>%
+  filter(depth_m == 2.5) %>%
+  distinct(station, longitude, latitude) %>%
+  add_count(station) %>%
+  filter(n > 1) %>%
+  ggplot(aes(x = longitude, y = latitude)) +
+  geom_point() +
+  facet_wrap(~station, scales = "free")
+
+uvp %>%
+  filter(depth_m == 2.5) %>%
+  distinct(station, longitude, latitude) %>%
+  add_count(station) %>%
+  filter(n > 1) %>%
+  st_as_sf(coords = c("longitude", "latitude"), crs = 4326) %>%
+  group_by(station) %>%
+  mutate(distance = list(as.numeric(st_distance(geometry, geometry)))) %>%
+  unnest(distance) %>%
+  filter(distance != 0) %>%
+  as_tibble() %>%
+  distinct(station, distance) %>%
+  ggplot(aes(x = station, y = distance)) +
+  geom_point() +
+  facet_wrap(~station, scales = "free")
+
+# Select the cast closest to the middle day -------------------------------
+
+# Looks like there are more than 1 measurement by station. It is because the
+# long/lat coordinates change slightly for a same station, probably reflecting
+# that there were many cast at each station.
+
+uvp %>%
+  dtplyr::lazy_dt() %>%
+  count(station, transect, depth_m, particle_size_range, sort = TRUE) %>%
+  as_tibble()
+
+uvp %>%
+  distinct(station)
+
+uvp <- uvp %>%
+  mutate(middle_day_time = as.Date(date_time) + hms("12:00:00")) %>%
+  mutate(timediff = abs(date_time - middle_day_time)) %>%
+  group_by(station) %>%
+  filter(timediff == min(timediff)) %>%
+  ungroup() %>%
+  select(-middle_day_time, -timediff)
+
+uvp %>%
+  distinct(station, date_time) %>%
+  mutate(h = hms::as_hms(date_time)) %>%
+  mutate(station = fct_reorder(as.character(station), h)) %>%
+  ggplot(aes(x = station, y = h)) +
+  geom_point() +
+  geom_hline(yintercept = hms::as_hms("12:00:00"), lty = 2, color = "red")
+
 # Extract particle sizes --------------------------------------------------
 
 uvp_clean <- uvp %>%
@@ -94,7 +151,10 @@ uvp_clean <- uvp_clean %>%
 # Visualize the particle size distribution --------------------------------
 
 p <- uvp_clean %>%
-  mutate(particle_size_range_mm = fct_inorder(particle_size_range_mm)) %>%
+  mutate(
+    particle_size_range_mm = fct_reorder(
+      particle_size_range_mm, particle_size_min_mm)
+  ) %>%
   filter(count_per_liter != 0) %>%
   count(particle_size_range_mm) %>%
   ggplot(aes(x = n, y = fct_rev(particle_size_range_mm))) +
@@ -149,7 +209,16 @@ uvp_clean %>%
 uvp_clean
 
 uvp_clean <- uvp_clean %>%
-  group_by(station, transect, date, date_time, longitude, latitude, depth_m, particle_size_class) %>%
+  group_by(
+    station,
+    transect,
+    date,
+    date_time,
+    longitude,
+    latitude,
+    depth_m,
+    particle_size_class
+  ) %>%
   summarise(across(c(count_per_liter, biovolume_ppm), ~ sum(., na.rm = TRUE))) %>%
   ungroup()
 
