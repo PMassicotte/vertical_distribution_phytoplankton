@@ -11,7 +11,6 @@ rm(list = ls())
 ctd <- read_csv(here::here("data", "clean", "ctd.csv")) %>%
   distinct(station, transect, longitude, latitude, owd)
 
-
 # Word map ----------------------------------------------------------------
 
 ctd_df <- ctd %>%
@@ -19,8 +18,7 @@ ctd_df <- ctd %>%
 
 bbox_baffin_bay <- st_read(here("data", "raw", "bbox_baffin_bay.geojson"))
 
-wm <- rnaturalearth::ne_countries(scale = "large", returnclass = "sf") %>%
-  st_crop(bbox_baffin_bay)
+wm <- rnaturalearth::ne_countries(scale = "large", returnclass = "sf")
 
 # Transect labels ---------------------------------------------------------
 
@@ -38,7 +36,7 @@ transect <- tibble::tribble(
 # Plot --------------------------------------------------------------------
 
 p <- ggplot() +
-  geom_sf(data = wm, size = 0.1) +
+  geom_sf(data = wm, size = 0.1, fill = "#adb5bd", color = "#3c3c3c") +
   geom_sf(data = ctd_df, aes(color = owd), size = 2) +
   geom_text(
     data = transect,
@@ -94,7 +92,7 @@ p <- ggplot() +
     panel.border = element_blank(),
     axis.ticks = element_blank(),
     panel.grid = element_blank(),
-    panel.background = element_rect(fill = "#B4C6D8")
+    panel.background = element_rect(fill = "#6699CC")
   )
 
 filename <- here("graphs", "fig01.pdf")
