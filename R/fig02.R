@@ -97,36 +97,61 @@ df_average_profiles <- average_vertical_profiles(df_viz, mean_cp, breaks = break
 
 p4 <- gg2dprofiles(df_average_profiles, mean_cp, depth_m, owd_bin)
 
+# bbp at 470 nm -----------------------------------------------------------
 
-# Ratio chla/cp -----------------------------------------------------------
+hydroscat <- read_csv(here("data","clean","hydroscat.csv")) %>%
+  filter(wavelength == 470) %>%
+  rename(depth_m = depth) %>%
+  filter(depth_m <= 100)
 
-df_mean
+# Summarize by depth and open water day -----------------------------------
+
+hydroscat_mean <- hydroscat %>%
+  dtplyr::lazy_dt() %>%
+  group_by(owd, depth_m) %>%
+  summarise(across(c(bbp), ~mean(., na.rm = TRUE), .names = "mean_{.col}")) %>%
+  as_tibble() %>%
+  drop_na()
+
+hydroscat_mean
 
 ## Interpolation and plot ----
 
-df_viz <- df_mean %>%
-  mutate(mean_chla_cp_ratio = mean_flor_mg_m3 / mean_cp) %>%
+df_viz <- hydroscat_mean %>%
   nest(data = everything()) %>%
-  mutate(res = map(data, interpolate_2d, owd, depth_m, mean_chla_cp_ratio, h = 7)) %>%
+  mutate(res = map(
+    data,
+    interpolate_2d,
+    owd,
+    depth_m,
+    mean_bbp,
+    h = 7,
+    m = 1,
+    n = 1
+  )) %>%
   unnest(res) %>%
-  rename(owd = x, depth_m = y, mean_chla_cp_ratio = z) %>%
+  rename(
+    owd = x,
+    depth_m = y,
+    mean_bbp = z
+  ) %>%
   select(-data) %>%
-  mutate(mean_chla_cp_ratio = ifelse(mean_chla_cp_ratio < 0, 0, mean_chla_cp_ratio)) %>%
-  drop_na(mean_chla_cp_ratio)
+  mutate(mean_bbp = ifelse(mean_bbp < 0, 0, mean_bbp)) %>%
+  drop_na(mean_bbp)
 
 df_viz
 
-range(df_viz$mean_chla_cp_ratio, na.rm = TRUE)
+range(df_viz$mean_bbp, na.rm = TRUE)
 
 p5 <- gg3d(
   df = df_viz,
   x = owd,
   y = depth_m,
-  z = mean_chla_cp_ratio,
-  iso_breaks = seq(0, 50, by = 2),
-  fill_text = expression("Chlorophyll-a / CP[657]~(mg~m^{-2})"),
+  z = mean_bbp,
+  iso_breaks = seq(0, 0.01, length.out = 50),
+  fill_text = expression("italic(b[bp])~(470)~(m^{-1})"),
   isolume = isolume,
-  nbreaks = 10
+  nbreaks = 5
 )
 
 p5 <- p5 +
@@ -136,9 +161,9 @@ p5 <- p5 +
 
 ## Average vertical profiles ----
 
-df_average_profiles <- average_vertical_profiles(df_viz, mean_chla_cp_ratio, breaks = breaks)
+df_average_profiles <- average_vertical_profiles(df_viz, mean_bbp, breaks = breaks)
 
-p6 <- gg2dprofiles(df_average_profiles, mean_chla_cp_ratio, depth_m, owd_bin)
+p6 <- gg2dprofiles(df_average_profiles, mean_bbp, depth_m, owd_bin)
 
 # Save plots --------------------------------------------------------------
 

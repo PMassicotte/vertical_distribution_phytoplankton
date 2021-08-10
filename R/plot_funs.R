@@ -28,11 +28,13 @@ gg3d <- function(df, x, y, z, iso_breaks, fill_text, isolume, nbreaks, trans_fun
     ) +
     scale_y_reverse(
       expand = c(0, 0),
-      breaks = seq(0, 100, by = 10)
+      breaks = seq(0, 100, by = 10),
+      limits = c(100, 0)
     ) +
     scale_x_continuous(
-      expand = expansion(mult = c(0.01, 0.05)),
-      breaks = scales::breaks_pretty(n = 8)
+      expand = expansion(mult = c(0.01, 0.01)),
+      breaks = scales::breaks_pretty(n = 8),
+      limits = c(-30, 40)
     ) +
     geom_line(
       data = isolume,
