@@ -477,29 +477,29 @@ knitr::include_graphics(here("graphs", "png", "fig04.png"))
 
 ### Figure 5
 
+Co-variability of fluorescence of chla, CP and bbp. At each OWD, the depth of the maximum value (ex.: chla) was extracted. Note that the depths at which each variable is maximum was calculated on *raw* data and not the interpolated data. The points are the raw data and the lines represent values fitted using loess.
+
 ```{r}
 knitr::include_graphics(here("graphs", "png", "fig05.png"))
 ```
 
 ### Figure 6
 
--   bbp/cp ratio (need to correct for CP first)
+TODO
 
 ```{r}
-knitr::include_graphics(here("graphs", "png", "fig06.png"))
+# knitr::include_graphics(here("graphs", "png", "fig06.png"))
 ```
 
 ### Figure 7
 
-Co-variability of fluorescence of chla, CP and bbp(620). At each OWD, the depth of the maximum value (ex.: chla) was extracted. Note that the depths at which each variable is maximum was calculated on *raw* data and not the interpolated data. The points are the raw data and the lines represent values fitted using loess.
+-   TODO
 
 ```{r}
-knitr::include_graphics(here("graphs", "png", "fig07.png"))
+# knitr::include_graphics(here("graphs", "png", "fig07.png"))
 ```
 
 ### Figure 8
-
-This graph is interesting:
 
 -   We can see that the relative proportion of small particles increase with increasing OWD.
 
@@ -523,20 +523,6 @@ knitr::include_graphics(here("graphs", "png", "fig08.png"))
 
 ```{r, fig.align='center'}
 knitr::include_graphics(here("graphs", "png", "fig09.png"))
-```
-
-### Figure 10
-
-Here I wanted to predict the bloom state:
-
-  - pre-bloom: -30, -10 OWD
-  - bloom: -10, 10 OWD
-  - post-bloom: 10, 40 OWD
-
-So, I rand a random forest (classification tree) model to predict/classify these three bloom states. The model was validated using monte-carlo simulations performed on training/testing data to avoid overfitting. The next graphic shows the importance of each variable that were included in the model. For instance, the total number of particle (UVP), phaeophytin_a and POC are the three most important variable to classify the bloom state.
-
-```{r, fig.align='center'}
-knitr::include_graphics(here("graphs", "png", "fig10.png"))
 ```
 
 ## Appendix

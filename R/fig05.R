@@ -1,114 +1,122 @@
 # <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 # AUTHOR:       Philippe Massicotte
 #
-# DESCRIPTION:  plot 2-D de log(bbp(532)/bbp(700)) / 0,274 (ici, je suppose que
-# bbp varie spectralement suivant une loi de puissance lambda**-n, et on veut
-# retrouver n qui fournit un indice de taille).
+# DESCRIPTION:  Co-variability among fluorescence of chla, CP and bbp. At
+# each OWD, calculate the depth of the maximum value (ex.: chla).
 # <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 
 rm(list = ls())
 
-source(here("R", "interpolate_fun.R"))
-source(here("R", "plot_funs.R"))
-source(here("R", "utils.R"))
+# CTD data ----------------------------------------------------------------
 
-breaks <- c(-30, -10, 10, 40)
+ctd <- read_csv(here::here("data", "clean", "ctd.csv"))
 
-# Hydroscat data ----------------------------------------------------------
+ctd
 
-hydroscat <- read_csv(here::here("data/clean/hydroscat.csv")) %>%
+## Correct for CP offset ----
+
+ctd <- ctd %>%
+  group_by(station, cast) %>%
+  # mutate(cp = cp - min(cp, na.rm = TRUE)) %>%
+  ungroup() %>%
+  filter(depth_m <= 100)
+
+# Hydroscat data (for bbp) ------------------------------------------------
+
+hydroscat <-
+  read_csv(here::here("data", "clean", "hydroscat.csv")) %>%
   rename(depth_m = depth) %>%
-  select(-fchla) %>%
-  filter(wavelength %in% c(532, 700)) %>%
-  filter(bbp >= 0)
+  filter(depth_m <= 100) %>%
+  filter(wavelength == 470)
 
 hydroscat
 
-df <- hydroscat %>%
-  pivot_wider(names_from = wavelength, values_from = bbp, names_prefix = "bbp_") %>%
-  mutate(index_marcel = log(bbp_532 / bbp_700) / 0.274)
+## Smooth out outliers ----
 
-range(df$index_marcel)
+hydroscat <- hydroscat %>%
+  group_by(station, wavelength) %>%
+  mutate(bbp_roll = RcppRoll::roll_median(
+    bbp,
+    n = 15,
+    fill = NA,
+    na.rm = TRUE,
+    align = "center"
+  )) %>%
+  ungroup()
 
-df %>%
-  ggplot(aes(x = index_marcel)) +
-  geom_histogram(binwidth = 0.1)
-
-df %>%
-  ggplot(aes(x = owd, y = depth_m, fill = index_marcel)) +
-  geom_tile() +
+# Looks like a window of 15 pts is good enough
+hydroscat %>%
+  ggplot(aes(x = bbp, y = depth_m, group = station)) +
+  geom_point() +
+  geom_path(aes(x = bbp_roll), color = "red") +
   scale_y_reverse() +
-  scale_fill_viridis_c()
+  facet_wrap(~ owd)
 
-# Isolume data ------------------------------------------------------------
+# Combine ctd and hydroscat data ------------------------------------------
 
-isolume <-
-  read_csv(
-    "https://raw.githubusercontent.com/poplarShift/ice-edge/master/nb_data/FIGURE_9-c-d-e.csv"
-  ) %>%
-  janitor::clean_names() %>%
-  select(owd, isolume_01) %>%
-  pivot_longer(starts_with("isolume"), names_to = "isolume", values_to = "depth_m")
+df <- ctd %>%
+  full_join(hydroscat, by = c("station", "transect", "depth_m", "owd"))
 
-# The isolume data goes further in time (OWD) than de hydroscat data
-isolume <- isolume %>%
-  filter(owd <= max(df$owd, na.rm = TRUE))
+# Calculate the depth at which each variable has a maximum value ----------
 
-# 3D plot of bbp/chla -----------------------------------------------------
-
-df
-
-df_mean <- df %>%
-  dtplyr::lazy_dt() %>%
-  group_by(owd, depth_m) %>%
-  summarise(mean_index_marcel = mean(index_marcel, na.rm = TRUE), n = n()) %>%
-  as_tibble() %>%
+df_viz <- df %>%
+  select(owd, depth_m, flor_mg_m3, cp, bbp_roll) %>%
+  pivot_longer(c(flor_mg_m3, cp, bbp_roll)) %>%
   drop_na() %>%
-  filter(depth_m <= 100)
+  group_by(owd, name) %>%
+  # slice_max(value, n = 1, with_ties = FALSE) %>%
+  filter(value == max(value, na.rm = TRUE)) %>%
+  # take the upmost value if more than 1
+  filter(depth_m == min(depth_m, na.rm = TRUE)) %>%
+  ungroup()
 
-range(df_mean$mean_index_marcel)
+df_viz
 
-df_viz <- df_mean %>%
-  nest(data = everything()) %>%
-  mutate(res = map(data, interpolate_2d, owd, depth_m, mean_index_marcel, h = 5)) %>%
-  unnest(res) %>%
-  rename(owd = x, depth_m = y, mean_index_marcel = z) %>%
-  select(-data) %>%
-  # mutate(mean_index_marcel = ifelse(mean_index_marcel < 0, 0, mean_index_marcel)) %>%
-  drop_na(mean_index_marcel)
+# Plot --------------------------------------------------------------------
 
-range(df_viz$mean_index_marcel)
+p <- df_viz %>%
+  ggplot(aes(x = owd, y = depth_m, color = name)) +
+  geom_point(
+    size = 2,
+    alpha = 0.75,
+    show.legend = FALSE,
+    shape = 16
+  ) +
+  scale_y_reverse() +
+  scale_x_continuous(breaks = seq(-40, 40, by = 10)) +
+  geom_smooth(se = FALSE) +
+  geom_smooth(aes(fill = name), key_glyph = "rect", show.legend = FALSE) +
+  scale_fill_manual(
+    breaks = c("bbp_roll", "cp", "flor_mg_m3"),
+    values = c("#e07a5f", "#3d405b", "#81b29a")
+  ) +
+  scale_color_manual(
+    breaks = c("bbp_roll", "cp", "flor_mg_m3"),
+    values = c("#e07a5f", "#3d405b", "#81b29a"),
+    labels = parse(text = c(
+      "b[bp]~(470)~(m^{-1})", "C[p]~(657)~(m^{-1})", "Chla~(mg~m^{-3})"
+    )),
+    guide = guide_legend(
+      override.aes = list(alpha = 1, size = 2),
+      label.hjust = 0.5,
+      label.position = "top",
+      keywidth = unit(3, "cm"),
+      keyheight = unit(0.01, "cm")
+    )
+  ) +
+  labs(
+    x = "Number of open water days (OWD)",
+    y = "Depth (m)"
+  ) +
+  theme(
+    panel.border = element_blank(),
+    axis.ticks = element_blank(),
+    legend.title = element_blank(),
+    legend.position = "top"
+  )
 
-p1 <- gg3d(
-  df = df_viz,
-  x = owd,
-  y = depth_m,
-  z = mean_index_marcel,
-  iso_breaks = seq(-5, 10, by = 0.05),
-  fill_text = expression("Band~ratio~(Marcel~index)"),
-  isolume = isolume,
-  nbreaks = 8,
-  trans_fun = scales::trans_new("shift", function(x) x, identity)
-)
-
-## Average vertical profiles ----
-
-df_average_profiles <- average_vertical_profiles(df_viz, mean_index_marcel, breaks = breaks)
-
-p2 <- gg2dprofiles(df_average_profiles, mean_index_marcel, depth_m, owd_bin)
-
-# Save plots --------------------------------------------------------------
-
-p <- p1 + p2 +
-  plot_layout(ncol = 2, widths = c(0.7, 0.3)) +
-  plot_annotation(
-    tag_levels = "A"
-  ) &
-  theme(plot.tag = element_text(face = "bold"))
-
-ggsave(
-  here::here("graphs","fig05.pdf"),
+ggsave(here("graphs","fig05.pdf"),
   device = cairo_pdf,
-  width = 9,
-  height = 4
+  width = 7.19,
+  height = 5.22
 )

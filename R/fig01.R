@@ -36,7 +36,7 @@ transect <- tibble::tribble(
 # Plot --------------------------------------------------------------------
 
 p <- ggplot() +
-  geom_sf(data = wm, size = 0.1, fill = "#adb5bd", color = "#3c3c3c") +
+  geom_sf(data = wm, size = 0.1, fill = "#DAE3E5", color = "#3c3c3c") +
   geom_sf(data = ctd_df, aes(color = owd), size = 2) +
   geom_text(
     data = transect,
@@ -92,7 +92,7 @@ p <- ggplot() +
     panel.border = element_blank(),
     axis.ticks = element_blank(),
     panel.grid = element_blank(),
-    panel.background = element_rect(fill = "#6699CC")
+    panel.background = element_rect(fill = "#BBD1EA")
   )
 
 filename <- here("graphs", "fig01.pdf")

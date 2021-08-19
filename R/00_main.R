@@ -65,3 +65,15 @@ source(here("R","26_visualize_bbp_cp_ratio.R"))
 source(here("R","27_xxxx_marcel.R"))
 
 source(here("R","30_visualize_uvp_particles_size.R"))
+
+# Figures for the paper ---------------------------------------------------
+
+source(here("R","fig01.R"))
+source(here("R","fig02.R"))
+source(here("R","fig03.R"))
+source(here("R","fig04.R"))
+source(here("R","fig05.R"))
+source(here("R","fig06.R"))
+# source(here("R","fig07.R"))
+source(here("R","fig08.R"))
+source(here("R","fig09.R"))
