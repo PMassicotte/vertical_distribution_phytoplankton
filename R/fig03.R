@@ -6,22 +6,33 @@
 
 rm(list = ls())
 
-# Correlation between CP and fluorescence ---------------------------------
-
 ctd <- read_csv(here::here("data/clean/ctd.csv")) %>%
   filter(depth_m <= 100)
 
-## Summarize by depth and open water day ----
+hydroscat <- read_csv(here("data","clean","hydroscat.csv")) %>%
+  filter(wavelength == 470) %>%
+  rename(depth_m = depth) %>%
+  filter(depth_m <= 100)
 
-chl_cp_mean <- ctd %>%
-  dtplyr::lazy_dt() %>%
-  group_by(owd, depth_m) %>%
-  summarise(across(c(flor_mg_m3, cp), ~mean(., na.rm = TRUE), .names = "mean_{.col}")) %>%
-  as_tibble() %>%
-  drop_na()
+hydroscat %>%
+  ggplot(aes(x = bbp)) +
+  geom_histogram() +
+  scale_x_log10()
 
-p1 <- chl_cp_mean %>%
-  ggplot(aes(x = mean_flor_mg_m3, y = mean_cp)) +
+hydroscat %>%
+  arrange(bbp) %>%
+  head(100) %>%
+  rowid_to_column() %>%
+  ggplot(aes(x = rowid, y = bbp)) +
+  geom_point()
+
+hydroscat <- hydroscat %>%
+  filter(bbp >= 0.0002)
+
+# Correlation between CP and fluorescence ---------------------------------
+
+p1 <- ctd %>%
+  ggplot(aes(x = flor_mg_m3, y = cp)) +
   geom_hex(bins = 50) +
   scale_y_log10() +
   scale_x_log10() +
@@ -41,39 +52,14 @@ p1 <- chl_cp_mean %>%
 
 # chla vs bbp 470 nm ------------------------------------------------------
 
-ctd <- read_csv(here::here("data/clean/ctd.csv")) %>%
-  filter(depth_m <= 100)
-
-hydroscat <- read_csv(here("data","clean","hydroscat.csv")) %>%
-  filter(wavelength == 470) %>%
-  rename(depth_m = depth) %>%
-  filter(depth_m <= 100)
-
-## Summarize by depth and open water day ----
-
-ctd_mean <- ctd %>%
-  dtplyr::lazy_dt() %>%
-  group_by(owd, depth_m) %>%
-  summarise(across(c(flor_mg_m3, cp), ~mean(., na.rm = TRUE), .names = "mean_{.col}")) %>%
-  as_tibble() %>%
-  drop_na()
-
-hydroscat_mean <- hydroscat %>%
-  dtplyr::lazy_dt() %>%
-  group_by(owd, depth_m) %>%
-  summarise(across(c(bbp), ~mean(., na.rm = TRUE), .names = "mean_{.col}")) %>%
-  as_tibble() %>%
-  drop_na() %>%
-  filter(mean_bbp > 0.0002)
-
 ## Merge CTD and Hydroscat on the OWD and the closest depth ----
 
-setDT(ctd_mean)
-setDT(hydroscat_mean)
+setDT(ctd)
+setDT(hydroscat)
 
-ctd_mean[, ctd_depth := depth_m]
+ctd[, ctd_depth := depth_m]
 
-chl_bbp <- ctd_mean[hydroscat_mean, on = c("owd", "depth_m"), roll = "nearest"]
+chl_bbp <- ctd[hydroscat, on = c("owd", "depth_m"), roll = "nearest"]
 
 chl_bbp <- chl_bbp %>%
   as_tibble() %>%
@@ -82,7 +68,7 @@ chl_bbp <- chl_bbp %>%
 ## Scatterplot chla vs bbp ----
 
 p2 <- chl_bbp %>%
-  ggplot(aes(x = mean_flor_mg_m3, y = mean_bbp)) +
+  ggplot(aes(x = flor_mg_m3, y = bbp)) +
   geom_hex(bins = 50) +
   scale_y_log10() +
   scale_x_log10() +
@@ -103,7 +89,7 @@ p2 <- chl_bbp %>%
 # Scatterplot Cp vs bbp ---------------------------------------------------
 
 p3 <- chl_bbp %>%
-  ggplot(aes(x = mean_cp, y = mean_bbp)) +
+  ggplot(aes(x = cp, y = bbp)) +
   geom_hex(bins = 50) +
   scale_y_log10() +
   scale_x_log10() +
@@ -121,9 +107,31 @@ p3 <- chl_bbp %>%
     axis.ticks = element_blank()
   )
 
+# Chla vs bbp/cp ----------------------------------------------------------
+
+p4 <- chl_bbp %>%
+  drop_na(bbp, cp, flor_mg_m3) %>%
+  ggplot(aes(x = bbp / cp, y = flor_mg_m3)) +
+  geom_hex(bins = 50) +
+  scale_y_log10() +
+  scale_x_log10() +
+  scale_fill_viridis_c() +
+  annotation_logticks(size = 0.25) +
+  labs(
+    x = quote(b[bp]~(470)/C[p]~(657)),
+    y = quote("Chla"~(mg~m^{-3}))
+  ) +
+  geom_smooth(method = "lm", color = "red", size = 1) +
+  theme(
+    legend.position = "none",
+    aspect.ratio = 1,
+    panel.border = element_blank(),
+    axis.ticks = element_blank()
+  )
+
 # Combine and save the plots ----------------------------------------------
 
-p <- p1 / p2 / p3 +
+p <- p1 / p2 / p3 / p4 +
   plot_layout(ncol = 2) +
   plot_annotation(
     tag_levels = "A"
