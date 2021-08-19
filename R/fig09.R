@@ -1,40 +1,83 @@
+# <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+# AUTHOR:       Philippe Massicotte
+#
+# DESCRIPTION:  Relationship between bbp/cp and particle size distribution from
+# the UVP.
+# <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+
 rm(list = ls())
 
-uvp <- fread(here("data", "clean", "uvp_small_medium_large_class_size.csv"))
+uvp <- read_csv(here("data", "clean", "uvp_small_medium_large_class_size.csv"))
 
-uvp <- uvp[, lapply(.SD, mean, na.rm = TRUE),
-  .SDcols = c("biovolume_ppm", "count_per_liter"),
-  by = list(station, transect, owd, depth_m, particle_size_class)
-]
+unique(uvp$particle_size_range)
 
-uvp <- uvp[, lapply(.SD, sum, na.rm = TRUE),
-  .SDcols = c("biovolume_ppm", "count_per_liter"),
-  by = list(station, transect, owd, depth_m)
-]
+# Make sure there is only 1 observation per group
+uvp %>%
+  count(station, transect, owd, depth_m, particle_size_class) %>%
+  assertr::verify(n == 1)
+
+# Calculate to total amount of particle (small + medium + large)
+uvp <- uvp %>%
+  dtplyr::lazy_dt() %>%
+  group_by(station, transect, owd, depth_m) %>%
+  summarise(across(c(biovolume_ppm, count_per_liter), sum, na.rm = TRUE)) %>%
+  as_tibble()
+
+setDT(uvp)
 
 ctd <- fread(here("data", "clean", "ctd.csv"))
-avw <- fread(here("data", "clean", "apparent_visible_wavelength.csv"))
 hydroscat <- fread(here("data", "clean", "hydroscat.csv"))
 hydroscat <- setnames(hydroscat, "depth", "depth_m")
 
-hydroscat <- hydroscat[wavelength == 532]
+hydroscat <- hydroscat[wavelength == 470]
 
 uvp
 ctd
 hydroscat
-avw
 
 ctd <- ctd[, ctd_depth_m := depth_m]
 hydroscat <- hydroscat[, hydroscat_depth_m := depth_m]
 
+# Merge data on the closest depth -----------------------------------------
+
 df <- ctd[uvp, roll = "nearest", on = .(station, transect, owd, depth_m)]
 df <- hydroscat[df, roll = "nearest", on = .(station, transect, owd, depth_m)]
-df_viz <- avw[df, roll = "nearest", on = .(station, depth_m)]
+
+df <- df %>%
+  as_tibble()
+
+# Check if the depths are not too different -------------------------------
+
+df
+
+df %>%
+  mutate(depth_diff_hydroscat = abs(depth_m - hydroscat_depth_m)) %>%
+  mutate(depth_diff_ctd = abs(depth_m - ctd_depth_m)) %>%
+  select(station, depth_m, contains("depth_diff")) %>%
+  pivot_longer(contains("depth_diff")) %>%
+  filter(value > 0) %>% # Remove perfect match (0 m depth difference)
+  ggplot(aes(x = value)) +
+  geom_histogram() +
+  scale_x_log10() +
+  facet_wrap(~name)
+
+# Looks like there are some important depth difference. Gonna use a maximum
+# depth difference of 5 meters.
+
+df <- df %>%
+  mutate(depth_diff_hydroscat = abs(depth_m - hydroscat_depth_m)) %>%
+  mutate(depth_diff_ctd = abs(depth_m - ctd_depth_m)) %>%
+  filter(if_all(contains("depth_diff"), ~. <= 5))
+
+range(df$depth_m)
+
+df %>%
+  count(owd, sort = TRUE)
 
 # Plot --------------------------------------------------------------------
 
-p <- df_viz %>%
-  as_tibble() %>%
+p <- df %>%
+  # filter(depth_m <= 100) %>%
   mutate(bbp_cp = bbp / cp) %>%
   drop_na(bbp_cp) %>%
   ggplot(aes(x = bbp_cp, y = count_per_liter, color = owd <= 0, size = flor_mg_m3)) +
@@ -69,7 +112,7 @@ p <- df_viz %>%
     )
   ) +
   labs(
-    x = quote(b[bp]/C[p]),
+    x = quote(b[bp]~(470)/C[p]~(657)),
     y = "Total particle count per liter"
   ) +
   theme(
@@ -80,7 +123,7 @@ p <- df_viz %>%
   )
 
 ggsave(
-  here("graphs/fig09.pdf"),
+  here("graphs","fig09.pdf"),
   device = cairo_pdf,
   width = 7,
   height = 5
