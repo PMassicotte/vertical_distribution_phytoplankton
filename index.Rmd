@@ -553,7 +553,9 @@ knitr::include_graphics(here("graphs", "png", "appendix01.png"))
 
 ### Appendix 2
 
-Relationship between Cp and bbp.
+-   It was previously that chla/cp was a good indicator of phytoplankton photoacclimation (Ek) and physiology (Fv/Fm).
+
+-   Very weak relations with either Ek (r = -0.16) or Fv/Fm (r = 0.26).
 
 ```{r}
 knitr::include_graphics(here("graphs", "png", "appendix02.png"))
@@ -562,8 +564,14 @@ knitr::include_graphics(here("graphs", "png", "appendix02.png"))
 ## TODO
 
 -   Determine if CP correction (baseline shift) should be performed or not.
+
 -   Check if there is a relation between particle size ratio and bbp/cp ratio (see figure 9).
+
 -   Add figure on correlation between CP and POC (see Fig. 4 in Behrenfeld 2006).
--   Relation between bbp/cp and fluo (see Fig. 9).
+
+-   Make a graph with POC vs other bio-optical variable (chla, cp, bbp).
+
+-   Make a graph exploring chla/cp ratio (often used as a photoacclimation) with other variables (Ek, Fv/Fm).
+    - No relationships found using the data in this study. Why?
 
 ## References

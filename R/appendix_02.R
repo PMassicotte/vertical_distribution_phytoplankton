@@ -1,311 +1,125 @@
 # <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 # AUTHOR:       Philippe Massicotte
 #
-# DESCRIPTION:  How change the distribution of particle size with OWD.
+# DESCRIPTION:  Check if there are any relationships between chla/cp against Ek
+# and Fv/Fm. These two last indices have been reported to be related to chla/cp.
+#
+# Behrenfeld, Michael J, and Emmanuel Boss. “The Beam Attenuation to Chlorophyll
+# Ratio: An Optical Index of Phytoplankton Physiology in the Surface Ocean?"
+# Deep Sea Research Part I: Oceanographic Research Papers 50, no. 12 (December
+# 2003): 1537–49. https://doi.org/10.1016/j.dsr.2003.09.002.
+#
+# Xing, Xiaogang, Hervé Claustre, Julia Uitz, Alexandre Mignot, Antoine Poteau,
+# and Haili Wang. “Seasonal Variations of Bio-Optical Properties and Their
+# Interrelationships Observed by Bio-Argo Floats in the Subpolar North
+# Atlantic." Journal of Geophysical Research: Oceans 119, no. 10 (October 2014):
+# 7372–88. https://doi.org/10.1002/2014JC010189.
 # <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 
 rm(list = ls())
 
-uvp <- read_csv(here("data","clean","uvp_small_medium_large_class_size.csv"))
+ctd <- read_csv(here("data","clean","ctd.csv"))
 
-uvp <- uvp %>%
-  select(station, owd, depth_m, particle_size_class, count_per_liter) %>%
-  group_by(station, owd, depth_m, particle_size_class) %>%
-  summarise(count_per_liter = mean(count_per_liter)) %>%
-  ungroup()
+# Chla/cp vs ek -----------------------------------------------------------
 
-uvp
+pvse <- read_csv(here("data", "raw", "photosynthetic_parameters_amundsen_2016.csv")) %>%
+  select(station, depth_m = depth, ps:pb_max) %>%
+  mutate(station = parse_number(station))
 
-uvp_wide <- uvp %>%
-  pivot_wider(names_from = particle_size_class, values_from = count_per_liter)
+ctd
+pvse
 
-uvp_wide
+setDT(ctd)
+setDT(pvse)
 
-uvp_wide <- uvp_wide %>%
-  mutate(particle_class_small_to_large = particle_class_small / particle_class_large) %>%
-  mutate(particle_class_small_to_medium = particle_class_small / particle_class_medium)
+ctd[, depth_ctd := depth_m]
 
-uvp_wide
+ek <- ctd[pvse, on = c("station", "depth_m"), roll = "nearest"]
 
-df_viz <- uvp_wide %>%
+ek <- ek %>%
+  as_tibble() %>%
+  filter(abs(depth_m - depth_ctd) <= 1) %>%
+  drop_na(flor_mg_m3, cp, ek) %>%
   filter(depth_m <= 100) %>%
-  group_by(owd) %>%
-  summarise(across(contains("_to_"), .fns = list(mean = mean))) %>%
-  pivot_longer(-owd)
+  mutate(chla_cp = flor_mg_m3 / cp)
 
-df_viz
-
-# Plot --------------------------------------------------------------------
-
-lab <- c(
-  "particle_class_small_to_medium_mean" = "Particle count small/medium ratio",
-  "particle_class_small_to_large_mean" = "Particle count small/large ratio"
-)
-
-p <- df_viz %>%
-  ggplot(aes(x = owd, y = value)) +
+p1 <- ek %>%
+  ggplot(aes(x = chla_cp, y = ek)) +
   geom_point(color = "#393E41") +
-  scale_y_continuous(breaks = scales::breaks_pretty(n = 5)) +
-  scale_x_continuous(breaks = scales::breaks_pretty(n = 8)) +
+  # scale_x_log10() +
+  # scale_y_log10() +
+  scale_color_viridis_c() +
   geom_smooth(
+    method = "lm",
     color = "#bf1d28",
-    size = 0.5,
-    method = "gam"
-  ) +
-  facet_wrap(
-    ~name,
-    scales = "free_y",
-    ncol = 1,
-    labeller = labeller(name = lab)
+    size = 0.5
   ) +
   labs(
-    x = "Number of open water days (OWD)",
-    y = "Particle count ratio"
+    x = quote(Chla/C[p] ~ (657)),
+    y = quote(E[k] ~ (mu*mol~m^{-2}~s^{-1}))
   ) +
   theme(
     panel.border = element_blank(),
     axis.ticks = element_blank()
   )
 
-ggsave(
-  here("graphs/fig08.pdf"),
-  device = cairo_pdf,
-  width = 5,
-  height = 6
-)
+# Fv/Fm vs ek -------------------------------------------------------------
 
-# See if there is relation with bbp/cp ratio ------------------------------
-
-## CTD data ----
-
-ctd <- read_csv(here::here("data", "clean", "ctd.csv")) %>%
-  select(station, owd, depth_m, flor_mg_m3, cp) %>%
-  filter(depth_m <= 100) %>%
-  drop_na() %>%
-  arrange(station, depth_m) %>%
-  mutate(ctd_depth_m = depth_m)
+pam <- read_csv(here("data", "raw", "GreenEdge_FvFm_all_station_data.csv")) %>%
+  janitor::clean_names() %>%
+  setDT()
 
 ctd
 
-ctd %>%
-  dtplyr::lazy_dt() %>%
-  count(station, owd, depth_m) %>%
+fvfm <- ctd[pam, on = c("station", "depth_m"), roll = "nearest"]
+
+fvfm <- fvfm %>%
   as_tibble() %>%
-  assertr::verify(n == 1)
-
-## Hydroscat data (for bbp) ----
-
-hydroscat <- read_csv(here::here("data", "clean", "hydroscat.csv")) %>%
-  rename(depth_m = depth) %>%
+  filter(abs(depth_m - depth_ctd) <= 1) %>%
+  drop_na(flor_mg_m3, cp, fv_fm_mean) %>%
   filter(depth_m <= 100) %>%
-  filter(wavelength == 620) %>%
-  select(station, owd, depth_m, bbp)
+  mutate(chla_cp = flor_mg_m3 / cp)
 
-hydroscat
-
-hydroscat %>%
-  count(station, depth_m) %>%
-  assertr::verify(n == 1)
-
-## Combine ctd and hydroscat data ----
-
-hydroscat <- setDT(hydroscat)
-ctd <- setDT(ctd)
-
-bbp_cp <- ctd[hydroscat, roll = "nearest", on = .(station, owd, depth_m)]
-
-bbp_cp <- bbp_cp %>%
-  mutate(bbp_cp = bbp / cp) %>%
-  as_tibble() %>%
-  filter(abs(depth_m - ctd_depth_m) <= 0.5) %>%
-  select(-ctd_depth_m)
-
-bbp_cp
-
-bbp_cp %>%
-  count(station, owd, depth_m) %>%
-  assertr::verify(n == 1)
-
-### bbp vs cp ----
-
-p <- bbp_cp %>%
-  ggplot(aes(x = cp, y = bbp)) +
-  geom_hex(
-    bins = 50,
-    fill = "#393E41",
-    color = "white",
-    size = 0.1
-  ) +
-  scale_x_log10(
-    labels = scales::label_number(),
-    expand = expansion(mult = c(0.05, 0.1))
-  ) +
-  scale_y_log10(
-    labels = scales::label_number(),
-    expand = expansion(mult = c(0.05, 0.05))
-  ) +
-  annotation_logticks(size = 0.25) +
+p2 <- fvfm %>%
+  ggplot(aes(x = chla_cp, y = fv_fm_mean)) +
+  geom_point(color = "#393E41") +
+  scale_y_continuous(labels = scales::label_percent()) +
+  scale_color_viridis_c() +
   geom_smooth(
+    method = "lm",
     color = "#bf1d28",
-    size = 0.5,
-    method = "lm"
+    size = 0.5
   ) +
   labs(
-    x = quote(C[p~(657)]~(m^{-1})),
-    y = quote(b[bp~(620)]~(m^{-1}))
+    x = quote(Chla/C[p] ~ (657)),
+    y = quote(Fv/Fm)
   ) +
   theme(
-    aspect.ratio = 1,
     panel.border = element_blank(),
     axis.ticks = element_blank()
   )
 
-filename <- here("graphs","appendix02.pdf")
+# Combine plots -----------------------------------------------------------
+
+p <- p1 / p2 +
+  plot_annotation(
+  tag_levels = "A"
+) &
+  theme(plot.tag = element_text(face = "bold"))
 
 ggsave(
-  filename,
+  here("graphs","appendix02.pdf"),
   device = cairo_pdf,
   width = 6,
-  height = 6
+  height = 8
 )
 
-knitr::plot_crop(filename)
+# Correlation stats -------------------------------------------------------
 
-### Is there a trend of bbp/cp ratio over OWD? ----
+cor(ek$chla_cp, ek$ek)
+cor(fvfm$chla_cp, fvfm$fv_fm_mean)
 
-bbp_cp
+# These are different indices, but they do not correlate to each other.
+# Ek: photoacclimation
+# Fv_Fm: physiology
 
-bbp_cp %>%
-  ggplot(aes(x = owd, y = bbp_cp)) +
-  geom_point()
-
-bbp_cp %>%
-  filter(depth_m <= 100) %>%
-  group_by(owd) %>%
-  summarise(cp = mean(cp)) %>%
-  ggplot(aes(x = owd, y = cp)) +
-  geom_point() +
-  geom_smooth()
-
-## Combine bbp/cp with uvp ----
-
-bbp_cp
-uvp_wide
-
-bbp_cp <- setDT(bbp_cp)
-uvp_wide <- setDT(uvp_wide)
-
-df <- uvp_wide[bbp_cp, roll = "nearest", on = .(station, owd, depth_m)]
-
-df %>%
-  as_tibble() %>%
-  count(station, depth_m) %>%
-  assertr::verify(n == 1)
-
-df <- df %>%
-  as_tibble()
-
-## Visualization with bbp_cp ----
-
-df
-
-df %>%
-  count(station, owd, depth_m) %>%
-  assertr::verify(n == 1)
-
-df %>%
-  ggplot(aes(x = particle_class_small, y = bbp_cp)) +
-  # geom_point() +
-  geom_hex(bins = 50) +
-  scale_x_log10() +
-  scale_y_log10() +
-  geom_smooth(method = "loess")
-
-df %>%
-  filter(particle_class_small_to_large < 1e3) %>%
-  ggplot(aes(x = particle_class_small_to_large, y = bbp_cp)) +
-  # geom_point() +
-  geom_hex(bins = 50) +
-  scale_x_log10() +
-  scale_y_log10() +
-  geom_smooth(method = "lm")
-
-# Anything with the pigments? ---------------------------------------------
-
-pigments <- read_csv(here("data","clean","pigments_grouped.csv")) %>%
-  # pivot_wider(names_from = pigment_group, values_from = sum_conc_mg_m3) %>%
-  select(-longitude, -latitude, -transect)
-
-pigments
-
-pigments <- setDT(pigments)
-df <- setDT(df)
-
-pigments <- df[pigments, roll = "nearest", on = .(station, owd, depth_m)]
-
-pigments <- pigments %>%
-  as_tibble()
-
-# pigments %>%
-#   count(station, depth_m) %>%
-#   assertr::verify(n == 1)
-
-pigments %>%
-  count(station)
-
-pigments %>%
-  ggplot(aes(x = bbp_cp, y = sum_conc_mg_m3)) +
-  geom_point(color = "#393E41") +
-  geom_smooth(
-    color = "#bf1d28",
-    size = 0.5,
-    method = "lm"
-  ) +
-  facet_wrap(~pigment_group) +
-  scale_x_log10() +
-  scale_y_log10()
-
-pigments %>%
-  pivot_wider(names_from = pigment_group, values_from = sum_conc_mg_m3) %>%
-  select(
-    particle_class_large:particle_class_small,
-    flor_mg_m3:phaeophorbide_a
-  ) %>%
-  mutate(across(everything(), log10)) %>%
-  GGally::ggpairs()
-
-ggsave("~/Desktop/ggpairs.pdf", device = cairo_pdf, width = 18, height = 18)
-
-
-pigments %>%
-  pivot_wider(names_from = pigment_group, values_from = sum_conc_mg_m3) %>%
-  select(particle_class_large:phaeophorbide_a) %>%
-  mutate(across(everything(), log10)) %>%
-  select(photosynthetic_pigments, particle_class_large:particle_class_small) %>%
-  lm(photosynthetic_pigments ~ ., data = .) %>%
-  relaimpo::calc.relimp() %>%
-  plot()
-
-# TODO: PCA
-
-pigments %>%
-  pivot_wider(names_from = pigment_group, values_from = sum_conc_mg_m3) %>%
-  select(particle_class_large:phaeophorbide_a) %>%
-  mutate(across(everything(), log10)) %>%
-  # skimr::skim()
-  select(-chlorophyllide_a, -contains("_to_"), -bbp_cp) %>%
-  drop_na() %>%
-  prcomp() %>%
-  autoplot(
-    loadings = TRUE,
-    loadings.label = TRUE,
-    loadings.label.repel = TRUE,
-    label = FALSE
-  )
-
-ggsave(
-  "~/Desktop/pca.pdf",
-  device = cairo_pdf,
-  width = 6,
-  height = 6
-)
