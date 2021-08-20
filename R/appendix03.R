@@ -108,7 +108,7 @@ p <- p1 / p2 +
   theme(plot.tag = element_text(face = "bold"))
 
 ggsave(
-  here("graphs","appendix02.pdf"),
+  here("graphs","appendix03.pdf"),
   device = cairo_pdf,
   width = 6,
   height = 8

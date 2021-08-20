@@ -477,10 +477,8 @@ knitr::include_graphics(here("graphs", "png", "fig04.png"))
 
 ### Figure 5
 
-Co-variability of fluorescence of chla, CP and bbp. At each OWD, the depth of the maximum value (ex.: chla) was extracted. Note that the depths at which each variable is maximum was calculated on *raw* data and not the interpolated data. The points are the raw data and the lines represent values fitted using loess.
 
 ```{r}
-knitr::include_graphics(here("graphs", "png", "fig05.png"))
 ```
 
 ### Figure 6
@@ -551,12 +549,20 @@ knitr::include_graphics(here("graphs", "png", "appendix01.png"))
 
 ### Appendix 2
 
+Co-variability of subsurface maximums for bbp, cp and chla. At each OWD, the depth of the maximum value (ex.: chla) was extracted. Note that the depths at which each variable is maximum was calculated on *raw* data and not the interpolated data from Fig. 02. The points are the raw data and the lines represent values fitted using loess.
+
+```{r}
+knitr::include_graphics(here("graphs", "png", "appendix02.png"))
+```
+
+### Appendix 3
+
 -   It was previously that chla/cp was a good indicator of phytoplankton photoacclimation (Ek) and physiology (Fv/Fm).
 
 -   Very weak relations with either Ek (r = -0.16) or Fv/Fm (r = 0.26).
 
 ```{r}
-knitr::include_graphics(here("graphs", "png", "appendix02.png"))
+knitr::include_graphics(here("graphs", "png", "appendix03.png"))
 ```
 
 ## TODO

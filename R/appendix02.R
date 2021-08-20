@@ -115,7 +115,7 @@ p <- df_viz %>%
     legend.position = "top"
   )
 
-ggsave(here("graphs","fig05.pdf"),
+ggsave(here("graphs","appendix02.pdf"),
   device = cairo_pdf,
   width = 7.19,
   height = 5.22
