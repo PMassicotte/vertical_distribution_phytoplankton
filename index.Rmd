@@ -485,8 +485,6 @@ knitr::include_graphics(here("graphs", "png", "fig05.png"))
 
 ### Figure 6
 
-TODO
-
 ```{r}
 # knitr::include_graphics(here("graphs", "png", "fig06.png"))
 ```
@@ -496,7 +494,7 @@ TODO
 -   TODO
 
 ```{r}
-# knitr::include_graphics(here("graphs", "png", "fig07.png"))
+knitr::include_graphics(here("graphs", "png", "fig07.png"))
 ```
 
 ### Figure 8
@@ -570,8 +568,5 @@ knitr::include_graphics(here("graphs", "png", "appendix02.png"))
 -   Add figure on correlation between CP and POC (see Fig. 4 in Behrenfeld 2006).
 
 -   Make a graph with POC vs other bio-optical variable (chla, cp, bbp).
-
--   Make a graph exploring chla/cp ratio (often used as a photoacclimation) with other variables (Ek, Fv/Fm).
-    - No relationships found using the data in this study. Why?
 
 ## References
