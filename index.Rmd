@@ -521,6 +521,20 @@ knitr::include_graphics(here("graphs", "png", "fig08.png"))
     -   Chlorophyll-a concentration is lower.
     -   There are less particles in open water than in ice-covered stations.
 
+-   In this figure, the total particle count is defined as the sum of these three classes:
+
+    -   0.102-0.323 mm
+    -   0.323-1.02 mm
+    -   1.02-26 mm
+
+-   Maybe use all UVP data and not not only the 3 defined classes.
+
+    -   These 3 classes are very large, and likely not capturing phytoplankton cells?
+
+-   *Using all the data* (not only \<= 100 meters).
+
+    -   I using a threshold of 5 meters to discard ctd, uvp and hydroscat measurements that were too far apart.
+
 ```{r, fig.align='center'}
 knitr::include_graphics(here("graphs", "png", "fig09.png"))
 ```

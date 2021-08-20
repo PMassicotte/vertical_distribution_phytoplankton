@@ -70,7 +70,7 @@ chl_bbp <- chl_bbp %>%
 p2 <- chl_bbp %>%
   ggplot(aes(x = flor_mg_m3, y = bbp)) +
   geom_hex(bins = 50) +
-  scale_y_log10() +
+  scale_y_log10(labels = scales::label_number()) +
   scale_x_log10() +
   scale_fill_viridis_c() +
   annotation_logticks(size = 0.25) +
@@ -91,7 +91,7 @@ p2 <- chl_bbp %>%
 p3 <- chl_bbp %>%
   ggplot(aes(x = cp, y = bbp)) +
   geom_hex(bins = 50) +
-  scale_y_log10() +
+  scale_y_log10(labels = scales::label_number()) +
   scale_x_log10() +
   scale_fill_viridis_c() +
   annotation_logticks(size = 0.25) +
