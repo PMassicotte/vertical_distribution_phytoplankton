@@ -54,6 +54,8 @@ p1 <- ek %>%
     color = "#bf1d28",
     size = 0.5
   ) +
+  ggpubr::stat_regline_equation(label.y.npc = 1) +
+  ggpubr::stat_regline_equation(label.y.npc = 0.93, aes(label = ..rr.label..)) +
   labs(
     x = quote(Chla/C[p] ~ (657)),
     y = quote(E[k] ~ (mu*mol~m^{-2}~s^{-1}))
@@ -90,6 +92,8 @@ p2 <- fvfm %>%
     color = "#bf1d28",
     size = 0.5
   ) +
+  ggpubr::stat_regline_equation(label.y.npc = 1) +
+  ggpubr::stat_regline_equation(label.y.npc = 0.93, aes(label = ..rr.label..)) +
   labs(
     x = quote(Chla/C[p] ~ (657)),
     y = quote(Fv/Fm)

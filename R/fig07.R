@@ -33,6 +33,8 @@ poc_cp <- poc_cp %>%
 p1 <- poc_cp %>%
   ggplot(aes(x = cp, y = poc_umol_l)) +
   geom_point(color = "#393E41") +
+  ggpubr::stat_regline_equation(label.y = log10(80)) +
+  ggpubr::stat_regline_equation(label.y = log10(50), aes(label = ..rr.label..)) +
   scale_y_log10(limits = c(min_poc, max_poc)) +
   scale_x_log10() +
   annotation_logticks(size = 0.1) +
@@ -46,11 +48,33 @@ p1 <- poc_cp %>%
     axis.ticks = element_blank()
   )
 
+# Note: Exponentiate regression coefficient.
+# https://daviddalpiaz.github.io/appliedstats/transformations.html
+# https://www.wolframalpha.com/input/?i=log10%28y%29+%3D+a+%2B+b+*log10%28x%29+isolate+y
+# y = 10^a * x^b where a and b are the intercept and the slope
+tibble(
+  x = seq(0.006668996, 1.000743797, length.out = 100),
+  y = 10^1.9 * x^0.74
+) %>%
+  ggplot(aes(x, y)) +
+  geom_point()+
+  scale_x_log10() +
+  scale_y_log10(limits = c(min_poc, max_poc)) +
+  annotation_logticks(sides = "l")
+
+poc_cp %>%
+  mutate(pred = 10^1.9 * cp^0.74) %>%
+  ggplot(aes(x = cp, y = poc_umol_l)) +
+  geom_point(color = "#393E41") +
+  geom_line(aes(y = pred), color = "#bf1d28", size = 0.5)
+
 # POC vs chla -------------------------------------------------------------
 
 p2 <- poc_cp %>%
   ggplot(aes(x = flor_mg_m3, y = poc_umol_l)) +
   geom_point(color = "#393E41") +
+  ggpubr::stat_regline_equation(label.y = log10(80)) +
+  ggpubr::stat_regline_equation(label.y = log10(50), aes(label = ..rr.label..)) +
   scale_y_log10(limits = c(min_poc, max_poc)) +
   scale_x_log10() +
   annotation_logticks(size = 0.1) +
@@ -85,6 +109,8 @@ poc_bbp <- poc_bbp %>%
 p3 <- poc_bbp %>%
   ggplot(aes(x = bbp, y = poc_umol_l)) +
   geom_point(color = "#393E41") +
+  ggpubr::stat_regline_equation(label.y = log10(80)) +
+  ggpubr::stat_regline_equation(label.y = log10(50), aes(label = ..rr.label..)) +
   scale_y_log10(limits = c(min_poc, max_poc)) +
   scale_x_log10(labels = scales::label_number()) +
   annotation_logticks(size = 0.1) +
@@ -112,3 +138,10 @@ ggsave(
   width = 6,
   height = 12
 )
+
+# Correlation statistics --------------------------------------------------
+
+cor(log10(poc_cp$cp), log10(poc_cp$poc_umol_l), "complete.obs")
+cor(log10(poc_cp$flor_mg_m3), log10(poc_cp$poc_umol_l), "complete.obs")
+cor(log10(poc_bbp$bbp), log10(poc_bbp$poc_umol_l), "complete.obs")
+

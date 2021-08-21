@@ -43,6 +43,8 @@ p1 <- ctd %>%
     y = quote(C[p]~(657)~(m^{-1}))
   ) +
   geom_smooth(method = "lm", color = "red", size = 1) +
+  ggpubr::stat_regline_equation(label.y.npc = 1, size = 3) +
+  ggpubr::stat_regline_equation(label.y.npc = 0.93, aes(label = ..rr.label..), size = 3) +
   theme(
     legend.position = "none",
     aspect.ratio = 1,
@@ -79,6 +81,8 @@ p2 <- chl_bbp %>%
     y = quote(b[bp]~(470)~(m^{-1}))
   ) +
   geom_smooth(method = "lm", color = "red", size = 1) +
+  ggpubr::stat_regline_equation(label.y.npc = 1, size = 3) +
+  ggpubr::stat_regline_equation(label.y.npc = 0.93, aes(label = ..rr.label..), size = 3) +
   theme(
     legend.position = "none",
     aspect.ratio = 1,
@@ -100,6 +104,8 @@ p3 <- chl_bbp %>%
     y = quote(b[bp]~(470)~(m^{-1}))
   ) +
   geom_smooth(method = "lm", color = "red", size = 1) +
+  ggpubr::stat_regline_equation(label.y.npc = 1, size = 3) +
+  ggpubr::stat_regline_equation(label.y.npc = 0.93, aes(label = ..rr.label..), size = 3) +
   theme(
     legend.position = "none",
     aspect.ratio = 1,
@@ -122,6 +128,8 @@ p4 <- chl_bbp %>%
     y = quote("Chla"~(mg~m^{-3}))
   ) +
   geom_smooth(method = "lm", color = "red", size = 1) +
+  ggpubr::stat_regline_equation(label.y.npc = 0.07, size = 3) +
+  ggpubr::stat_regline_equation(label.y.npc = 0, aes(label = ..rr.label..), size = 3) +
   theme(
     legend.position = "none",
     aspect.ratio = 1,

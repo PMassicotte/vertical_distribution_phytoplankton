@@ -80,12 +80,22 @@ p <- df %>%
   # filter(depth_m <= 100) %>%
   mutate(bbp_cp = bbp / cp) %>%
   drop_na(bbp_cp) %>%
-  ggplot(aes(x = bbp_cp, y = count_per_liter, color = owd <= 0, size = flor_mg_m3)) +
+  ggplot(aes(
+    x = bbp_cp,
+    y = count_per_liter,
+    color = owd <= 0,
+    size = flor_mg_m3
+  )) +
   geom_point(alpha = 0.5, stroke = 0) +
   scale_x_log10() +
   scale_y_log10() +
   annotation_logticks(size = 0.1) +
   geom_smooth(method = "lm", show.legend = FALSE) +
+  ggpubr::stat_regline_equation(
+    label.y.npc = 0,
+    aes(label = paste(..eq.label.., ..rr.label.., sep = "~~~~")),
+    size = 3
+  ) +
   scale_color_manual(
     breaks = c("TRUE", "FALSE"),
     values = c("#bb3e03", "#023047"),
@@ -97,7 +107,7 @@ p <- df %>%
       title.theme = element_text(size = 8, family = "Poppins"),
       ncol = 1
     )
-  ) +
+  )+
   scale_size_continuous(
     breaks = scales::breaks_pretty(n = 6),
     guide = guide_legend(

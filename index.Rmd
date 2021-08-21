@@ -489,8 +489,6 @@ knitr::include_graphics(here("graphs", "png", "fig04.png"))
 
 ### Figure 7
 
--   TODO
-
 ```{r}
 knitr::include_graphics(here("graphs", "png", "fig07.png"))
 ```
@@ -537,7 +535,7 @@ knitr::include_graphics(here("graphs", "png", "fig09.png"))
 
 ## Appendix
 
-### Appendix 1 (MVP fluorescence)
+### Appendix 1
 
 -   I have calculated the number of open water days using the same data an Achim. I have used a threshold of 15% at least for 3 consecutive days.
 
@@ -559,7 +557,7 @@ knitr::include_graphics(here("graphs", "png", "appendix02.png"))
 
 -   It was previously that chla/cp was a good indicator of phytoplankton photoacclimation (Ek) and physiology (Fv/Fm).
 
--   Very weak relations with either Ek (r = -0.16) or Fv/Fm (r = 0.26).
+-   Very weak relations with either Ek or Fv/Fm.
 
 ```{r}
 knitr::include_graphics(here("graphs", "png", "appendix03.png"))
