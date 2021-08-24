@@ -537,9 +537,9 @@ knitr::include_graphics(here("graphs", "png", "fig09.png"))
 
 ### Appendix 1
 
--   I have calculated the number of open water days using the same data an Achim. I have used a threshold of 15% at least for 3 consecutive days.
+-   I have calculated the number of open water days using the same SIC data as Achim used in his paper (resolution of 3.125 km). I have used a SIC threshold of 15% that lasted at least 3 consecutive days to determine the melting and freezing of sea ice.
 
--   We can see that there are not many observations with negative OWD because the MVP was deployed in open water.
+-   On the next plot, we can see that there are not many observations with negative OWD because the MVP was deployed in open water.
 
 ```{r}
 knitr::include_graphics(here("graphs", "png", "appendix01.png"))
@@ -567,10 +567,13 @@ knitr::include_graphics(here("graphs", "png", "appendix03.png"))
 
 -   Determine if CP correction (baseline shift) should be performed or not.
 
--   Check if there is a relation between particle size ratio and bbp/cp ratio (see figure 9).
+-   Check if there is a relation between particle size ratio and bbp/cp ratio.
 
 -   Add figure on correlation between CP and POC (see Fig. 4 in Behrenfeld 2006).
 
 -   Make a graph with POC vs other bio-optical variable (chla, cp, bbp).
+
+-   *In this study, the particulate organic carbon (POC) is divided into small POC (sPOC) and big POC (bPOC), with a nominal cutoff at 100 μm (Table 1; section 2.2.2).*
+  -   Check with the UVP data using this 100 um (0.1 mm) cutoff.
 
 ## References
