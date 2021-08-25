@@ -111,7 +111,7 @@ p <- df %>%
       title.theme = element_text(size = 8, family = "Poppins"),
       ncol = 1
     )
-  )+
+  ) +
   scale_size_continuous(
     breaks = scales::breaks_pretty(n = 6),
     guide = guide_legend(
@@ -132,7 +132,6 @@ p <- df %>%
   theme(
     panel.border = element_blank(),
     axis.ticks = element_blank(),
-    # legend.title = element_blank(),
     legend.position = "top"
   )
 

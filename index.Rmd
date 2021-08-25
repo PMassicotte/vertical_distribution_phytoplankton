@@ -9,6 +9,8 @@ output:
     toc_float:
       collapsed: false
 bibliography: references.bib
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r setup, include=FALSE}
@@ -495,11 +497,7 @@ knitr::include_graphics(here("graphs", "png", "fig07.png"))
 
 ### Figure 8
 
--   We can see that the relative proportion of small particles increase with increasing OWD.
-
--   Change in the phytoplankton community?
-
--   Can we use pigments to get insights on how the phtoplankton community change over time?
+-   In this figure, the total particle count is defined as the sum of all particles under 2.05 mm.
 
 ```{r, fig.align='center'}
 knitr::include_graphics(here("graphs", "png", "fig08.png"))

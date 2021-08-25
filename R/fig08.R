@@ -1,94 +1,173 @@
 # <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 # AUTHOR:       Philippe Massicotte
 #
-# DESCRIPTION:  Explore how the different classes of particle size change over
-# the time.
+# DESCRIPTION:  Relationship between POC and two classes of particle.
+#
+#
+# In this study, the particulate organic carbon (POC) is divided
+# into small POC (sPOC) and big POC (bPOC), with a nominal cutoff at 100 μm
+# (Table 1; section 2.2.2).
+#
+# Galí et al., “Bridging the Gaps between Particulate Backscattering
+# Measurements and Modeled Particulate Organic Carbon in the Ocean.”
 # <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 
 rm(list = ls())
 
-# Read the UVP data -------------------------------------------------------
+# Prepare POC -------------------------------------------------------------
 
-uvp <- read_csv(here("data","clean","uvp_small_medium_large_class_size.csv"))
+poc <- read_csv(here::here("data","clean","poc.csv"))  %>%
+  mutate(poc_mg_m3 = ((poc_umol_l / 0.000001) * 12) / 1000000)
 
-uvp
+poc %>%
+  count(station, transect, owd, depth_m, sort = TRUE)
 
-uvp_wide <- uvp %>%
-  dtplyr::lazy_dt() %>%
-  filter(depth_m <= 100) %>%
-  group_by(station, owd, depth_m, particle_size_range) %>%
-  summarise(count_per_liter = mean(count_per_liter, na.rm = TRUE)) %>%
-  as_tibble() %>%
-  pivot_wider(names_from = particle_size_range, values_from = count_per_liter) %>%
-  rowwise() %>%
-  mutate(total_particle_count = sum(c_across(matches(" mm$")))) %>%
+poc <- poc %>%
+  group_by(station, transect, owd, depth_m) %>%
+  summarise(poc_mg_m3 = mean(poc_mg_m3)) %>%
   ungroup()
 
-unique(uvp_wide$depth_m)
+# Prepare UVP -------------------------------------------------------------
 
-# Average contribution as OWD increase ------------------------------------
+uvp <- read_csv(here("data","clean","uvp_tidy.csv"))
 
-df_viz <- uvp_wide %>%
-  select(-total_particle_count) %>%
-  group_by(depth_m, owd) %>%
-  summarise(across(matches(" mm$"), ~ mean(., na.rm = TRUE))) %>%
-  arrange(depth_m, owd) %>%
-  rowwise() %>%
-  mutate(total_particle_count = sum(c_across(matches(" mm$")))) %>%
-  mutate(across(matches(" mm$"), ~ . / total_particle_count)) %>%
-  pivot_longer(matches(" mm$")) %>%
-  filter(depth_m <= 30) %>%
-  mutate(depth_label = glue("{depth_m} m"), .after = "depth_m") %>%
-  mutate(depth_label = fct_reorder(depth_label, depth_m))
+unique(uvp$particle_size_min_mm)
+unique(uvp$particle_size_max_mm)
 
-df_viz
+uvp <- uvp %>%
+  filter(particle_size_max_mm <= 2.05)
+
+# A lot of 0, remove them because I think they are too small to be measured by
+# the UVP and not real values.
+
+uvp %>%
+  ggplot(aes(x = count_per_liter)) +
+  geom_histogram()
+
+uvp <- uvp %>%
+  filter(count_per_liter > 0)
+
+unique(uvp$particle_size_range_mm)
+
+uvp <- uvp %>%
+  mutate(particle_size_class = ifelse(particle_size_max_mm <= 0.102, "small", "large"))
+
+uvp %>%
+  count(particle_size_class)
+
+uvp <- uvp %>%
+  group_by(station, transect, date, depth_m, particle_size_class) %>%
+  summarise(total_count_per_liter = sum(count_per_liter)) %>%
+  ungroup() %>%
+  pivot_wider(names_from = particle_size_class, values_from = total_count_per_liter)
+
+# Merge with UVP ----------------------------------------------------------
+
+setDT(uvp)
+setDT(poc)
+
+uvp[, uvp_depth := depth_m]
+
+df <- uvp[poc, on = c("station", "transect", "depth_m"), roll = "nearest"]
+
+df <- df %>%
+  as_tibble() %>%
+  filter(abs(depth_m - uvp_depth) <= 5)
+
+df
+
+df %>%
+  count(station, depth_m, sort = TRUE) %>%
+  assertr::verify(n == 1)
 
 # Plot --------------------------------------------------------------------
 
-# Make nice labels
-df_viz <- df_viz %>%
-  mutate(
-    class_label = case_when(
-      name == "0.102-0.323 mm" ~ "0.102-0.323 mm (small)",
-      name == "0.323-1.02 mm" ~ "0.323-1.02 mm (medium)",
-      name == "1.02-26 mm" ~ "1.02-26 mm (large)",
-      TRUE ~ NA_character_
-    )
-  ) %>%
-  mutate(class_label = factor(
-    class_label,
-    levels = c(
-      "0.102-0.323 mm (small)",
-      "0.323-1.02 mm (medium)",
-      "1.02-26 mm (large)"
-    )
-  )) %>%
-  mutate(class_label = fct_rev(class_label))
+df
 
-p <- df_viz %>%
-  ggplot(aes(x = owd, y = value, fill = class_label)) +
-  geom_area() +
-  facet_wrap(~depth_label, scales = "free_x") +
-  scale_x_continuous(expand = c(0, 0), breaks = scales::breaks_pretty(n = 8)) +
-  scale_y_continuous(expand = c(0, 0), labels = scales::label_percent()) +
-  # scale_fill_viridis_d(option = "D", direction = -1) +
-  paletteer::scale_fill_paletteer_d(
-    "ggthemes::wsj_rgby"
+mylabels <- c(
+  "small" = "Small particles (0.064 - 0.102 mm)",
+  "large" = "Large particles (0.102 - 2.05 mm)"
+)
+
+p <- df %>%
+  pivot_longer(c(small, large),
+    names_to = "particle_size_class",
+    values_to = "total_count_per_liter"
+  ) %>%
+  mutate(
+    particle_size_class =
+      factor(particle_size_class, levels = c("small", "large"))
+  ) %>%
+  ggplot(aes(x = poc_mg_m3, y = total_count_per_liter, color = owd <= 0,)) +
+  geom_point(aes(size = depth_m)) +
+  scale_x_log10() +
+  scale_y_log10() +
+  scale_color_manual(
+    breaks = c("TRUE", "FALSE"),
+    values = c("#bb3e03", "#023047"),
+    labels = c("Ice covered", "Open water"),
+    guide = guide_legend(
+      override.aes = list(alpha = 1, size = 3),
+      title = element_blank(),
+      title.position = "top",
+      title.theme = element_text(size = 8, family = "Poppins"),
+      label.theme = element_text(size = 10, family = "Poppins"),
+      ncol = 1
+    )
+  ) +
+  scale_size_continuous(
+    breaks = scales::breaks_pretty(n = 6),
+    guide = guide_legend(
+      nrow = 1,
+      title.position = "top",
+      title = "Depth (m)",
+      title.theme = element_text(
+        size = 10,
+        family = "Poppins",
+        margin = margin(t = 8),
+        hjust = 0.5),
+      label.theme = element_text(size = 10, family = "Poppins")
+    )
+  ) +
+  annotation_logticks(size = 0.25) +
+  geom_smooth(method = "lm", color = "#3c3c3c", size = 1) +
+  ggpubr::stat_regline_equation(
+    label.y.npc = 1,
+    aes(
+      x = poc_mg_m3,
+      y = total_count_per_liter,
+    ),
+    size = 4,
+    inherit.aes = FALSE
+  ) +
+  ggpubr::stat_regline_equation(
+    label.y.npc = 0.90,
+    size = 4,
+    inherit.aes = FALSE,
+    aes(
+      x = poc_mg_m3,
+      y = total_count_per_liter,
+      label = ..rr.label..
+    )
+  ) +
+  facet_wrap(
+    ~particle_size_class,
+    ncol = 2,
+    labeller = labeller(particle_size_class = mylabels)
   ) +
   labs(
-    x = "Number of open water days (OWD)",
-    y = "Relative contribution"
+    x = quote("POC"~(mg~m^{-3})),
+    y = "Total particle count per liter"
   ) +
   theme(
     legend.position = "top",
     panel.border = element_blank(),
-    legend.title = element_blank(),
     axis.ticks = element_blank()
   )
 
 ggsave(
   here("graphs","fig08.pdf"),
   device = cairo_pdf,
-  width = 7.15,
-  height = 5.21
+  height = 6,
+  width = 10
 )
