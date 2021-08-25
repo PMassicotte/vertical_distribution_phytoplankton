@@ -7,19 +7,23 @@
 
 rm(list = ls())
 
-uvp <- read_csv(here("data", "clean", "uvp_small_medium_large_class_size.csv"))
+# uvp <- read_csv(here("data", "clean", "uvp_small_medium_large_class_size.csv"))
+uvp <- read_csv(here("data/clean/uvp_tidy.csv")) %>%
+  filter(particle_size_max_mm <= 2.05)
 
 unique(uvp$particle_size_range)
 
 # Make sure there is only 1 observation per group
 uvp %>%
-  count(station, transect, owd, depth_m, particle_size_class) %>%
+  dtplyr::lazy_dt() %>%
+  count(station, transect, depth_m, particle_size_range) %>%
+  as_tibble() %>%
   assertr::verify(n == 1)
 
 # Calculate to total amount of particle (small + medium + large)
 uvp <- uvp %>%
   dtplyr::lazy_dt() %>%
-  group_by(station, transect, owd, depth_m) %>%
+  group_by(station, transect, depth_m) %>%
   summarise(across(c(biovolume_ppm, count_per_liter), sum, na.rm = TRUE)) %>%
   as_tibble()
 
@@ -40,7 +44,7 @@ hydroscat <- hydroscat[, hydroscat_depth_m := depth_m]
 
 # Merge data on the closest depth -----------------------------------------
 
-df <- ctd[uvp, roll = "nearest", on = .(station, transect, owd, depth_m)]
+df <- ctd[uvp, roll = "nearest", on = .(station, transect, depth_m)]
 df <- hydroscat[df, roll = "nearest", on = .(station, transect, owd, depth_m)]
 
 df <- df %>%
