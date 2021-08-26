@@ -6,6 +6,8 @@
 
 rm(list = ls())
 
+source(here("R","zzz_colors.R"))
+
 # CTD data ----------------------------------------------------------------
 
 ctd <- read_csv(here::here("data", "clean", "ctd.csv")) %>%
@@ -62,9 +64,9 @@ p <- ggplot() +
     style = ggspatial::north_arrow_nautical(text_size = 6)
   ) +
   scale_colour_gradient2(
-    low = "blue",
+    low = owd_colors$close,
     mid = "white",
-    high = "red",
+    high = owd_colors$open,
     breaks = scales::breaks_pretty(n = 6),
     midpoint = 0,
     guide =
@@ -92,7 +94,7 @@ p <- ggplot() +
     panel.border = element_blank(),
     axis.ticks = element_blank(),
     panel.grid = element_blank(),
-    panel.background = element_rect(fill = "#BBD1EA")
+    panel.background = element_rect(fill = "gray50")
   )
 
 filename <- here("graphs", "fig01.pdf")

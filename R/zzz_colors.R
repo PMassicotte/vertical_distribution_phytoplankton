@@ -1,10 +1,15 @@
 is_open_water <- function(owd) {
-  ifelse(owd >= 0, TRUE, FALSE)
+  ifelse(owd >= 0, "open", "close")
 }
 
 owd_colors <- list(
-  "TRUE" = "#023047",
-  "FALSE" = "#00bcd7"
+  "open" = "#023047",
+  "close" = "#00bcd7"
+)
+
+owd_labels <- list(
+  "open" = "Open water",
+  "close" = "Ice covered"
 )
 
 lm_color <- "#d64933"
@@ -14,7 +19,7 @@ scale_color_owd <- function() {
 
   scale_color_manual(
     values = owd_colors,
-    labels = c("Ice covered", "Open water"),
+    labels = owd_labels,
     guide = guide_legend(
       override.aes = list(alpha = 1, size = 3),
       title = element_blank(),

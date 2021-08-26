@@ -109,22 +109,11 @@ mylabels <- c(
 )
 
 p <- df %>%
-  ggplot(aes(x = poc_mg_m3, y = total_count_per_liter, color = is_open_water)) +
-  geom_point(aes(size = depth_m)) +
+  ggplot(aes(x = poc_mg_m3, y = total_count_per_liter)) +
+  geom_point(aes(color = is_open_water, size = depth_m)) +
   scale_x_log10() +
   scale_y_log10() +
-  scale_color_manual(
-    values = owd_colors,
-    labels = c("Ice covered", "Open water"),
-    guide = guide_legend(
-      override.aes = list(alpha = 1, size = 3),
-      title = element_blank(),
-      title.position = "top",
-      title.theme = element_text(size = 8, family = "Poppins"),
-      label.theme = element_text(size = 10, family = "Poppins"),
-      ncol = 1
-    )
-  ) +
+  scale_color_owd() +
   scale_size_continuous(
     breaks = scales::breaks_pretty(n = 6),
     guide = guide_legend(
@@ -141,24 +130,11 @@ p <- df %>%
   ) +
   annotation_logticks(size = 0.25) +
   geom_smooth(method = "lm", color = lm_color, size = 1) +
-  ggpubr::stat_regline_equation(
-    label.y.npc = 1,
-    aes(
-      x = poc_mg_m3,
-      y = total_count_per_liter,
-    ),
-    size = 4,
-    inherit.aes = FALSE
-  ) +
+  ggpubr::stat_regline_equation(label.y.npc = 1, size = 4) +
   ggpubr::stat_regline_equation(
     label.y.npc = 0.90,
     size = 4,
-    inherit.aes = FALSE,
-    aes(
-      x = poc_mg_m3,
-      y = total_count_per_liter,
-      label = ..rr.label..
-    )
+    aes(label = ..rr.label..)
   ) +
   facet_wrap(
     ~particle_size_class,

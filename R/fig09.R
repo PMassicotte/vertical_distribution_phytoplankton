@@ -88,7 +88,7 @@ p <- df %>%
   ggplot(aes(
     x = bbp_cp,
     y = count_per_liter,
-    color = owd <= 0,
+    color = is_open_water,
     size = flor_mg_m3
   )) +
   geom_point(alpha = 0.5, stroke = 0) +
