@@ -479,7 +479,6 @@ knitr::include_graphics(here("graphs", "png", "fig04.png"))
 
 ### Figure 5
 
-
 ```{r}
 ```
 
@@ -558,12 +557,5 @@ knitr::include_graphics(here("graphs", "png", "appendix03.png"))
 -   Determine if CP correction (baseline shift) should be performed or not.
 
 -   Check if there is a relation between particle size ratio and bbp/cp ratio.
-
--   Add figure on correlation between CP and POC (see Fig. 4 in Behrenfeld 2006).
-
--   Make a graph with POC vs other bio-optical variable (chla, cp, bbp).
-
--   *In this study, the particulate organic carbon (POC) is divided into small POC (sPOC) and big POC (bPOC), with a nominal cutoff at 100 μm (Table 1; section 2.2.2).*
-  -   Check with the UVP data using this 100 um (0.1 mm) cutoff.
 
 ## References

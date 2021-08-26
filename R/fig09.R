@@ -7,8 +7,9 @@
 
 rm(list = ls())
 
-# uvp <- read_csv(here("data", "clean", "uvp_small_medium_large_class_size.csv"))
-uvp <- read_csv(here("data/clean/uvp_tidy.csv")) %>%
+source(here("R","zzz_colors.R"))
+
+uvp <- read_csv(here("data","clean","uvp_tidy.csv")) %>%
   filter(particle_size_max_mm <= 2.05)
 
 unique(uvp$particle_size_range)
@@ -81,7 +82,7 @@ df %>%
 # Plot --------------------------------------------------------------------
 
 p <- df %>%
-  # filter(depth_m <= 100) %>%
+  mutate(is_open_water = is_open_water(owd)) %>%
   mutate(bbp_cp = bbp / cp) %>%
   drop_na(bbp_cp) %>%
   ggplot(aes(
@@ -100,18 +101,7 @@ p <- df %>%
     aes(label = paste(..eq.label.., ..rr.label.., sep = "~~~~")),
     size = 3
   ) +
-  scale_color_manual(
-    breaks = c("TRUE", "FALSE"),
-    values = c("#bb3e03", "#023047"),
-    labels = c("Ice covered", "Open water"),
-    guide = guide_legend(
-      override.aes = list(alpha = 1, size = 3),
-      title = element_blank(),
-      title.position = "top",
-      title.theme = element_text(size = 8, family = "Poppins"),
-      ncol = 1
-    )
-  ) +
+  scale_color_owd() +
   scale_size_continuous(
     breaks = scales::breaks_pretty(n = 6),
     guide = guide_legend(
@@ -122,7 +112,9 @@ p <- df %>%
         size = 8,
         family = "Poppins",
         margin = margin(t = 8),
-        hjust = 0.5)
+        hjust = 0.5
+      ),
+      override.aes = list(alpha = 1)
     )
   ) +
   labs(

@@ -18,6 +18,10 @@
 
 rm(list = ls())
 
+source(here("R","zzz_colors.R"))
+
+# CTD ---------------------------------------------------------------------
+
 ctd <- read_csv(here("data","clean","ctd.csv"))
 
 # Chla/cp vs ek -----------------------------------------------------------
@@ -41,17 +45,16 @@ ek <- ek %>%
   filter(abs(depth_m - depth_ctd) <= 1) %>%
   drop_na(flor_mg_m3, cp, ek) %>%
   filter(depth_m <= 100) %>%
-  mutate(chla_cp = flor_mg_m3 / cp)
+  mutate(chla_cp = flor_mg_m3 / cp) %>%
+  mutate(is_open_water = is_open_water(owd))
 
 p1 <- ek %>%
   ggplot(aes(x = chla_cp, y = ek)) +
-  geom_point(color = "#393E41") +
-  # scale_x_log10() +
-  # scale_y_log10() +
-  scale_color_viridis_c() +
+  geom_point(aes(color = is_open_water)) +
+  scale_color_owd() +
   geom_smooth(
     method = "lm",
-    color = "#bf1d28",
+    color = lm_color,
     size = 0.5
   ) +
   ggpubr::stat_regline_equation(label.y.npc = 1) +
@@ -62,7 +65,11 @@ p1 <- ek %>%
   ) +
   theme(
     panel.border = element_blank(),
-    axis.ticks = element_blank()
+    legend.background = element_blank(),
+    legend.key = element_rect(fill = NA),
+    axis.ticks = element_blank(),
+    legend.justification = c(1, 1),
+    legend.position = c(0.9, 0.9)
   )
 
 # Fv/Fm vs ek -------------------------------------------------------------
@@ -80,13 +87,14 @@ fvfm <- fvfm %>%
   filter(abs(depth_m - depth_ctd) <= 1) %>%
   drop_na(flor_mg_m3, cp, fv_fm_mean) %>%
   filter(depth_m <= 100) %>%
-  mutate(chla_cp = flor_mg_m3 / cp)
+  mutate(chla_cp = flor_mg_m3 / cp) %>%
+  mutate(is_open_water = is_open_water(owd))
 
 p2 <- fvfm %>%
   ggplot(aes(x = chla_cp, y = fv_fm_mean)) +
-  geom_point(color = "#393E41") +
+  geom_point(aes(color = is_open_water)) +
   scale_y_continuous(labels = scales::label_percent()) +
-  scale_color_viridis_c() +
+  scale_color_owd() +
   geom_smooth(
     method = "lm",
     color = "#bf1d28",
@@ -100,7 +108,8 @@ p2 <- fvfm %>%
   ) +
   theme(
     panel.border = element_blank(),
-    axis.ticks = element_blank()
+    axis.ticks = element_blank(),
+    legend.position = "none"
   )
 
 # Combine plots -----------------------------------------------------------

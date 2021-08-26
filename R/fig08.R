@@ -14,6 +14,8 @@
 
 rm(list = ls())
 
+source(here("R","zzz_colors.R"))
+
 # Prepare POC -------------------------------------------------------------
 
 poc <- read_csv(here::here("data","clean","poc.csv"))  %>%
@@ -80,6 +82,23 @@ df %>%
   count(station, depth_m, sort = TRUE) %>%
   assertr::verify(n == 1)
 
+# Pivot longer ------------------------------------------------------------
+
+df <- df %>%
+  pivot_longer(c(small, large),
+    names_to = "particle_size_class",
+    values_to = "total_count_per_liter"
+  ) %>%
+  mutate(
+    particle_size_class =
+      factor(particle_size_class,
+        levels = c("small", "large")
+      )
+  )
+
+df <- df %>%
+  mutate(is_open_water = is_open_water(owd))
+
 # Plot --------------------------------------------------------------------
 
 df
@@ -90,21 +109,12 @@ mylabels <- c(
 )
 
 p <- df %>%
-  pivot_longer(c(small, large),
-    names_to = "particle_size_class",
-    values_to = "total_count_per_liter"
-  ) %>%
-  mutate(
-    particle_size_class =
-      factor(particle_size_class, levels = c("small", "large"))
-  ) %>%
-  ggplot(aes(x = poc_mg_m3, y = total_count_per_liter, color = owd <= 0,)) +
+  ggplot(aes(x = poc_mg_m3, y = total_count_per_liter, color = is_open_water)) +
   geom_point(aes(size = depth_m)) +
   scale_x_log10() +
   scale_y_log10() +
   scale_color_manual(
-    breaks = c("TRUE", "FALSE"),
-    values = c("#bb3e03", "#023047"),
+    values = owd_colors,
     labels = c("Ice covered", "Open water"),
     guide = guide_legend(
       override.aes = list(alpha = 1, size = 3),
@@ -130,7 +140,7 @@ p <- df %>%
     )
   ) +
   annotation_logticks(size = 0.25) +
-  geom_smooth(method = "lm", color = "#3c3c3c", size = 1) +
+  geom_smooth(method = "lm", color = lm_color, size = 1) +
   ggpubr::stat_regline_equation(
     label.y.npc = 1,
     aes(

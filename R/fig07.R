@@ -6,6 +6,8 @@
 
 rm(list = ls())
 
+source(here("R","zzz_colors.R"))
+
 # Do not forget to convert umol L to mg m3.
 # 1 molC = 12 gC
 poc <- read_csv(here("data","clean","poc.csv")) %>%
@@ -31,22 +33,28 @@ poc_cp <- ctd[poc, roll = "nearest", on = .(station, transect, depth_m)]
 poc_cp <- poc_cp %>%
   as_tibble() %>%
   filter(abs(depth_m - depth_ctd_m) <= 1) %>%
+  mutate(is_open_water = is_open_water(owd)) %>%
   filter(depth_m <= 100)
 
 p1 <- poc_cp %>%
   ggplot(aes(x = cp, y = poc_mg_m3)) +
-  geom_point(color = "#393E41") +
+  geom_point(aes(color = is_open_water)) +
   ggpubr::stat_regline_equation(label.y.npc = 1) +
   ggpubr::stat_regline_equation(label.y.npc = 0.93, aes(label = ..rr.label..)) +
   scale_y_log10(limits = c(min_poc, max_poc)) +
   scale_x_log10() +
   annotation_logticks(size = 0.1) +
+  scale_color_owd() +
   labs(
     x = quote(C[p]~(657)~(m^{-1})),
     y = quote("POC"~(mg~m^{-3}))
   ) +
-  geom_smooth(method = "lm", color = "#bf1d28", size = 0.5) +
+  geom_smooth(method = "lm", color = lm_color, size = 0.5) +
   theme(
+    legend.justification = c(1, 0),
+    legend.position = c(0.9, 0.1),
+    legend.background = element_blank(),
+    legend.key = element_rect(fill = NA),
     panel.border = element_blank(),
     axis.ticks = element_blank()
   )
@@ -71,24 +79,26 @@ poc_cp %>%
   mutate(pred = 10^2.9 * cp^0.74) %>%
   ggplot(aes(x = cp, y = poc_mg_m3)) +
   geom_point(color = "#393E41") +
-  geom_line(aes(y = pred), color = "#bf1d28", size = 0.5)
+  geom_line(aes(y = pred), color = lm_color, size = 0.5)
 
 # POC vs chla -------------------------------------------------------------
 
 p2 <- poc_cp %>%
   ggplot(aes(x = flor_mg_m3, y = poc_mg_m3)) +
-  geom_point(color = "#393E41") +
+  geom_point(aes(color = is_open_water)) +
   ggpubr::stat_regline_equation(label.y.npc = 1) +
   ggpubr::stat_regline_equation(label.y.npc = 0.93, aes(label = ..rr.label..)) +
   scale_y_log10(limits = c(min_poc, max_poc)) +
   scale_x_log10() +
   annotation_logticks(size = 0.1) +
+  scale_color_owd() +
   labs(
     x = quote("Chlorophyll-a"~(mg~m^{-3})),
     y = quote("POC"~(mg~m^{-3}))
   ) +
-  geom_smooth(method = "lm", color = "#bf1d28", size = 0.5) +
+  geom_smooth(method = "lm", color = lm_color, size = 0.5) +
   theme(
+    legend.position = "none",
     panel.border = element_blank(),
     axis.ticks = element_blank()
   )
@@ -109,6 +119,7 @@ poc_bbp <- hydroscat[poc, roll = "nearest", on = .(station, transect, depth_m)]
 poc_bbp <- poc_bbp %>%
   as_tibble() %>%
   filter(abs(depth_m - depth_hydroscat_m) <= 1) %>%
+  mutate(is_open_water = is_open_water(owd)) %>%
   filter(depth_m <= 100)
 
 # https://bg.copernicus.org/preprints/bg-2021-123/bg-2021-123.pdf
@@ -117,7 +128,7 @@ p3 <- poc_bbp %>%
   # mutate(loisel_pred_poc = 37550 * bbp + 1.3) %>%
   # mutate(cetinic_pred_poc = 35422 * bbp - 14.4) %>%
   ggplot(aes(x = bbp, y = poc_mg_m3)) +
-  geom_point(color = "#393E41") +
+  geom_point(aes(color = is_open_water)) +
   # geom_line(aes(y = stramski_pred_poc, color = "Stramski (2008)")) +
   # geom_line(aes(y = loisel_pred_poc, color = "Loisel (2011)")) +
   # geom_line(aes(y = cetinic_pred_poc, color = "Cetinic (2012)")) +
@@ -126,12 +137,14 @@ p3 <- poc_bbp %>%
   scale_y_log10(limits = c(min_poc, max_poc)) +
   scale_x_log10(labels = scales::label_number()) +
   annotation_logticks(size = 0.1) +
+  scale_color_owd() +
   labs(
     x = quote(b[bp]~(470)~(m^{-1})),
     y = quote("POC"~(mg~m^{-3}))
   ) +
-  geom_smooth(method = "lm", color = "#bf1d28", size = 0.5) +
+  geom_smooth(method = "lm", color = lm_color, size = 0.5) +
   theme(
+    legend.position = "none",
     panel.border = element_blank(),
     axis.ticks = element_blank()
   )
@@ -216,7 +229,7 @@ cor(log10(poc_bbp$bbp), log10(poc_bbp$poc_mg_m3), "complete.obs")
 #   scale_x_log10(labels = scales::label_number()) +
 #   scale_y_log10() +
 #   annotation_logticks(size = 0.1) +
-#   geom_smooth(method = "lm", color = "#bf1d28", size = 0.5) +
+#   geom_smooth(method = "lm", color = lm_color, size = 0.5) +
 #   ggpubr::stat_regline_equation(label.y.npc = 1) +
 #   ggpubr::stat_regline_equation(label.y.npc = 0.90, aes(label = ..rr.label..)) +
 #   labs(
