@@ -15,7 +15,7 @@ owd_labels <- list(
 lm_color <- "#d64933"
 
 
-scale_color_owd <- function() {
+scale_color_owd <- function(ncol = 1) {
 
   scale_color_manual(
     values = owd_colors,
@@ -26,7 +26,7 @@ scale_color_owd <- function() {
       title.position = "top",
       title.theme = element_text(size = 8, family = "Poppins"),
       label.theme = element_text(size = 10, family = "Poppins"),
-      ncol = 1
+      ncol = ncol
     )
   )
 

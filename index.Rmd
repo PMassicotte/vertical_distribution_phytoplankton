@@ -479,7 +479,18 @@ knitr::include_graphics(here("graphs", "png", "fig04.png"))
 
 ### Figure 5
 
+-   Comparison between total chla from the CTD vs all the pigment groups defined by Joséphine.
+
+- Pigment groups:
+  -   photoprotection = Zeaxanthin +  Diatoxanthin + Diadinoxanthin + Antheraxanthin + Violaxanthin
+  -   photosynthetic_pigments = Sum 19HF-like + Sum 19BF-like + Peridinin + Fucoxanthin + Chlorophyll c3 + Chlorophyll c1+c2+MgDVP + Chlorophyll b + Lutein
+  -   tchla = Total Chlorophyll a
+  -   phaeophytin_a = Sum Phaeophytin a
+  -   phaeophorbide_a = sum Phbd a
+  -   chlorophyllide_a = sum Chld a
+
 ```{r}
+knitr::include_graphics(here("graphs", "png", "fig05.png"))
 ```
 
 ### Figure 6
@@ -544,9 +555,9 @@ knitr::include_graphics(here("graphs", "png", "appendix02.png"))
 
 ### Appendix 3
 
--   It was previously that chla/cp was a good indicator of phytoplankton photoacclimation (Ek) and physiology (Fv/Fm).
+-   It was previously shown that chla/cp was a good indicator of phytoplankton photoacclimation (Ek) and physiology (Fv/Fm).
 
--   Very weak relations with either Ek or Fv/Fm.
+-   Very weak relations with either Ek or Fv/Fm based on the Greenedge data.
 
 ```{r}
 knitr::include_graphics(here("graphs", "png", "appendix03.png"))
