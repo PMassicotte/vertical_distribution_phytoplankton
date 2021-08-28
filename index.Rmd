@@ -453,6 +453,12 @@ knitr::include_graphics(here("graphs", "png", "32_average_apparent_visible_wavel
 knitr::include_graphics(here("graphs", "png", "fig01.png"))
 ```
 
+### Figure 2a
+
+```{r}
+knitr::include_graphics(here("graphs", "png", "fig02a.png"))
+```
+
 ### Figure 2
 
 ```{r}

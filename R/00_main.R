@@ -35,7 +35,9 @@ theme_set(theme_poppins(base_size = 10))
 
 theme_update(
   strip.background = element_blank(),
-  strip.text = element_text(face = "bold", size = 14)
+  strip.text = element_text(face = "bold", size = 14),
+  panel.border = element_blank(),
+  axis.ticks = element_blank()
 )
 
 # Run all -----------------------------------------------------------------
