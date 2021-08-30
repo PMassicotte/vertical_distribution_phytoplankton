@@ -455,6 +455,8 @@ knitr::include_graphics(here("graphs", "png", "fig01.png"))
 
 ### Figure 2a
 
+This graph will be used to show an overview of the physical dynamics in the Baffin Bay. Data from @Randelhoff2019.
+
 ```{r}
 knitr::include_graphics(here("graphs", "png", "fig02a.png"))
 ```
@@ -487,13 +489,14 @@ knitr::include_graphics(here("graphs", "png", "fig04.png"))
 
 -   Comparison between total chla from the CTD vs all the pigment groups defined by Joséphine.
 
-- Pigment groups:
-  -   photoprotection = Zeaxanthin +  Diatoxanthin + Diadinoxanthin + Antheraxanthin + Violaxanthin
-  -   photosynthetic_pigments = Sum 19HF-like + Sum 19BF-like + Peridinin + Fucoxanthin + Chlorophyll c3 + Chlorophyll c1+c2+MgDVP + Chlorophyll b + Lutein
-  -   tchla = Total Chlorophyll a
-  -   phaeophytin_a = Sum Phaeophytin a
-  -   phaeophorbide_a = sum Phbd a
-  -   chlorophyllide_a = sum Chld a
+-   Pigment groups:
+
+    -   photoprotection = Zeaxanthin + Diatoxanthin + Diadinoxanthin + Antheraxanthin + Violaxanthin
+    -   photosynthetic_pigments = Sum 19HF-like + Sum 19BF-like + Peridinin + Fucoxanthin + Chlorophyll c3 + Chlorophyll c1+c2+MgDVP + Chlorophyll b + Lutein
+    -   tchla = Total Chlorophyll a
+    -   phaeophytin_a = Sum Phaeophytin a
+    -   phaeophorbide_a = sum Phbd a
+    -   chlorophyllide_a = sum Chld a
 
 ```{r}
 knitr::include_graphics(here("graphs", "png", "fig05.png"))
@@ -567,6 +570,17 @@ knitr::include_graphics(here("graphs", "png", "appendix02.png"))
 
 ```{r}
 knitr::include_graphics(here("graphs", "png", "appendix03.png"))
+```
+
+### Appendix 4
+
+This figure is quite interesting:
+
+-   We can see that high PP occurred before OWD = 0.
+-   The correlation between PP and Chl-a is much higher for ice-covered stations compared to open water stations.
+
+```{r}
+knitr::include_graphics(here("graphs", "png", "appendix04.png"))
 ```
 
 ## TODO
