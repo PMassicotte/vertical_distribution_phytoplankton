@@ -463,6 +463,10 @@ knitr::include_graphics(here("graphs", "png", "fig02a.png"))
 
 ### Figure 2
 
+-   Contrary to what can observed in @Hill2013 (see Fig. 8), we can see *underice* sub-surface chla maximum in the Greenedge data.
+
+-   The phytoplankton biomass (chla) under the ice seems to represent an important source of primary production (see Appendix 4).
+
 ```{r}
 knitr::include_graphics(here("graphs", "png", "fig02.png"))
 ```
@@ -577,7 +581,12 @@ knitr::include_graphics(here("graphs", "png", "appendix03.png"))
 This figure is quite interesting:
 
 -   We can see that high PP occurred before OWD = 0.
+
 -   The correlation between PP and Chl-a is much higher for ice-covered stations compared to open water stations.
+
+    -   Any ideas why in situ PP is not correlated to the phytoplankton biomass for stations located in open water? This is in contradiction with what is shown by @Hill2013.
+
+    -   Could it be related to nutrients depletion?
 
 ```{r}
 knitr::include_graphics(here("graphs", "png", "appendix04.png"))
@@ -588,5 +597,7 @@ knitr::include_graphics(here("graphs", "png", "appendix04.png"))
 -   Determine if CP correction (baseline shift) should be performed or not.
 
 -   Check if there is a relation between particle size ratio and bbp/cp ratio.
+
+-   Continue the exploration of nutrients vs pp/chla.
 
 ## References
