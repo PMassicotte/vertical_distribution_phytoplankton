@@ -453,7 +453,7 @@ knitr::include_graphics(here("graphs", "png", "32_average_apparent_visible_wavel
 knitr::include_graphics(here("graphs", "png", "fig01.png"))
 ```
 
-### Figure 2a
+### Figure 2A
 
 This graph will be used to show an overview of the physical dynamics in the Baffin Bay. Data from @Randelhoff2019.
 
@@ -469,6 +469,17 @@ knitr::include_graphics(here("graphs", "png", "fig02a.png"))
 
 ```{r}
 knitr::include_graphics(here("graphs", "png", "fig02.png"))
+```
+
+### Figure 2C
+
+For this figure, I have integrated the data in the water column:
+
+-   NO~3~ was integrated between the surface and h~BD~.
+-   Chlorophyll-a was integrated between the surface and 0.1 isolume.
+
+```{r}
+knitr::include_graphics(here("graphs", "png", "fig02c.png"))
 ```
 
 ### Figure 3
