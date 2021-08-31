@@ -40,8 +40,17 @@ gg3d <- function(df, x, y, z, iso_breaks, fill_text, isolume, nbreaks, trans_fun
       data = isolume,
       size = 1,
       lineend = "round",
-      color = "red",
-      aes(x = owd, y = depth_m),
+      color = "#F3C558FF",
+      aes(x = owd, y = isolume_01),
+      inherit.aes = FALSE,
+      show.legend = FALSE
+    ) +
+    geom_line(
+      data = isolume,
+      size = 1,
+      lineend = "round",
+      color = "#CC3D24FF",
+      aes(x = owd, y = h_bd),
       inherit.aes = FALSE,
       show.legend = FALSE
     ) +
@@ -51,7 +60,7 @@ gg3d <- function(df, x, y, z, iso_breaks, fill_text, isolume, nbreaks, trans_fun
       fill = parse(text = fill_text)
     ) +
     theme(
-      panel.grid = element_line(color = "gray60", size = 0.1),
+      panel.grid = element_line(color = alpha("gray60", 0.5), size = 0.1),
       panel.background = element_rect(fill = NA),
       panel.ontop = TRUE,
       legend.position = "top",

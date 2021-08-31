@@ -15,13 +15,14 @@ breaks <- c(-30, -10, 10, 40)
 
 # Isolume data ------------------------------------------------------------
 
-isolume <-
-  read_csv(
-    "https://raw.githubusercontent.com/poplarShift/ice-edge/master/nb_data/FIGURE_9-c-d-e.csv"
-  ) %>%
+isolume <- read_csv(here(
+  "data",
+  "raw",
+  "randelhoff2019",
+  "FIGURE_9-c-d-e.csv"
+)) %>%
   janitor::clean_names() %>%
-  select(owd, isolume_01) %>%
-  pivot_longer(starts_with("isolume"), names_to = "isolume", values_to = "depth_m")
+  select(owd, h_bd, nitracline, isolume_01)
 
 # Prepare the data --------------------------------------------------------
 
@@ -64,7 +65,16 @@ df %>%
 
 # Associate the number of open water day
 
-owd <- read_csv("https://raw.githubusercontent.com/poplarShift/ice-edge/master/nb_data/Randelhoff-et-al-2019_GreenEdge_per-station_v1.0.csv", na = "NaN") %>%
+owd <-
+  read_csv(
+    here(
+      "data",
+      "raw",
+      "randelhoff2019",
+      "Randelhoff-et-al-2019_GreenEdge_per-station_v1.0.csv"
+    ),
+    na = "NaN"
+  ) %>%
   janitor::clean_names() %>%
   select(station, owd)
 
@@ -197,7 +207,7 @@ pigments %>%
   assertr::verify(n == 6)
 
 pigments %>%
-  write_csv(here("data/clean/pigments_grouped.csv"))
+  write_csv(here("data","clean","pigments_grouped.csv"))
 
 # TODO: Not all station/depth_m pairs have the 6 groups of pigments. For
 # example, station 100 at depth 1.88, there is no sum Phbd a (Phaeophorbide a)

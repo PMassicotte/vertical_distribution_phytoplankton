@@ -15,17 +15,18 @@ breaks <- c(-30, -10, 10, 40)
 
 # Isolume data ------------------------------------------------------------
 
-isolume <-
-  read_csv(
-    "https://raw.githubusercontent.com/poplarShift/ice-edge/master/nb_data/FIGURE_9-c-d-e.csv"
-  ) %>%
+isolume <- read_csv(here(
+  "data",
+  "raw",
+  "randelhoff2019",
+  "FIGURE_9-c-d-e.csv"
+)) %>%
   janitor::clean_names() %>%
-  select(owd, isolume_01) %>%
-  pivot_longer(starts_with("isolume"), names_to = "isolume", values_to = "depth_m")
+  select(owd, h_bd, nitracline, isolume_01)
 
 # CTD data ----------------------------------------------------------------
 
-ctd <- read_csv(here::here("data/clean/ctd.csv")) %>%
+ctd <- read_csv(here::here("data","clean","ctd.csv")) %>%
   filter(depth_m <= 100)
 
 # Summarize by depth and open water day -----------------------------------
