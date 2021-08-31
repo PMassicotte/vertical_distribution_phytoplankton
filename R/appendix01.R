@@ -12,13 +12,14 @@ source(here("R","utils.R"))
 
 # Isolume data ------------------------------------------------------------
 
-isolume <-
-  read_csv(
-    "https://raw.githubusercontent.com/poplarShift/ice-edge/master/nb_data/FIGURE_9-c-d-e.csv"
-  ) %>%
+isolume <- read_csv(here(
+  "data",
+  "raw",
+  "randelhoff2019",
+  "FIGURE_9-c-d-e.csv"
+)) %>%
   janitor::clean_names() %>%
-  select(owd, isolume_01) %>%
-  pivot_longer(starts_with("isolume"), names_to = "isolume", values_to = "depth_m")
+  select(owd, h_bd, nitracline, isolume_01)
 
 # MVP ---------------------------------------------------------------------
 

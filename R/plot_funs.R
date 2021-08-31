@@ -92,7 +92,8 @@ gg2dprofiles <- function(df, x, y, bin) {
     geom_path() +
     scale_y_reverse(
       expand = c(0, 0),
-      breaks = seq(0, 100, by = 10)
+      breaks = seq(0, 100, by = 10),
+      limits = c(100, 0)
     ) +
     labs(
       y = NULL,
