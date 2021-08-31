@@ -611,4 +611,6 @@ knitr::include_graphics(here("graphs", "png", "appendix04.png"))
 
 -   Continue the exploration of nutrients vs pp/chla.
 
+-   Add isolume and hBD legends on 3D plots.
+
 ## References
