@@ -519,8 +519,10 @@ knitr::include_graphics(here("graphs", "png", "fig05.png"))
 
 ### Figure 6
 
+- Panel B shows the determination coefficients of the regression between aphy and chla between 400 and 700 nm.
+
 ```{r}
-# knitr::include_graphics(here("graphs", "png", "fig06.png"))
+knitr::include_graphics(here("graphs", "png", "fig06.png"))
 ```
 
 ### Figure 7
@@ -603,6 +605,12 @@ This figure is quite interesting:
 knitr::include_graphics(here("graphs", "png", "appendix04.png"))
 ```
 
+This is the daily integrated PP (surface to isolume).
+
+```{r}
+knitr::include_graphics(here("graphs", "png", "appendix04b.png"))
+```
+
 ## TODO
 
 -   Determine if CP correction (baseline shift) should be performed or not.
@@ -611,6 +619,8 @@ knitr::include_graphics(here("graphs", "png", "appendix04.png"))
 
 -   Continue the exploration of nutrients vs pp/chla.
 
--   Add isolume and hBD legends on 3D plots.
+-   Add isolume and hBD *legends* on 3D plots.
+
+-   Check for packaging effect and correlation with aphi443 vs 670.
 
 ## References

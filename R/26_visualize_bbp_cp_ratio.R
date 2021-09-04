@@ -7,13 +7,13 @@
 
 rm(list = ls())
 
-source("R/interpolate_fun.R")
+source(here("R","interpolate_fun.R"))
 
-hydroscat <- read_csv(here::here("data/clean/hydroscat.csv")) %>%
+hydroscat <- read_csv(here::here("data","clean","hydroscat.csv")) %>%
   rename(depth_m = depth) %>%
   select(station, transect, owd, wavelength, depth_m, bbp)
 
-ctd <- fread(here("data/clean/ctd.csv")) %>%
+ctd <- fread(here("data","clean","ctd.csv")) %>%
   dtplyr::lazy_dt() %>%
   select(station, transect, depth_m, owd, cp) %>%
   mutate(ctd_depth_m = depth_m) %>%
@@ -64,12 +64,13 @@ res <- df_viz %>%
 # Isolume -----------------------------------------------------------------
 
 isolume <-
-  read_csv(
-    "https://raw.githubusercontent.com/poplarShift/ice-edge/master/nb_data/FIGURE_9-c-d-e.csv"
-  ) %>%
+  read_csv(here("data", "raw", "randelhoff2019", "FIGURE_9-c-d-e.csv")) %>%
   janitor::clean_names() %>%
   select(owd, starts_with("isolume")) %>%
-  pivot_longer(starts_with("isolume"), names_to = "isolume", values_to = "depth_m")
+  pivot_longer(starts_with("isolume"),
+    names_to = "isolume",
+    values_to = "depth_m"
+  )
 
 # Plot --------------------------------------------------------------------
 
@@ -123,7 +124,7 @@ p <- res %>%
   )
 
 ggsave(
-  here("graphs/26_bbp_cp_by_wavelength.pdf"),
+  here("graphs","26_bbp_cp_by_wavelength.pdf"),
   device = cairo_pdf,
   width = 8,
   height = 8

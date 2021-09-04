@@ -51,7 +51,12 @@ df <- df %>%
 
 isolume <-
   read_csv(
-    "https://raw.githubusercontent.com/poplarShift/ice-edge/master/nb_data/Randelhoff-et-al-2019_GreenEdge_per-station_v1.0.csv"
+    here(
+      "data",
+      "raw",
+      "randelhoff2019",
+      "Randelhoff-et-al-2019_GreenEdge_per-station_v1.0.csv"
+    )
   ) %>%
   janitor::clean_names() %>%
   select(station, owd, isolume_m_at_0_1_einm_2d_1) %>%

@@ -7,21 +7,22 @@
 
 rm(list = ls())
 
-source("R/interpolate_fun.R")
+source(here("R","interpolate_fun.R"))
 
 # Isolume data ------------------------------------------------------------
 
 isolume <-
-  read_csv(
-    "https://raw.githubusercontent.com/poplarShift/ice-edge/master/nb_data/FIGURE_9-c-d-e.csv"
-  ) %>%
+  read_csv(here("data", "raw", "randelhoff2019", "FIGURE_9-c-d-e.csv")) %>%
   janitor::clean_names() %>%
   select(owd, starts_with("isolume")) %>%
-  pivot_longer(starts_with("isolume"), names_to = "isolume", values_to = "depth_m")
+  pivot_longer(starts_with("isolume"),
+    names_to = "isolume",
+    values_to = "depth_m"
+  )
 
 # CTD data ----------------------------------------------------------------
 
-ctd <- read_csv(here::here("data/clean/ctd.csv"))
+ctd <- read_csv(here::here("data","clean","ctd.csv"))
 
 transect <- ctd %>%
   distinct(transect, latitude) %>%
@@ -72,11 +73,11 @@ p1 <- ctd %>%
 p1
 
 ggsave(
-  here::here("graphs/02_map_owd.pdf"),
+  here::here("graphs","02_map_owd.pdf"),
   device = cairo_pdf
 )
 
-knitr::plot_crop(here::here("graphs/02_map_owd.pdf"))
+knitr::plot_crop(here::here("graphs","02_map_owd.pdf"))
 
 # CTD fluorescence --------------------------------------------------------
 
@@ -124,7 +125,7 @@ res %>%
   paletteer::scale_fill_paletteer_d("nord::aurora")
 
 ggsave(
-  here::here("graphs/02_boxplot_ctd_fluorescence_isolume_owd.pdf"),
+  here::here("graphs","02_boxplot_ctd_fluorescence_isolume_owd.pdf"),
   device = cairo_pdf,
   width = 7,
   height = 4
@@ -342,7 +343,7 @@ p <- p2 + p3 + p4 +
   )
 
 ggsave(
-  here::here("graphs/02_phytoplankton_biomass_ctd.pdf"),
+  here::here("graphs","02_phytoplankton_biomass_ctd.pdf"),
   device = cairo_pdf,
   width = 6,
   height = 12
@@ -373,7 +374,7 @@ p <- df_viz %>%
   )
 
 ggsave(
-  here::here("graphs/02_scatterplot_fluorescence_vs_cp.pdf"),
+  here::here("graphs","02_scatterplot_fluorescence_vs_cp.pdf"),
   device = cairo_pdf,
   width = 7,
   height = 7
@@ -384,7 +385,7 @@ ggsave(
 p +
   facet_wrap(~transect) +
   ggsave(
-    here("graphs/02_scatterplot_fluorescence_vs_cp_by_transect.pdf"),
+    here("graphs","02_scatterplot_fluorescence_vs_cp_by_transect.pdf"),
     device = cairo_pdf,
     width = 7,
     height = 7
@@ -430,7 +431,7 @@ p <- df_viz2 %>%
   )
 
 ggsave(
-  here("graphs/02_scatterplot_fluorescence_vs_cp_isolume_depth.pdf"),
+  here("graphs","02_scatterplot_fluorescence_vs_cp_isolume_depth.pdf"),
   device = cairo_pdf,
   height = 8,
   width = 8
@@ -466,7 +467,7 @@ p <- df_viz %>%
   )
 
 ggsave(
-  here("graphs/02_vertical_profiles_cp.pdf"),
+  here("graphs","02_vertical_profiles_cp.pdf"),
   device = cairo_pdf,
   height = 8,
   width = 9

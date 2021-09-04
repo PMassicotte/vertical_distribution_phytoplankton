@@ -6,8 +6,8 @@
 
 rm(list = ls())
 
-hourly_par_sbdart <- read_csv(here::here("data/clean/sbdart_hourly_par_0p.csv"))
-transmittance <- read_csv(here::here("data/clean/cops_kd_par_transmittance.csv"))
+hourly_par_sbdart <- read_csv(here::here("data","clean","sbdart_hourly_par_0p.csv"))
+transmittance <- read_csv(here::here("data","clean","cops_kd_par_transmittance.csv"))
 
 # Merge SBDART and COPS data based on geo positions -----------------------
 
@@ -89,7 +89,7 @@ p <- df %>%
   )
 
 ggsave(
-  here::here("graphs/12_01_hourly_par_z_umol_m2_s1.pdf"),
+  here::here("graphs","12_01_hourly_par_z_umol_m2_s1.pdf"),
   device = cairo_pdf,
   width = 12,
   height = 26
@@ -141,7 +141,7 @@ p <- df %>%
   )
 
 ggsave(
-  here::here("graphs/12_02_ourly_par_z_umol_m2_s1_averaged_by_station.pdf"),
+  here::here("graphs","12_02_ourly_par_z_umol_m2_s1_averaged_by_station.pdf"),
   device = cairo_pdf,
   width = 10,
   height = 10
@@ -150,4 +150,4 @@ ggsave(
 # Export ------------------------------------------------------------------
 
 df %>%
-  write_csv(here::here("data/clean/propagated_hourly_par_water_column.csv"))
+  write_csv(here::here("data","clean","propagated_hourly_par_water_column.csv"))

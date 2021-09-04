@@ -6,9 +6,9 @@
 
 rm(list = ls())
 
-source("R/interpolate_fun.R")
+source(here("R","interpolate_fun.R"))
 
-pvse <- read_csv("/media/LaCie16TB/work/projects/green_edge/green_edge/data/pe-curves/photosynthetic_parameters_amundsen_2016.csv")
+pvse <- read_csv(here("data","raw","photosynthetic_parameters_amundsen_2016.csv"))
 
 glimpse(pvse)
 
@@ -25,7 +25,7 @@ pvse <- pvse %>%
   filter(r2 >= 0.8)
 
 station <- read_csv(
-    here::here("data/clean/ctd.csv"),
+    here::here("data","clean","ctd.csv"),
     altrep = TRUE,
     col_select = c(station, transect, longitude, latitude)
   ) %>%
@@ -49,11 +49,19 @@ pvse %>%
 
 isolume <-
   read_csv(
-    "https://raw.githubusercontent.com/poplarShift/ice-edge/master/nb_data/Randelhoff-et-al-2019_GreenEdge_per-station_v1.0.csv"
+    here(
+      "data",
+      "raw",
+      "randelhoff2019",
+      "Randelhoff-et-al-2019_GreenEdge_per-station_v1.0.csv"
+    )
   ) %>%
   janitor::clean_names() %>%
   select(station, owd, starts_with("isolume")) %>%
-  pivot_longer(starts_with("isolume"), names_to = "isolume", values_to = "isolume_depth_m") %>%
+  pivot_longer(starts_with("isolume"),
+    names_to = "isolume",
+    values_to = "isolume_depth_m"
+  ) %>%
   drop_na()
 
 # Two stations without calculated owd...
@@ -70,12 +78,13 @@ pvse <- pvse %>%
 # Isolume data ------------------------------------------------------------
 
 isolume <-
-  read_csv(
-    "https://raw.githubusercontent.com/poplarShift/ice-edge/master/nb_data/FIGURE_9-c-d-e.csv"
-  ) %>%
+  read_csv(here("data", "raw", "randelhoff2019", "FIGURE_9-c-d-e.csv")) %>%
   janitor::clean_names() %>%
   select(owd, starts_with("isolume")) %>%
-  pivot_longer(starts_with("isolume"), names_to = "isolume", values_to = "depth_m")
+  pivot_longer(starts_with("isolume"),
+    names_to = "isolume",
+    values_to = "depth_m"
+  )
 
 isolume <- isolume %>%
   filter(between(owd, min(pvse$owd), max(pvse$owd)))
@@ -145,7 +154,7 @@ p <- df_viz %>%
   )
 
 ggsave(
-  here::here("graphs/06_ek.pdf"),
+  here::here("graphs","06_ek.pdf"),
   device = cairo_pdf,
   height = 6,
   width = 8

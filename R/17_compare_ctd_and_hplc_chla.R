@@ -6,7 +6,7 @@
 
 rm(list = ls())
 
-pigments <- read_csv(here::here("data/raw/nutrients.csv"))
+pigments <- read_csv(here::here("data","raw","nutrients.csv"))
 
 pigments <- pigments %>%
   filter(mission == "amundsen_2016") %>%
@@ -36,7 +36,7 @@ pigments <- pigments %>%
 
 pigments
 
-ctd <- fread(here::here("data/raw/ctd.csv")) %>%
+ctd <- fread(here::here("data","raw","ctd.csv")) %>%
   as_tibble()
 
 ctd <- ctd %>%
@@ -91,6 +91,6 @@ p <- df_viz %>%
   )
 
 ggsave(
-  here::here("graphs/17_scatterplot_ctd_vs_hplc_chla.pdf"),
+  here::here("graphs","17_scatterplot_ctd_vs_hplc_chla.pdf"),
   device = cairo_pdf
 )

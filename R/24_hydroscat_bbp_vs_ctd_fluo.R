@@ -6,7 +6,7 @@
 
 rm(list = ls())
 
-source("R/interpolate_fun.R")
+source(here("R","interpolate_fun.R"))
 
 hydroscat <- read_csv(here::here("data","clean","hydroscat.csv")) %>%
   rename(depth_m = depth)
@@ -17,7 +17,12 @@ hydroscat
 
 isolume <-
   read_csv(
-    "https://raw.githubusercontent.com/poplarShift/ice-edge/master/nb_data/Randelhoff-et-al-2019_GreenEdge_per-station_v1.0.csv"
+    here(
+      "data",
+      "raw",
+      "randelhoff2019",
+      "Randelhoff-et-al-2019_GreenEdge_per-station_v1.0.csv"
+    )
   ) %>%
   janitor::clean_names() %>%
   select(station, owd, isolume_m_at_0_1_einm_2d_1) %>%
@@ -70,13 +75,13 @@ p <- hydroscat %>%
   )
 
 ggsave(
-  here("graphs/24_scatterplot_hydroscat_bbp_fluo_chla.pdf"),
+  here("graphs","24_scatterplot_hydroscat_bbp_fluo_chla.pdf"),
   device = cairo_pdf,
   width = 7,
   height = 5
 )
 
-knitr::plot_crop(here("graphs/24_scatterplot_hydroscat_bbp_fluo_chla.pdf"))
+knitr::plot_crop(here("graphs","24_scatterplot_hydroscat_bbp_fluo_chla.pdf"))
 
 p <- p +
   facet_grid(ice_covered + above_isolume~glue("{wavelength} nm")) +
@@ -86,13 +91,13 @@ p <- p +
   )
 
 ggsave(
-  here("graphs/24_scatterplot_hydroscat_bbp_fluo_chla_by_group.pdf"),
+  here("graphs","24_scatterplot_hydroscat_bbp_fluo_chla_by_group.pdf"),
   device = cairo_pdf,
   width = 8,
   height = 7
 )
 
-knitr::plot_crop(here("graphs/24_scatterplot_hydroscat_bbp_fluo_chla_by_group.pdf"))
+knitr::plot_crop(here("graphs","24_scatterplot_hydroscat_bbp_fluo_chla_by_group.pdf"))
 
 # Spectral dependency ------------------------------------------------------
 
@@ -119,7 +124,7 @@ p <- df_viz %>%
   geom_smooth(method = "lm", color = "#bf1d28", size = 0.5)
 
 ggsave(
-  here("graphs/24_scatterplot_hydroscat_bbp_532nm_vs_700nm.pdf"),
+  here("graphs","24_scatterplot_hydroscat_bbp_532nm_vs_700nm.pdf"),
   device = cairo_pdf,
   width = 7,
   height = 5
@@ -129,7 +134,7 @@ p <- p +
   facet_grid(ice_covered ~ above_isolume, scales = "free")
 
 ggsave(
-  here("graphs/24_scatterplot_hydroscat_bbp_532nm_vs_700nm_by_group.pdf"),
+  here("graphs","24_scatterplot_hydroscat_bbp_532nm_vs_700nm_by_group.pdf"),
   device = cairo_pdf,
   width = 7,
   height = 5
@@ -137,13 +142,13 @@ ggsave(
 
 # 3D plot of bbp/chla -----------------------------------------------------
 
-isolume <-
-  read_csv(
-    "https://raw.githubusercontent.com/poplarShift/ice-edge/master/nb_data/FIGURE_9-c-d-e.csv"
-  ) %>%
+isolume <- read_csv(here("data", "raw", "randelhoff2019", "FIGURE_9-c-d-e.csv")) %>%
   janitor::clean_names() %>%
   select(owd, starts_with("isolume")) %>%
-  pivot_longer(starts_with("isolume"), names_to = "isolume", values_to = "depth_m")
+  pivot_longer(starts_with("isolume"),
+    names_to = "isolume",
+    values_to = "depth_m"
+  )
 
 hydroscat
 
@@ -218,7 +223,7 @@ p <- res %>%
   )
 
 ggsave(
-  here("graphs/24_bbp_fchla_by_wavelength_hydroscat.pdf"),
+  here("graphs", "24_bbp_fchla_by_wavelength_hydroscat.pdf"),
   device = cairo_pdf,
   width = 8,
   height = 8

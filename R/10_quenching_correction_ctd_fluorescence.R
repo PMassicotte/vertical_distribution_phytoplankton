@@ -75,7 +75,7 @@ p <- sunpos %>%
   )
 
 ggsave(
-  here::here("graphs/10_01_histogram_sun_altitude.pdf"),
+  here::here("graphs","10_01_histogram_sun_altitude.pdf"),
   device = cairo_pdf,
   width = 7.44,
   height = 5.2
@@ -116,8 +116,6 @@ plot_function <- function(df, station) {
 }
 
 # Find the MLD ------------------------------------------------------------
-
-# https://raw.githubusercontent.com/poplarShift/ice-edge/master/nb_data/Randelhoff-et-al-2019_GreenEdge_per-station_v1.0.csv
 
 mld <- ctd %>%
   ungroup() %>%
@@ -223,7 +221,7 @@ pp <- df %>%
   mutate(p = map2(data, station, plot_function2))
 
 pdf(
-  here::here("graphs/10_02_ctd_fluorescence_npq_corrected.pdf"),
+  here::here("graphs","10_02_ctd_fluorescence_npq_corrected.pdf"),
   width = 6,
   height = 5
 )
@@ -238,4 +236,4 @@ pp %>%
   select(-p) %>%
   unnest(data) %>%
   select(-max_fluorescence_in_mld, -max_fluorescence_depth_in_mld) %>%
-  write_csv(here::here("data/clean/ctd_fluorescence_npq_corrected.csv"))
+  write_csv(here::here("data","clean","ctd_fluorescence_npq_corrected.csv"))

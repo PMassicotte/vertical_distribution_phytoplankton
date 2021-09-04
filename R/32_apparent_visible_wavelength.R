@@ -6,7 +6,7 @@
 
 rm(list = ls())
 
-df <- read_csv("data/clean/phytoplankton_absorption.csv")
+df <- read_csv(here("data","clean","phytoplankton_absorption.csv"))
 
 df
 

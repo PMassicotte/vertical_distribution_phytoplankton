@@ -6,24 +6,36 @@
 
 rm(list = ls())
 
-source("R/interpolate_fun.R")
+source(here("R","interpolate_fun.R"))
 
 isolume <-
-  read_csv(
-    "https://raw.githubusercontent.com/poplarShift/ice-edge/master/nb_data/FIGURE_9-c-d-e.csv"
-  ) %>%
+  read_csv(here("data", "raw", "randelhoff2019", "FIGURE_9-c-d-e.csv")) %>%
   janitor::clean_names() %>%
   select(owd, starts_with("isolume")) %>%
-  pivot_longer(starts_with("isolume"), names_to = "isolume", values_to = "depth_m")
+  pivot_longer(starts_with("isolume"),
+    names_to = "isolume",
+    values_to = "depth_m"
+  )
 
 daily_pp_at_depth <-
   read_csv(here::here(
-    "data/clean/daily_primary_production_at_depth_from_pvse.csv"
+    "data",
+    "clean",
+    "daily_primary_production_at_depth_from_pvse.csv"
   ))
 
 daily_pp_at_depth
 
-owd <- read_csv("https://raw.githubusercontent.com/poplarShift/ice-edge/master/nb_data/Randelhoff-et-al-2019_GreenEdge_per-station_v1.0.csv", na = "NaN") %>%
+owd <-
+  read_csv(
+    here(
+      "data",
+      "raw",
+      "randelhoff2019",
+      "Randelhoff-et-al-2019_GreenEdge_per-station_v1.0.csv"
+    ),
+    na = "NaN"
+  ) %>%
   janitor::clean_names() %>%
   select(station, owd)
 
@@ -65,7 +77,7 @@ daily_pp_at_depth %>%
   )
 
 ggsave(
-  here::here("graphs/20_01_primary_production_pvse_vs_owd.pdf"),
+  here::here("graphs", "20_01_primary_production_pvse_vs_owd.pdf"),
   device = cairo_pdf,
   width = 10,
   height = 7
@@ -136,7 +148,7 @@ p <- df_viz %>%
   )
 
 ggsave(
-  here::here("graphs/20_02_primary_production_pvse_vs_owd.pdf"),
+  here::here("graphs","20_02_primary_production_pvse_vs_owd.pdf"),
   device = cairo_pdf,
   height = 6,
   width = 8

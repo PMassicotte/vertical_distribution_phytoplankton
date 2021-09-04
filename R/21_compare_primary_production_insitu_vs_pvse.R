@@ -10,7 +10,7 @@ rm(list = ls())
 # In-situ primary production ----------------------------------------------
 
 pp_insitu <-
-  read_csv(here::here("data/raw/greenedge_primary_prod.csv"))
+  read_csv(here::here("data","raw","greenedge_primary_prod.csv"))
 
 pp_insitu %>%
   count(mission, sample_type, sample_source, method)
@@ -40,7 +40,9 @@ pp_insitu
 
 pp_pvse <-
   read_csv(here::here(
-    "data/clean/daily_primary_production_at_depth_from_pvse.csv"
+    "data",
+    "clean",
+    "daily_primary_production_at_depth_from_pvse.csv"
   ))
 
 pp_pvse
@@ -171,7 +173,7 @@ p <- df_viz %>%
   )
 
 ggsave(
-  here::here("graphs/21_01_scatterplot_primary_production_insitu_vs_pvse.pdf"),
+  here::here("graphs","21_01_scatterplot_primary_production_insitu_vs_pvse.pdf"),
   device = cairo_pdf,
   width = 7,
   height = 6
@@ -187,7 +189,7 @@ p2 <- p +
   )
 
 ggsave(
-  here::here("graphs/21_01_scatterplot_primary_production_insitu_vs_pvse_by_deployment.pdf"),
+  here::here("graphs","21_01_scatterplot_primary_production_insitu_vs_pvse_by_deployment.pdf"),
   device = cairo_pdf,
   width = 12,
   height = 6

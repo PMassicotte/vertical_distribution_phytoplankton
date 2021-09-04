@@ -7,7 +7,7 @@
 
 rm(list = ls())
 
-source(here::here("R/propagate_fun.R"))
+source(here::here("R","propagate_fun.R"))
 
 depth_m <- seq(1, 100, by = 1)
 
@@ -18,10 +18,7 @@ station <- fread("data/clean/ctd.csv") %>%
 # PvsE parameters ---------------------------------------------------------
 
 # Keep observations where ek was calculated (model1, i.e. with photoinhibition)
-pvse <-
-  read_csv(
-    "/media/4TB/work-ulaval/projects/green_edge/green_edge/data/pe-curves/photosynthetic_parameters_amundsen_2016.csv"
-  ) %>%
+pvse <- read_csv(here("data", "raw", "photosynthetic_parameters_amundsen_2016.csv")) %>%
   mutate(station = parse_number(station)) %>%
   mutate(transect = station %/% 100 * 100) %>%
   inner_join(station, by = c("station", "transect")) %>%
@@ -79,4 +76,4 @@ pvse %>%
 
 res %>%
   select(-data) %>%
-  write_csv(here::here("data/clean/propagated_pvse_water_column.csv"))
+  write_csv(here::here("data", "clean", "propagated_pvse_water_column.csv"))

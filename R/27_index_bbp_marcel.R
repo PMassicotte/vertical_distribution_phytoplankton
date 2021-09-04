@@ -8,9 +8,9 @@
 
 rm(list = ls())
 
-source("R/interpolate_fun.R")
+source(here("R","interpolate_fun.R"))
 
-hydroscat <- read_csv(here::here("data/clean/hydroscat.csv")) %>%
+hydroscat <- read_csv(here::here("data","clean","hydroscat.csv")) %>%
   rename(depth_m = depth) %>%
   select(-fchla) %>%
   filter(wavelength %in% c(532, 700)) %>%
@@ -35,12 +35,13 @@ df %>%
 # 3D plot of bbp/chla -----------------------------------------------------
 
 isolume <-
-  read_csv(
-    "https://raw.githubusercontent.com/poplarShift/ice-edge/master/nb_data/FIGURE_9-c-d-e.csv"
-  ) %>%
+  read_csv(here("data", "raw", "randelhoff2019", "FIGURE_9-c-d-e.csv")) %>%
   janitor::clean_names() %>%
   select(owd, starts_with("isolume")) %>%
-  pivot_longer(starts_with("isolume"), names_to = "isolume", values_to = "depth_m")
+  pivot_longer(starts_with("isolume"),
+    names_to = "isolume",
+    values_to = "depth_m"
+  )
 
 df
 
@@ -111,10 +112,10 @@ res %>%
   )
 
 ggsave(
-  here::here("graphs/27_index_marcel.pdf"),
+  here::here("graphs","27_index_marcel.pdf"),
   device = cairo_pdf,
   height = 6,
   width = 8
 )
 
-# fs::file_info(here::here("graphs/27_index_marcel.pdf"))
+# fs::file_info(here::here("graphs","27_index_marcel.pdf"))

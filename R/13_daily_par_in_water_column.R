@@ -7,7 +7,7 @@
 
 rm(list = ls())
 
-df <- read_csv(here::here("data/clean/propagated_hourly_par_water_column.csv"))
+df <- read_csv(here::here("data","clean","propagated_hourly_par_water_column.csv"))
 
 df
 
@@ -34,7 +34,7 @@ depth_m_0.1 <- df %>%
 depth_m_0.1 %>%
   rename(maximum_integration_depth_m = depth_m) %>%
   select(-deployement, -daily_par, -n) %>%
-  write_csv(here::here("data/clean/isolume_0.1_mol_day.csv"))
+  write_csv(here::here("data","clean","isolume_0.1_mol_day.csv"))
 
 # Plot --------------------------------------------------------------------
 
@@ -103,7 +103,7 @@ p <- p1 / p2 +
   theme(plot.tag = element_text(size = 20, face = "bold"))
 
 ggsave(
-  here::here("graphs/13_daily_par_in_water_column.pdf"),
+  here::here("graphs","13_daily_par_in_water_column.pdf"),
   device = cairo_pdf,
   width = 10,
   height = 12

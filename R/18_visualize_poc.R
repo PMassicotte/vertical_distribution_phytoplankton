@@ -7,38 +7,47 @@
 
 rm(list = ls())
 
-source("R/interpolate_fun.R")
+source(here("R","interpolate_fun.R"))
 
 # Isolume data ------------------------------------------------------------
 
 isolume <-
-  read_csv(
-    "https://raw.githubusercontent.com/poplarShift/ice-edge/master/nb_data/FIGURE_9-c-d-e.csv"
-  ) %>%
+  read_csv(here("data", "raw", "randelhoff2019", "FIGURE_9-c-d-e.csv")) %>%
   janitor::clean_names() %>%
   select(owd, starts_with("isolume")) %>%
-  pivot_longer(starts_with("isolume"), names_to = "isolume", values_to = "depth_m")
+  pivot_longer(starts_with("isolume"),
+    names_to = "isolume",
+    values_to = "depth_m"
+  )
 
 # OWD ---------------------------------------------------------------------
 
-owd <- read_csv("https://raw.githubusercontent.com/poplarShift/ice-edge/master/nb_data/Randelhoff-et-al-2019_GreenEdge_per-station_v1.0.csv", na = "NaN") %>%
+
+owd <- read_csv(
+  here(
+    "data",
+    "raw",
+    "randelhoff2019",
+    "Randelhoff-et-al-2019_GreenEdge_per-station_v1.0.csv"
+  ),
+  na = "NaN"
+) %>%
   janitor::clean_names() %>%
   select(station, owd)
 
 # POC data ----------------------------------------------------------------
 
-col_names <-
-  readxl::read_excel(
-    here::here("data/raw/database 13C15N amundsen2016-210318.xlsx"),
-    skip = 9,
-    n_max = 1
-  ) %>%
+col_names <- readxl::read_excel(
+  here::here("data", "raw", "database 13C15N amundsen2016-210318.xlsx"),
+  skip = 9,
+  n_max = 1
+) %>%
   janitor::clean_names() %>%
   names()
 
 # TODOL: select the right column for the depth...
 poc <- readxl::read_excel(
-  here::here("data/raw/database 13C15N amundsen2016-210318.xlsx"),
+  here::here("data", "raw", "database 13C15N amundsen2016-210318.xlsx"),
   skip = 12,
   col_names = FALSE
 ) %>%
@@ -88,7 +97,7 @@ poc <- poc %>%
   left_join(owd)
 
 poc %>%
-  write_csv(here("data/clean/poc.csv"))
+  write_csv(here("data","clean","poc.csv"))
 
 # Average by depth and OWD ------------------------------------------------
 
@@ -158,7 +167,7 @@ p <- df_viz %>%
   )
 
 ggsave(
-  here::here("graphs/18_poc_vs_owd.pdf"),
+  here::here("graphs","18_poc_vs_owd.pdf"),
   device = cairo_pdf,
   height = 6,
   width = 8

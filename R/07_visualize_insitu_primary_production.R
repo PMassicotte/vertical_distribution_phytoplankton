@@ -6,9 +6,9 @@
 
 rm(list = ls())
 
-source("R/interpolate_fun.R")
+source(here("R","interpolate_fun.R"))
 
-pp <- read_csv(here::here("data/raw/greenedge_primary_prod.csv"))
+pp <- read_csv(here::here("data","raw","greenedge_primary_prod.csv"))
 
 pp %>%
   count(mission, sample_type, sample_source, method)
@@ -43,14 +43,20 @@ pp %>%
 
 # OWD ---------------------------------------------------------------------
 
-# https://raw.githubusercontent.com/poplarShift/ice-edge/master/nb_data/Randelhoff-et-al-2019_GreenEdge_per-station_v1.0.csv
-owd <-
-  read_csv(
-    "https://raw.githubusercontent.com/poplarShift/ice-edge/master/nb_data/Randelhoff-et-al-2019_GreenEdge_per-station_v1.0.csv"
-  ) %>%
+owd <- read_csv(
+  here(
+    "data",
+    "raw",
+    "randelhoff2019",
+    "Randelhoff-et-al-2019_GreenEdge_per-station_v1.0.csv"
+  )
+) %>%
   janitor::clean_names() %>%
   select(station, owd, starts_with("isolume")) %>%
-  pivot_longer(starts_with("isolume"), names_to = "isolume", values_to = "isolume_depth_m") %>%
+  pivot_longer(starts_with("isolume"),
+    names_to = "isolume",
+    values_to = "isolume_depth_m"
+  ) %>%
   drop_na()
 
 pp %>%
@@ -79,13 +85,13 @@ pp %>%
 
 # Isolume data ------------------------------------------------------------
 
-isolume <-
-  read_csv(
-    "https://raw.githubusercontent.com/poplarShift/ice-edge/master/nb_data/FIGURE_9-c-d-e.csv"
-  ) %>%
+isolume <- read_csv(here("data", "raw", "randelhoff2019", "FIGURE_9-c-d-e.csv")) %>%
   janitor::clean_names() %>%
   select(owd, starts_with("isolume")) %>%
-  pivot_longer(starts_with("isolume"), names_to = "isolume", values_to = "depth_m")
+  pivot_longer(starts_with("isolume"),
+    names_to = "isolume",
+    values_to = "depth_m"
+  )
 
 # Interpolation -----------------------------------------------------------
 
@@ -146,7 +152,7 @@ p <- df_viz %>%
   )
 
 ggsave(
-  here::here("graphs/07_insitu_primary_production.pdf"),
+  here::here("graphs","07_insitu_primary_production.pdf"),
   device = cairo_pdf,
   height = 6,
   width = 8

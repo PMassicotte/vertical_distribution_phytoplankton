@@ -7,26 +7,26 @@
 
 rm(list = ls())
 
-station <- read_csv("data/clean/ctd.csv") %>%
+station <- read_csv(here("data","clean","ctd.csv")) %>%
   distinct(station, transect, longitude, latitude)
 
-kdpar_transmittance <- read_csv(here::here("data/clean/cops_kd_par_transmittance.csv")) %>%
+kdpar_transmittance <- read_csv(here::here("data","clean","cops_kd_par_transmittance.csv")) %>%
   distinct(station, transect, longitude, latitude) %>%
   mutate(data = "kdpar (cops)")
 
-hourly_par <- read_csv(here::here("data/clean/sbdart_hourly_par_0p.csv")) %>%
+hourly_par <- read_csv(here::here("data","clean","sbdart_hourly_par_0p.csv")) %>%
   distinct(station, transect) %>%
   inner_join(station, by = c("station", "transect")) %>%
   mutate(data = "sbdart (hourly par)")
 
-pvse <- read_csv("/media/4TB/work-ulaval/projects/green_edge/green_edge/data/pe-curves/photosynthetic_parameters_amundsen_2016.csv") %>%
+pvse <- read_csv(here("data","raw","photosynthetic_parameters_amundsen_2016.csv")) %>%
   distinct(station) %>%
   mutate(station = parse_number(station)) %>%
   mutate(transect = station %/% 100 * 100) %>%
   inner_join(station, by = c("station", "transect")) %>%
   mutate(data = "pvse")
 
-ctd_fluorescence <- read_csv(here::here("data/clean/ctd_fluorescence_npq_corrected.csv")) %>%
+ctd_fluorescence <- read_csv(here::here("data","clean","ctd_fluorescence_npq_corrected.csv")) %>%
   distinct(station, transect, cast, longitude, latitude) %>%
   mutate(data = "ctd fluorescence (chla)")
 
@@ -48,7 +48,7 @@ p <- df %>%
     strip.text = element_text(face = "bold", size = 10)
   )
 
-plot_file <- here::here("graphs/11_map_spatial_distribution_primary_production_parameters.pdf")
+plot_file <- here::here("graphs","11_map_spatial_distribution_primary_production_parameters.pdf")
 
 ggsave(
   plot_file,

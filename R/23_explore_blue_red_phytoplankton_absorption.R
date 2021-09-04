@@ -7,9 +7,9 @@
 
 rm(list = ls())
 
-source("R/interpolate_fun.R")
+source(here("R","interpolate_fun.R"))
 
-absorption <- read_csv(here("data/clean/phtyplankton_absorption.csv"))
+absorption <- read_csv(here("data","clean","phtyplankton_absorption.csv"))
 
 absorption %>%
   count(spectra_id)
@@ -60,7 +60,7 @@ p <- df_viz %>%
   )
 
 ggsave(
-  here("graphs/23_scatterplot_phytoplankton_specific_absorption_blue_red.pdf"),
+  here("graphs","23_scatterplot_phytoplankton_specific_absorption_blue_red.pdf"),
   device = cairo_pdf,
   width = 7,
   height = 5
@@ -71,7 +71,7 @@ p <- p +
   facet_grid(above_isolume ~ ice_covered, scales = "fixed")
 
 ggsave(
-  here("graphs/23_scatterplot_phytoplankton_specific_absorption_blue_red_by_group.pdf"),
+  here("graphs","23_scatterplot_phytoplankton_specific_absorption_blue_red_by_group.pdf"),
   device = cairo_pdf,
   width = 7,
   height = 5
@@ -150,12 +150,13 @@ range(df_viz$mean_aphy_blue_red_ratio, na.rm = TRUE)
 # Isolume -----------------------------------------------------------------
 
 isolume <-
-  read_csv(
-    "https://raw.githubusercontent.com/poplarShift/ice-edge/master/nb_data/FIGURE_9-c-d-e.csv"
-  ) %>%
+  read_csv(here("data", "raw", "randelhoff2019", "FIGURE_9-c-d-e.csv")) %>%
   janitor::clean_names() %>%
   select(owd, starts_with("isolume")) %>%
-  pivot_longer(starts_with("isolume"), names_to = "isolume", values_to = "depth_m")
+  pivot_longer(starts_with("isolume"),
+    names_to = "isolume",
+    values_to = "depth_m"
+  )
 
 # Plot --------------------------------------------------------------------
 
@@ -203,7 +204,7 @@ p <- df_viz %>%
   )
 
 ggsave(
-  here("graphs/23_visualize_phytoplankton_specific_absorption_blue_red_ratio_owd.pdf"),
+  here("graphs","23_visualize_phytoplankton_specific_absorption_blue_red_ratio_owd.pdf"),
   device = cairo_pdf,
   width = 7,
   height = 5

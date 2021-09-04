@@ -165,7 +165,7 @@ p <- uvp_clean %>%
   )
 
 ggsave(
-  here("graphs/30_uvp_number_observations_by_classe_range.pdf"),
+  here("graphs","30_uvp_number_observations_by_classe_range.pdf"),
   device = cairo_pdf,
   width = 6,
   height = 5
@@ -173,7 +173,7 @@ ggsave(
 
 # Export ------------------------------------------------------------------
 
-fwrite(uvp_clean, here("data/clean/uvp_tidy.csv"))
+fwrite(uvp_clean, here("data","clean","uvp_tidy.csv"))
 
 # Keep only a subset of class size ----------------------------------------
 
@@ -237,10 +237,14 @@ uvp_clean
 
 # OWD ---------------------------------------------------------------------
 
-owd <-
-  read_csv(
-    "https://raw.githubusercontent.com/poplarShift/ice-edge/master/nb_data/Randelhoff-et-al-2019_GreenEdge_per-station_v1.0.csv"
-  ) %>%
+owd <- read_csv(
+  here(
+    "data",
+    "raw",
+    "randelhoff2019",
+    "Randelhoff-et-al-2019_GreenEdge_per-station_v1.0.csv"
+  )
+) %>%
   janitor::clean_names() %>%
   select(station, owd, starts_with("isolume")) %>%
   select(-isolume_m_at_0_415_einm2_d1)
@@ -256,5 +260,8 @@ uvp_clean
 
 # Export ------------------------------------------------------------------
 
-write_csv(uvp_clean, here("data/clean/uvp_small_medium_large_class_size.csv"))
+write_csv(
+  uvp_clean,
+  here("data", "clean", "uvp_small_medium_large_class_size.csv")
+)
 

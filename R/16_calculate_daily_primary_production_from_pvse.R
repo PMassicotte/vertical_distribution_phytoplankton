@@ -7,10 +7,10 @@
 
 rm(list = ls())
 
-pvse <- read_csv(here::here("data/clean/propagated_pvse_water_column.csv"))
-ctd <- read_csv(here::here("data/clean/propagated_fluorescence_water_column.csv"))
-hourly_par <- read_csv(here::here("data/clean/propagated_hourly_par_water_column.csv"))
-isolume <- read_csv(here::here("data/clean/isolume_0.1_mol_day.csv"))
+pvse <- read_csv(here::here("data","clean","propagated_pvse_water_column.csv"))
+ctd <- read_csv(here::here("data","clean","propagated_fluorescence_water_column.csv"))
+hourly_par <- read_csv(here::here("data","clean","propagated_hourly_par_water_column.csv"))
+isolume <- read_csv(here::here("data","clean","isolume_0.1_mol_day.csv"))
 
 
 # Keep the observations within the 0.1 mol day isolume --------------------
@@ -78,7 +78,7 @@ df
 # Export the data
 df %>%
   select(-data) %>%
-  write_csv(here::here("data/clean/daily_primary_production_at_depth_from_pvse.csv"))
+  write_csv(here::here("data","clean","daily_primary_production_at_depth_from_pvse.csv"))
 
 # Vertically integrated primary production --------------------------------
 
@@ -93,7 +93,7 @@ daily_pp
 
 daily_pp %>%
   select(-data) %>%
-  write_csv(here::here("data/clean/daily_integrated_primary_production_from_pvse.csv"))
+  write_csv(here::here("data","clean","daily_integrated_primary_production_from_pvse.csv"))
 
 p <- daily_pp %>%
   ggplot(aes(x = daily_primary_production_m2)) +
@@ -114,7 +114,7 @@ p <- daily_pp %>%
   )
 
 ggsave(
-  here::here("graphs/16_01_histograms_daily_primary_production.pdf"),
+  here::here("graphs","16_01_histograms_daily_primary_production.pdf"),
   device = cairo_pdf,
   height = 3.5,
   width = 7
@@ -213,7 +213,7 @@ p <- wrap_plots(p1, p2, p3, p4, p5, p6, ncol = 2) +
   theme(plot.tag = element_text(face = "bold"))
 
 ggsave(
-  here::here("graphs/16_02_stations_with_highest_daily_pp.pdf"),
+  here::here("graphs","16_02_stations_with_highest_daily_pp.pdf"),
   device = cairo_pdf,
   height = 10,
   width = 12

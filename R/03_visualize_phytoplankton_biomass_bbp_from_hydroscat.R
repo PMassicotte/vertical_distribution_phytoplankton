@@ -7,24 +7,29 @@
 
 rm(list = ls())
 
-source("R/interpolate_fun.R")
+source(here("R","interpolate_fun.R"))
 
 # Isolume data ------------------------------------------------------------
 
 isolume <-
-  read_csv(
-    "https://raw.githubusercontent.com/poplarShift/ice-edge/master/nb_data/FIGURE_9-c-d-e.csv"
-  ) %>%
+  read_csv(here("data", "raw", "randelhoff2019", "FIGURE_9-c-d-e.csv")) %>%
   janitor::clean_names() %>%
   select(owd, starts_with("isolume")) %>%
-  pivot_longer(starts_with("isolume"), names_to = "isolume", values_to = "depth_m")
+  pivot_longer(starts_with("isolume"),
+    names_to = "isolume",
+    values_to = "depth_m"
+  )
 
 # Data preparation --------------------------------------------------------
 
 files <-
   fs::dir_ls(
     here::here(
-      "data/raw/GreenEdge_Hydroscat_Asphere/GreenEdge_Hydroscat_Asphere/HS6/"
+      "data",
+      "raw",
+      "GreenEdge_Hydroscat_Asphere",
+      "GreenEdge_Hydroscat_Asphere",
+      "HS6"
     )
   )
 
@@ -40,7 +45,16 @@ df <- read_csv(files,
 
 df
 
-owd <- read_csv("https://raw.githubusercontent.com/poplarShift/ice-edge/master/nb_data/Randelhoff-et-al-2019_GreenEdge_per-station_v1.0.csv", na = "NaN") %>%
+owd <-
+  read_csv(
+    here(
+      "data",
+      "raw",
+      "randelhoff2019",
+      "Randelhoff-et-al-2019_GreenEdge_per-station_v1.0.csv"
+    ),
+    na = "NaN"
+  ) %>%
   janitor::clean_names() %>%
   select(station, owd)
 
@@ -50,7 +64,7 @@ df <- df %>%
 # Export clean hydroscat data ---------------------------------------------
 
 df %>%
-  write_csv(here("data/clean/hydroscat.csv"))
+  write_csv(here("data","clean","hydroscat.csv"))
 
 # Visualize the data ------------------------------------------------------
 
@@ -83,7 +97,7 @@ p <- df %>%
   )
 
 ggsave(
-  here::here("graphs/03_vertical_profiles_bbp.pdf"),
+  here::here("graphs","03_vertical_profiles_bbp.pdf"),
   device = cairo_pdf,
   width = 8,
   height = 16
@@ -180,7 +194,7 @@ p <- df_viz %>%
   )
 
 ggsave(
-  here::here("graphs/03_phytoplankton_biomass_hydroscat.pdf"),
+  here::here("graphs","03_phytoplankton_biomass_hydroscat.pdf"),
   device = cairo_pdf,
   width = 8,
   height = 8

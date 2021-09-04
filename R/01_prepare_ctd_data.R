@@ -6,7 +6,7 @@
 
 rm(list = ls())
 
-ctd <- fread(here::here("data/raw/ctd.csv")) %>%
+ctd <- fread(here::here("data","raw","ctd.csv")) %>%
   as_tibble()
 
 ctd <- ctd %>%
@@ -70,7 +70,7 @@ p <- ctd %>%
   theme(legend.position = "none")
 
 ggsave(
-  here("graphs/01_ctd_raw_fluorescence_vertical_profiles.pdf"),
+  here("graphs","01_ctd_raw_fluorescence_vertical_profiles.pdf"),
   device = cairo_pdf,
   height = 20,
   width = 20
@@ -170,7 +170,7 @@ p <- p1 / p2 +
   theme(plot.tag = element_text(face = "bold", size = 26))
 
 ggsave(
-  here("graphs/01_ctd_smoothed_fluorescence_vertical_profiles.pdf"),
+  here("graphs","01_ctd_smoothed_fluorescence_vertical_profiles.pdf"),
   device = cairo_pdf,
   height = 20,
   width = 10
@@ -189,10 +189,15 @@ ctd
 
 # Add OWD information -----------------------------------------------------
 
-owd <- read_csv(
-  "https://raw.githubusercontent.com/poplarShift/ice-edge/master/nb_data/Randelhoff-et-al-2019_GreenEdge_per-station_v1.0.csv",
-  na = "NaN"
-) %>%
+owd <-
+  read_csv(
+    here(
+      "data",
+      "raw",
+      "randelhoff2019",
+      "Randelhoff-et-al-2019_GreenEdge_per-station_v1.0.csv"
+    )
+  ) %>%
   janitor::clean_names() %>%
   select(station, owd)
 
@@ -268,7 +273,7 @@ r <- 0.25
 ctd <- ctd %>%
   mutate(cp = -(1 / r) * log10(tran_percent / 100))
 
-fwrite(ctd, here("data/clean/ctd.csv"))
+fwrite(ctd, here("data","clean","ctd.csv"))
 
 # Check that we have all the stations -------------------------------------
 

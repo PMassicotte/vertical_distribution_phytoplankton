@@ -7,7 +7,7 @@
 rm(list = ls())
 
 df <- readxl::read_excel(
-  here("data/raw/GE-Amundsen-phyto_absorption_120517.xlsx"),
+  here("data","raw","GE-Amundsen-phyto_absorption_120517.xlsx"),
   sheet = "Discrete"
 ) %>%
   janitor::clean_names() %>%
@@ -33,13 +33,20 @@ df %>%
 
 # OWD ---------------------------------------------------------------------
 
-owd <-
-  read_csv(
-    "https://raw.githubusercontent.com/poplarShift/ice-edge/master/nb_data/Randelhoff-et-al-2019_GreenEdge_per-station_v1.0.csv"
-  ) %>%
+owd <- read_csv(
+  here(
+    "data",
+    "raw",
+    "randelhoff2019",
+    "Randelhoff-et-al-2019_GreenEdge_per-station_v1.0.csv"
+  )
+) %>%
   janitor::clean_names() %>%
   select(station, owd, starts_with("isolume")) %>%
-  pivot_longer(starts_with("isolume"), names_to = "isolume", values_to = "isolume_depth_m") %>%
+  pivot_longer(starts_with("isolume"),
+    names_to = "isolume",
+    values_to = "isolume_depth_m"
+  ) %>%
   drop_na() %>%
   filter(isolume == "isolume_m_at_0_1_einm_2d_1")
 
@@ -89,7 +96,7 @@ absorption <- absorption %>%
   group_by(station, ctd, bottle) %>%
   mutate(spectra_id = cur_group_id(), .before = 1)
 
-write_csv(absorption, here("data/clean/phytoplankton_absorption.csv"))
+write_csv(absorption, here("data","clean","phytoplankton_absorption.csv"))
 
 # Visualize the spectral profiles -----------------------------------------
 
@@ -123,7 +130,10 @@ p <- absorption %>%
   )
 
 ggsave(
-  here::here("graphs/22_spectral_profiles_phyto_absorption_isolume_owd.pdf"),
+  here::here(
+    "graphs",
+    "22_spectral_profiles_phyto_absorption_isolume_owd.pdf"
+  ),
   device = cairo_pdf,
   height = 9,
   width = 7
@@ -160,7 +170,10 @@ p <- df_viz %>%
   )
 
 ggsave(
-  here::here("graphs/22_spectral_profiles_phyto_absorption_averaged_isolume_owd.pdf"),
+  here::here(
+    "graphs",
+    "22_spectral_profiles_phyto_absorption_averaged_isolume_owd.pdf"
+  ),
   device = cairo_pdf,
   height = 5,
   width = 8
@@ -198,7 +211,7 @@ p <- p1 / p2 +
   plot_annotation(tag_levels = "A")
 
 ggsave(
-  here::here("graphs/22_boxplot_phyto_absorption_isolume_owd.pdf"),
+  here::here("graphs", "22_boxplot_phyto_absorption_isolume_owd.pdf"),
   device = cairo_pdf,
   height = 7,
   width = 6
@@ -251,7 +264,7 @@ p <- df_viz %>%
   )
 
 ggsave(
-  here::here("graphs/22_vertical_profiles_aphy.pdf"),
+  here::here("graphs", "22_vertical_profiles_aphy.pdf"),
   device = cairo_pdf,
   height = 10,
   width = 9

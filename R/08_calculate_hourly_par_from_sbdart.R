@@ -23,7 +23,7 @@ read_irradiance <- function(file) {
 # List all files and read them --------------------------------------------
 
 files <- fs::dir_ls(
-  here::here("data/raw/SBDART_GreenEdge/AM2016/AM2016_SBDART_AllCasts/"),
+  here::here("data","raw","SBDART_GreenEdge","AM2016","AM2016_SBDART_AllCasts"),
   recurse = TRUE,
   glob = "*.txt"
 )
@@ -62,7 +62,7 @@ df
 df %>%
   select(-filename) %>%
   unnest(irradiance) %>%
-  fwrite(here::here("data/clean/irradiance_sbdart_ed0p.csv"))
+  fwrite(here::here("data","clean","irradiance_sbdart_ed0p.csv"))
 
 # Calculate hourly --------------------------------------------------------
 
@@ -169,7 +169,7 @@ p <- res %>%
   )
 
 ggsave(
-  here::here("graphs/08_01_sbdart_hourly_par.pdf"),
+  here::here("graphs","08_01_sbdart_hourly_par.pdf"),
   device = cairo_pdf,
   width = 10,
   height = 7
@@ -178,5 +178,5 @@ ggsave(
 # Export ------------------------------------------------------------------
 
 res %>%
-  write_csv(here::here("data/clean/sbdart_hourly_par_0p.csv"))
+  write_csv(here::here("data","clean","sbdart_hourly_par_0p.csv"))
 

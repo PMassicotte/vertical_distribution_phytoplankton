@@ -6,9 +6,9 @@
 
 rm(list = ls())
 
-source("R/interpolate_fun.R")
+source(here("R","interpolate_fun.R"))
 
-uvp <- read_csv(here("data/clean/uvp_small_medium_large_class_size.csv"))
+uvp <- read_csv(here("data","clean","uvp_small_medium_large_class_size.csv"))
 
 uvp
 
@@ -72,7 +72,7 @@ p <- df_viz %>%
   )
 
 ggsave(
-  here("graphs/31_boxplot_uvp_particle_size.pdf"),
+  here("graphs","31_boxplot_uvp_particle_size.pdf"),
   device = cairo_pdf,
   width = 7,
   height = 5
@@ -105,7 +105,7 @@ p <- df_viz %>%
   )
 
 ggsave(
-  here("graphs/31_uvp_particle_concentration_averaged_20_meters_owd.pdf"),
+  here("graphs","31_uvp_particle_concentration_averaged_20_meters_owd.pdf"),
   device = cairo_pdf,
   width = 5,
   height = 7
@@ -233,7 +233,7 @@ p <- wrap_plots(list(p1, p2, p3, p4, p5, p6), ncol = 2, byrow = FALSE) +
   )
 
 ggsave(
-  here("graphs/31_uvp_particle_size_class_vs_owd.pdf"),
+  here("graphs","31_uvp_particle_size_class_vs_owd.pdf"),
   device = cairo_pdf,
   width = 12,
   height = 12
@@ -261,7 +261,7 @@ p <- df_viz %>%
   )
 
 ggsave(
-  here("graphs/31_uvp_concentration_vs_biovolume_per_depth_bin.pdf"),
+  here("graphs","31_uvp_concentration_vs_biovolume_per_depth_bin.pdf"),
   device = cairo_pdf,
   width = 8,
   height = 10
@@ -330,7 +330,7 @@ p <- df_viz %>%
   theme(panel.border = element_blank())
 
 ggsave(
-  here("graphs/31_uvp_vertical_crosscorrelation.pdf"),
+  here("graphs","31_uvp_vertical_crosscorrelation.pdf"),
   device = cairo_pdf,
   width = 6,
   height = 10

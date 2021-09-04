@@ -6,10 +6,10 @@
 
 rm(list = ls())
 
-poc <- fread(here("data/clean/poc.csv")) %>%
+poc <- fread(here("data","clean","poc.csv")) %>%
   select(station, transect, depth_m, poc_umol_l)
 
-ctd <- fread(here("data/clean/ctd.csv")) %>%
+ctd <- fread(here("data","clean","ctd.csv")) %>%
   select(station, transect, depth_m, owd, cp) %>%
   mutate(ctd_depth_m = depth_m)
 
@@ -27,10 +27,14 @@ df %>%
 
 # Isolume data ------------------------------------------------------------
 
-isolume <-
-  read_csv(
-    "https://raw.githubusercontent.com/poplarShift/ice-edge/master/nb_data/Randelhoff-et-al-2019_GreenEdge_per-station_v1.0.csv"
-  ) %>%
+isolume <- read_csv(
+  here(
+    "data",
+    "raw",
+    "randelhoff2019",
+    "Randelhoff-et-al-2019_GreenEdge_per-station_v1.0.csv"
+  )
+) %>%
   janitor::clean_names() %>%
   select(station, owd, isolume_m_at_0_1_einm_2d_1) %>%
   pivot_longer(starts_with("isolume"),
@@ -74,7 +78,7 @@ p <- df %>%
   geom_smooth(method = "lm", color = "#bf1d28", size = 0.5)
 
 ggsave(
-  here("graphs/25_scatterplot_poc_vs_cp.pdf"),
+  here("graphs","25_scatterplot_poc_vs_cp.pdf"),
   device = cairo_pdf,
   width = 7,
   height = 5
@@ -84,7 +88,7 @@ p <- p +
   facet_grid(ice_covered ~ above_isolume)
 
 ggsave(
-  here("graphs/25_scatterplot_poc_vs_cp_by_group.pdf"),
+  here("graphs","25_scatterplot_poc_vs_cp_by_group.pdf"),
   device = cairo_pdf,
   width = 7,
   height = 5

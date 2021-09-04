@@ -6,9 +6,9 @@
 
 rm(list = ls())
 
-source(here::here("R/propagate_fun.R"))
+source(here::here("R","propagate_fun.R"))
 
-df <- fread(here::here("data/clean/ctd_fluorescence_npq_corrected.csv")) %>%
+df <- fread(here::here("data","clean","ctd_fluorescence_npq_corrected.csv")) %>%
   as_tibble() %>%
   filter(depth_m <= 100)
 
@@ -59,5 +59,5 @@ res %>%
   assertr::verify(n == 1) %>%
   select(-data, -n) %>%
   relocate(cast, .after = transect) %>%
-  write_csv(here::here("data/clean/propagated_fluorescence_water_column.csv"))
+  write_csv(here::here("data","clean","propagated_fluorescence_water_column.csv"))
 

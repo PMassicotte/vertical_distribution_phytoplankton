@@ -12,7 +12,7 @@ plan(multisession(workers = availableCores() - 1))
 
 # MVP data ----------------------------------------------------------------
 
-mvp <- read_csv(here("data/raw/greenedge_mvp.csv")) %>%
+mvp <- read_csv(here("data","raw","greenedge_mvp.csv")) %>%
   mutate(initial_longitude_deg = -initial_longitude_deg) %>%
   group_by(initial_longitude_deg, initial_latitude_deg) %>%
   mutate(measurement_id = cur_group_id(), .before = 1) %>%
@@ -107,10 +107,12 @@ df_viz <- sic %>%
 df_viz %>%
   ggplot(aes(x = date_sic, sea_ice_concentration, group = measurement_id)) +
   geom_line() +
-  geom_line(aes(y =rolling_sic), color = "red") +
+  geom_line(aes(y = rolling_sic), color = "red") +
   geom_hline(yintercept = 15, color = "blue", lty = 2) +
   geom_vline(aes(xintercept = date), color = "green", lty = 2) +
   facet_wrap(~measurement_id, scales = "free_x")
+
+write_csv(df_viz, here("data","clean","sic.csv"))
 
 # Calculate the number of open water days (OWD) ---------------------------
 

@@ -7,21 +7,22 @@
 
 rm(list = ls())
 
-source("R/interpolate_fun.R")
+source(here("R","interpolate_fun.R"))
 
 # Isolume data ------------------------------------------------------------
 
 isolume <-
-  read_csv(
-    "https://raw.githubusercontent.com/poplarShift/ice-edge/master/nb_data/FIGURE_9-c-d-e.csv"
-  ) %>%
+  read_csv(here("data", "raw", "randelhoff2019", "FIGURE_9-c-d-e.csv")) %>%
   janitor::clean_names() %>%
   select(owd, starts_with("isolume")) %>%
-  pivot_longer(starts_with("isolume"), names_to = "isolume", values_to = "depth_m")
+  pivot_longer(starts_with("isolume"),
+    names_to = "isolume",
+    values_to = "depth_m"
+  )
 
 # Prepare the data --------------------------------------------------------
 
-df <- read_csv(here::here("data/raw/nutrients.csv"))
+df <- read_csv(here::here("data","raw","nutrients.csv"))
 
 df <- df %>%
   filter(mission == "amundsen_2016") %>%
@@ -59,7 +60,16 @@ df
 
 # Associate the number of open water day
 
-owd <- read_csv("https://raw.githubusercontent.com/poplarShift/ice-edge/master/nb_data/Randelhoff-et-al-2019_GreenEdge_per-station_v1.0.csv", na = "NaN") %>%
+owd <-
+  read_csv(
+    here(
+      "data",
+      "raw",
+      "randelhoff2019",
+      "Randelhoff-et-al-2019_GreenEdge_per-station_v1.0.csv"
+    ),
+    na = "NaN"
+  ) %>%
   janitor::clean_names() %>%
   select(station, owd)
 
@@ -105,7 +115,7 @@ p <- df %>%
   )
 
 ggsave(
-  here::here("graphs/04_available_pigments_rosette.pdf"),
+  here::here("graphs","04_available_pigments_rosette.pdf"),
   device = cairo_pdf
 )
 
@@ -312,7 +322,7 @@ p <- p1 + p2 +
   plot_layout(ncol = 1)
 
 ggsave(
-  here::here("graphs/04_phytoplankton_biomass_pigments.pdf"),
+  here::here("graphs","04_phytoplankton_biomass_pigments.pdf"),
   device = cairo_pdf,
   width = 10,
   height = 8

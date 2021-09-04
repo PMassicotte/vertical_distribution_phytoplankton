@@ -6,7 +6,7 @@
 
 rm(list = ls())
 
-ctd <- read_csv(here::here("data/clean/ctd.csv")) %>%
+ctd <- read_csv(here::here("data","clean","ctd.csv")) %>%
   filter(depth_m <= 100)
 
 hydroscat <- read_csv(here("data","clean","hydroscat.csv")) %>%

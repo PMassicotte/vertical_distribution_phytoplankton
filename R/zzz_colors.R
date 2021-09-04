@@ -31,3 +31,23 @@ scale_color_owd <- function(ncol = 1) {
   )
 
 }
+
+scale_depth_continuous <- function(nbreaks = 6, min_size = 1, max_size = 4) {
+
+  scale_size_continuous(
+    breaks = scales::breaks_pretty(n = nbreaks),
+    range = c(min_size, max_size),
+    guide = guide_legend(
+      nrow = 1,
+      title.position = "top",
+      title = "Depth (m)",
+      title.theme = element_text(
+        size = 10,
+        family = "Poppins",
+        margin = margin(t = 8),
+        hjust = 0.5),
+      label.theme = element_text(size = 10, family = "Poppins")
+    )
+  )
+
+}
