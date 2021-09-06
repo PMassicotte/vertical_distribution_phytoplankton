@@ -102,23 +102,10 @@ knitr::include_graphics(here("graphs", "png", "01_ctd_smoothed_fluorescence_vert
 
 During the meeting we had on 2021-01-22, it was questioned why I was averaging data by `owd` and `depth` before doing the interpolation. This is simply because there may be many observations for a specific pair of `owd` and `depth`. For example, it can be seen here that there are 9 values (i.e. 9 stations) that have an `owd = 2` and `depth = 1.980`.
 
-```{r count-duplicated-owd-depth, cache=TRUE}
-ctd <- fread(here::here("data", "clean", "ctd.csv"))
-
-ctd[, .N, by = .(owd, depth_m)][N > 5] %>%
-  as_tibble() %>%
-  arrange(desc(N)) %>%
-  head(6) %>%
-  knitr::kable()
-```
-
-Here are 9 stations in the CTD data with `owd = 2` and `depth = 1.980`.
-
 ```{r count-duplicated-owd-depth2, cache=TRUE}
-ctd %>%
-  as_tibble() %>%
+read_csv(here::here("data", "clean", "ctd.csv")) %>%
   filter(owd == 2 & depth_m == 1.98) %>%
-  select(station, depth_m, owd, flor_mg_m3) %>%
+  select(station, depth_m, owd) %>%
   rmarkdown::paged_table()
 ```
 
@@ -141,8 +128,6 @@ knitr::include_graphics(here("graphs", "png", "02_boxplot_ctd_fluorescence_isolu
 ```
 
 ### Fluorescence from the MVP
-
-*Note that because the MVP is measuring continually, there are no stations associated with each measurement. This is why that the MVP data is not presented as a function of OWD.*
 
 ```{r}
 knitr::include_graphics(here("graphs", "png", "05_phytoplankton_biomass_mvp_fluo.png"))
@@ -447,6 +432,18 @@ knitr::include_graphics(here("graphs", "png", "32_average_apparent_visible_wavel
 
 ## Figures
 
+-   `bbp/cp` is often considered as a proxy of particle size and composition:
+
+-   `bbp/cp` has been found to be consistent across a wide range of diverse open ocean environments.
+
+-   `cp` is, in theory, most sensitive to particles in the size range of the majority of phytoplankton (0.5-20 um) while smaller particles are thought to dominate the bbp signal.
+
+-   `cp` is proportional to the concentration of suspended particles in a size domain overlapping that of the phytoplankton assemblage.
+
+-   `cp` is largely insensitive to changes in intracellular chlorophyll concentration, which varies with growth irradiance (photoacclimation).
+
+-   `cp/chla` (cp\*) represents an interesting optical measurement to monitor phytoplankton photoacclimation/physiology.
+
 ### Figure 1
 
 ```{r}
@@ -519,13 +516,15 @@ knitr::include_graphics(here("graphs", "png", "fig05.png"))
 
 ### Figure 6
 
-- Panel B shows the determination coefficients of the regression between aphy and chla between 400 and 700 nm.
+-   Panel B shows the determination coefficients of the regression between aphy and chla between 400 and 700 nm.
 
 ```{r}
 knitr::include_graphics(here("graphs", "png", "fig06.png"))
 ```
 
 ### Figure 7
+
+Correlations with POC.
 
 ```{r}
 knitr::include_graphics(here("graphs", "png", "fig07.png"))
@@ -535,13 +534,15 @@ knitr::include_graphics(here("graphs", "png", "fig07.png"))
 
 -   In this figure, the total particle count is defined as the sum of all particles under 2.05 mm.
 
+-   0.5-20 μm (0.0005 - 0.02 mm): most of the size domain occupied by marine phytoplankton.
+
 ```{r, fig.align='center'}
 knitr::include_graphics(here("graphs", "png", "fig08.png"))
 ```
 
 ### Figure 9
 
--   When bbp/cp increases, small particles become relatively more abundant than large particles.
+> The ratio bbp(532)/cp(660) could be considered as a proxy of particle size and composition, increasing when small or inorganic particles become relatively more abundant than large or organic particles [@Xing2014].
 
 -   At high bbp/cp (i.e. higher contribution of small particle to the total pool):
 
@@ -551,9 +552,9 @@ knitr::include_graphics(here("graphs", "png", "fig08.png"))
 
 -   In this figure, the total particle count is defined as the sum of all particles under 2.05 mm.
 
--   *Using all the data* (not only \<= 100 meters).
+-   **Using all the data** (not only \<= 100 meters).
 
-    -   I using a threshold of 5 meters to discard ctd, uvp and hydroscat measurements that were too far apart.
+    -   I used a threshold of 5 meters to discard ctd, uvp and hydroscat measurements that were too far apart.
 
 ```{r, fig.align='center'}
 knitr::include_graphics(here("graphs", "png", "fig09.png"))
@@ -615,6 +616,8 @@ knitr::include_graphics(here("graphs", "png", "appendix04b.png"))
 
 -   Determine if CP correction (baseline shift) should be performed or not.
 
+    -   See script `33_visualize_effect_baseline_correction_cp.R`.
+
 -   Check if there is a relation between particle size ratio and bbp/cp ratio.
 
 -   Continue the exploration of nutrients vs pp/chla.
@@ -622,5 +625,9 @@ knitr::include_graphics(here("graphs", "png", "appendix04b.png"))
 -   Add isolume and hBD *legends* on 3D plots.
 
 -   Check for packaging effect and correlation with aphi443 vs 670.
+
+-   If condifence intervals needed on the estimates, check `37_cp_or_bbp_to_predict_chla.R`.
+
+-   Autocorrelation (see `ccf` function).
 
 ## References

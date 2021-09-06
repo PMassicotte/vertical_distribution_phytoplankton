@@ -60,7 +60,7 @@ p1 <- ek %>%
   ggpubr::stat_regline_equation(label.y.npc = 1) +
   ggpubr::stat_regline_equation(label.y.npc = 0.93, aes(label = ..rr.label..)) +
   labs(
-    x = quote(Chla/C[p] ~ (657)),
+    x = quote(Chla/C[p] ~ (657) ~ (mg~m^{-2})),
     y = quote(E[k] ~ (mu*mol~m^{-2}~s^{-1}))
   ) +
   theme(
@@ -103,7 +103,7 @@ p2 <- fvfm %>%
   ggpubr::stat_regline_equation(label.y.npc = 1) +
   ggpubr::stat_regline_equation(label.y.npc = 0.93, aes(label = ..rr.label..)) +
   labs(
-    x = quote(Chla/C[p] ~ (657)),
+    x = quote(Chla/C[p] ~ (657) ~ (mg~m^{-2})),
     y = quote(Fv/Fm)
   ) +
   theme(
