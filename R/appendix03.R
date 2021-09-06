@@ -45,14 +45,12 @@ ek <- ek %>%
   filter(abs(depth_m - depth_ctd) <= 1) %>%
   drop_na(flor_mg_m3, cp, ek) %>%
   filter(depth_m <= 100) %>%
-  mutate(cp_chla = cp / flor_mg_m3) %>%
+  mutate(chla_cp = flor_mg_m3 / cp) %>%
   mutate(is_open_water = is_open_water(owd))
 
 p1 <- ek %>%
-  ggplot(aes(x = cp_chla, y = ek)) +
+  ggplot(aes(x = chla_cp, y = ek)) +
   geom_point(aes(color = is_open_water)) +
-  scale_x_log10() +
-  annotation_logticks(sides = "b", size = 0.1) +
   scale_color_owd() +
   geom_smooth(
     method = "lm",
@@ -89,15 +87,13 @@ fvfm <- fvfm %>%
   filter(abs(depth_m - depth_ctd) <= 1) %>%
   drop_na(flor_mg_m3, cp, fv_fm_mean) %>%
   filter(depth_m <= 100) %>%
-  mutate(cp_chla = cp / flor_mg_m3) %>%
+  mutate(chla_cp = flor_mg_m3 / cp) %>%
   mutate(is_open_water = is_open_water(owd))
 
 p2 <- fvfm %>%
-  ggplot(aes(x = cp_chla, y = fv_fm_mean)) +
+  ggplot(aes(x = chla_cp, y = fv_fm_mean)) +
   geom_point(aes(color = is_open_water)) +
-  scale_x_log10() +
   scale_y_continuous(labels = scales::label_percent()) +
-  annotation_logticks(sides = "b", size = 0.1) +
   scale_color_owd() +
   geom_smooth(
     method = "lm",
@@ -133,8 +129,8 @@ ggsave(
 
 # Correlation stats -------------------------------------------------------
 
-cor(log10(ek$cp_chla), ek$ek)^2
-cor(log10(fvfm$cp_chla), fvfm$fv_fm_mean)^2
+cor(ek$chla_cp, ek$ek)
+cor(fvfm$chla_cp, fvfm$fv_fm_mean)
 
 # These are different indices, but they do not correlate to each other.
 # Ek: photoacclimation
