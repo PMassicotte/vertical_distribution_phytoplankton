@@ -1,109 +1,232 @@
-# <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
-# AUTHOR:       Philippe Massicotte
-#
-# DESCRIPTION:  Figure 1: Map of the sampling stations with OWD.
-# <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 
-rm(list = ls())
 
-source(here("R","zzz_colors.R"))
 
-# CTD data ----------------------------------------------------------------
 
-ctd <- read_csv(here::here("data", "clean", "ctd.csv")) %>%
+# Stations ----------------------------------------------------------------
+
+stations <- read_csv(here::here("data", "clean", "ctd.csv")) %>%
   distinct(station, transect, longitude, latitude, owd)
+
+stations %>%
+  count(station, sort = TRUE)
+
+# SIC ---------------------------------------------------------------------
+
+sic <- read_csv(here(
+  "data",
+  "clean",
+  "ice_concentration_history_amundsen.csv"
+)) %>%
+  select(station, date = date_utc, ice_date, sic) %>%
+  filter(str_starts(station, "G")) %>%
+  mutate(station = parse_number(station)) %>%
+  filter(date == ice_date) %>%
+  distinct(station, .keep_all = TRUE)
+
+sic
+
+sic %>%
+  count(station, sort = TRUE)
+
+sic <- sic %>%
+  mutate(is_open_water = case_when(
+    sic <= 0.15 ~ "Open water",
+    sic > 0.15 ~ "Ice covered"
+  ))
+
+# Merge stations and sic --------------------------------------------------
+
+stations <- stations %>%
+  inner_join(sic, by = "station")
 
 # Word map ----------------------------------------------------------------
 
-ctd_df <- ctd %>%
-  st_as_sf(coords = c("longitude", "latitude"), crs = 4326)
+baffin <- ne_countries(scale = "large", returnclass = "sf") %>%
+  st_crop(c(
+    xmin = -65,
+    ymin = 60,
+    xmax = -45,
+    ymax = 85
+  )) %>%
+  st_transform(crs = "+proj=stere +lat_0=90 +lat_ts=75 +lon_0=0 +k=1 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs +ellps=WGS84 +towgs84=0,0,0") %>%
+  as("Spatial")
 
-bbox_baffin_bay <- st_read(here("data", "raw", "bbox_baffin_bay.geojson"))
+bb <- raster::raster(here("data/raw/IBCAO_V3_500m_RR.tif")) %>%
+  raster::crop(baffin)
 
-wm <- rnaturalearth::ne_countries(scale = "large", returnclass = "sf")
+bb2 <- bb %>%
+  raster::sampleRegular(size = 1e4, asRaster = TRUE) %>%
+  raster::projectRaster(crs = "+proj=longlat +datum=WGS84 +no_defs") %>%
+  raster::rasterToPoints() %>%
+  as_tibble() %>%
+  rename(z = 3)
 
-# Transect labels ---------------------------------------------------------
+wm <-
+  ne_download(
+    scale = "large",
+    type = "countries",
+    returnclass = "sf"
+  )
 
-transect <- tibble::tribble(
-  ~transect, ~latitude, ~longitude,
-  100L, 68.4991666666666, -56,
-  200L, 68.75, -57.2,
-  300L, 69.0004833333333, -56,
-  400L, 68.1099166666667, -56.2,
-  500L, 70.0002916666666, -56.2,
-  600L, 70.5012833333333, -58,
-  700L, 69.5008833333333, -57
-)
+# Map ---------------------------------------------------------------------
 
-# Plot --------------------------------------------------------------------
-
-p <- ggplot() +
-  geom_sf(data = wm, size = 0.1, fill = "#DAE3E5", color = "#3c3c3c") +
-  geom_sf(data = ctd_df, aes(color = owd), size = 2) +
-  geom_text(
-    data = transect,
+p <- bb2 %>%
+  mba.surf(no.X = 600, no.Y = 600, sp = TRUE) %>%
+  as.data.frame() %>%
+  as_tibble() %>%
+  mutate(xyz.est.z = ifelse(xyz.est.z >= 0, 0, xyz.est.z)) %>%
+  ggplot(aes(xyz.est.x, xyz.est.y, fill = xyz.est.z, z = xyz.est.z)) +
+  ggisoband::geom_isobands(bins = 25, color = NA) +
+  scale_color_viridis_c(
+    limits = c(0, 1),
+    breaks = c(0, 0.5, 1),
+    labels = scales::label_percent(),
+    guide = guide_colorbar(
+      barwidth = unit(2, "cm"),
+      barheight = unit(0.1, "cm"),
+      direction = "horizontal",
+      title.position = "top",
+      order = 1
+    )
+  ) +
+  paletteer::scale_fill_paletteer_c(
+    "ggthemes::Blue",
+    direction = -1,
+    limits = c(-2500, 0),
+    oob = scales::squish,
+    breaks = -c(0, 1000, 2000, 3000),
+    guide = guide_colorbar(
+      barwidth = unit(2, "cm"),
+      barheight = unit(0.1, "cm"),
+      direction = "horizontal",
+      title.position = "top",
+      order = 2
+    )
+  ) +
+  scale_shape(guide = guide_legend(
+    ncol = 1,
+    title = element_blank(),
+    override.aes = list(size = 1.5),
+    order = 3
+  )) +
+  geom_sf(
+    data = wm,
+    size = 0.1,
+    inherit.aes = FALSE,
+    fill = "white"
+  ) +
+  coord_sf(
+    xlim = c(-70.5, -44),
+    ylim = c(65, 72)
+  ) +
+  annotate(
+    geom = "text",
+    x = -63.5,
+    y = 67.5,
+    label = "Qikiqtarjuaq",
+    vjust = -0.25,
+    hjust = 0,
+    size = 2,
+    family = "Poppins"
+  ) +
+  annotate(
+    geom = "text",
+    x = -50,
+    y = 71,
+    label = "Greenland",
+    vjust = 0,
+    hjust = 0,
+    size = 3,
+    family = "Poppins",
+    fontface = 2
+  ) +
+  annotate(
+    geom = "text",
+    x = -68,
+    y = 71.5,
+    label = "Baffin Bay",
+    vjust = 0,
+    hjust = 0,
+    size = 3,
+    family = "Poppins",
+    fontface = 2
+  ) +
+  annotate(
+    geom = "text",
+    x = -71,
+    y = 67,
+    label = "Baffin Island",
+    vjust = 0,
+    hjust = 0,
+    size = 3,
+    family = "Poppins",
+    fontface = 2
+  ) +
+  annotation_scale(
+    location = "bl",
+    width_hint = 0.08,
+    height = unit(0.1, "cm"),
+    line_width = 0.1,
+    text_cex = 0.5
+  ) +
+  annotation_north_arrow(
+    location = "tl",
+    which_north = "true",
+    height = unit(0.75, "cm"),
+    width = unit(0.75, "cm"),
+    pad_x = unit(0.1, "in"),
+    pad_y = unit(0.1, "in"),
+    style = north_arrow_nautical(
+      fill = c("grey40", "white"),
+      line_col = "grey20",
+      text_family = "ArcherPro Book",
+      text_size = 6,
+      line_width = 0.5
+    )
+  ) +
+  geom_point(
+    data = stations,
     aes(
       x = longitude,
       y = latitude,
-      label = transect
+      color = sic,
+      shape = is_open_water
     ),
-    inherit.aes = FALSE,
-    size = 2.5,
-    color = "#3c3c3c"
+    size = 1,
+    inherit.aes = FALSE
   ) +
-  ggspatial::annotation_scale(
-    location = "br",
-    width_hint = 0.25,
-    height = unit(0.1, "cm"),
-    line_width = 0.25
+  annotate("point",
+    x = -63.78953333,
+    y = 67.47973333,
+    size = 0.5
   ) +
-  ggspatial::annotation_north_arrow(
-    which_north = "true",
-    height = unit(1, "cm"),
-    width = unit(1, "cm"),
-    style = ggspatial::north_arrow_nautical(text_size = 6)
-  ) +
-  scale_colour_gradient2(
-    low = owd_colors$close,
-    mid = "white",
-    high = owd_colors$open,
-    breaks = scales::breaks_pretty(n = 6),
-    midpoint = 0,
-    guide =
-      guide_colorbar(
-        barwidth = unit(6, "cm"),
-        barheight = unit(0.2, "cm"),
-        direction = "horizontal",
-        title.position = "top",
-        title.hjust = 0.5
-      )
-  ) +
-  scale_x_continuous(expand = expansion(mult = c(0.05, 0.05))) +
   labs(
-    color = "Open water days (OWD)"
-  ) +
-  coord_sf(
-    xlim = c(-68, -52),
-    ylim = c(67, 71)
+    x = NULL,
+    y = NULL,
+    fill = "Depth (m)",
+    color = "Sea ice concentration"
   ) +
   theme(
-    legend.justification = c(0.5, 0.5),
-    legend.position = c(0.5, 0.1),
-    legend.background = element_blank(),
-    axis.title = element_blank(),
-    panel.border = element_blank(),
-    axis.ticks = element_blank(),
+    legend.justification = c(1, 0),
+    legend.position = c(0.97, 0.2),
+    legend.background = element_rect(fill = "white"),
+    panel.background = element_rect(fill = "#B9DDF1"),
+    legend.key = element_rect(fill = "white"),
     panel.grid = element_blank(),
-    panel.background = element_rect(fill = "gray50")
+    legend.title = element_text(size = 6, family = "Exo"),
+    legend.text = element_text(size = 6, family = "Exo"),
+    legend.key.size = unit(0.25, "cm"),
+    legend.margin = margin(t = 0, unit = "cm")
   )
 
-filename <- here("graphs", "fig01.pdf")
+filename <- here("graphs/fig01.pdf")
 
 ggsave(
-  filename = filename,
+  filename,
   device = cairo_pdf,
-  width = 6,
-  height = 6
+  width = 12,
+  height = 12 / 1.229081,
+  units = "cm"
 )
 
 knitr::plot_crop(filename)

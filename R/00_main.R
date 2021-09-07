@@ -24,6 +24,8 @@ library(magrittr)
 library(ggfortify)
 library(tidymodels)
 library(vip)
+library(rnaturalearth)
+library(ggspatial)
 
 # devtools::install_github("PMassicotte/ggpmthemes")
 # renv::install("MilesMcBain/breakerofchains")

@@ -432,17 +432,21 @@ knitr::include_graphics(here("graphs", "png", "32_average_apparent_visible_wavel
 
 ## Figures
 
--   `bbp/cp` is often considered as a proxy of particle size and composition:
+-   `bbp/cp` is often considered as a proxy of particle size and composition.
+    
+    -   `bbp/cp` has been found to be consistent across a wide range of diverse open ocean environments.
 
--   `bbp/cp` has been found to be consistent across a wide range of diverse open ocean environments.
+-   `cp` is, in theory, most sensitive to particles in the size range of the majority of phytoplankton (0.5-20 um) while smaller particles are thought to dominate the `bbp` signal.
 
--   `cp` is, in theory, most sensitive to particles in the size range of the majority of phytoplankton (0.5-20 um) while smaller particles are thought to dominate the bbp signal.
+    -   Note that the smallest particle size measured by the UVP during the Greenedge campaign is 64 um (0.064 mm).
 
 -   `cp` is proportional to the concentration of suspended particles in a size domain overlapping that of the phytoplankton assemblage.
 
 -   `cp` is largely insensitive to changes in intracellular chlorophyll concentration, which varies with growth irradiance (photoacclimation).
 
--   `cp/chla` (cp\*) represents an interesting optical measurement to monitor phytoplankton photoacclimation/physiology.
+-   `cp/chla` (`cp*`) represents an interesting optical measurement to monitor phytoplankton photoacclimation/physiology.
+
+    -   Some studies have reported relationships with E~k~.
 
 ### Figure 1
 
@@ -473,7 +477,7 @@ knitr::include_graphics(here("graphs", "png", "fig02.png"))
 For this figure, I have integrated the data in the water column:
 
 -   NO~3~ was integrated between the surface and h~BD~.
--   Chlorophyll-a was integrated between the surface and 0.1 isolume.
+-   Other values (B-C-D) have been integrated between the surface and 0.1 isolume.
 
 ```{r}
 knitr::include_graphics(here("graphs", "png", "fig02c.png"))
@@ -596,11 +600,15 @@ This figure is quite interesting:
 
 -   We can see that high PP occurred before OWD = 0.
 
+    -   PP is almost the same in open/ice covered water, but the chla is much high in open water (see panel **B**).
+
 -   The correlation between PP and Chl-a is much higher for ice-covered stations compared to open water stations.
 
     -   Any ideas why in situ PP is not correlated to the phytoplankton biomass for stations located in open water? This is in contradiction with what is shown by @Hill2013.
 
     -   Could it be related to nutrients depletion?
+    
+    -   Change in community composition?
 
 ```{r}
 knitr::include_graphics(here("graphs", "png", "appendix04.png"))
@@ -624,9 +632,9 @@ knitr::include_graphics(here("graphs", "png", "appendix04b.png"))
 
 -   Add isolume and hBD *legends* on 3D plots.
 
--   Check for packaging effect and correlation with aphi443 vs 670.
+-   Check for packaging effect and correlation with aphi443 vs 670?
 
--   If condifence intervals needed on the estimates, check `37_cp_or_bbp_to_predict_chla.R`.
+-   If confidence intervals needed on the estimates, check `37_cp_or_bbp_to_predict_chla.R`.
 
 -   Autocorrelation (see `ccf` function).
 
