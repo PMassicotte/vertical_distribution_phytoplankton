@@ -18,7 +18,7 @@ knitr::opts_chunk$set(
   echo = FALSE,
   message = FALSE,
   warning = FALSE,
-  fig.pos = "center",
+  fig.align = "center",
   cache = TRUE
 )
 
@@ -454,36 +454,19 @@ knitr::include_graphics(here("graphs", "png", "32_average_apparent_visible_wavel
 knitr::include_graphics(here("graphs", "png", "fig01.png"))
 ```
 
-### Figure 2A
-
-This graph will be used to show an overview of the physical dynamics in the Baffin Bay. Data from @Randelhoff2019.
-
-```{r}
-knitr::include_graphics(here("graphs", "png", "fig02a.png"))
-```
-
 ### Figure 2
 
--   Contrary to what can observed in @Hill2013 (see Fig. 8), we can see *underice* sub-surface chla maximum in the Greenedge data.
-
--   The phytoplankton biomass (chla) under the ice seems to represent an important source of primary production (see Appendix 4).
+This graph will be used to show an overview of the physical dynamics in the Baffin Bay. Data from @Randelhoff2019.
 
 ```{r}
 knitr::include_graphics(here("graphs", "png", "fig02.png"))
 ```
 
-### Figure 2C
-
-For this figure, I have integrated the data in the water column:
-
--   NO~3~ was integrated between the surface and h~BD~.
--   Other values (B-C-D) have been integrated between the surface and 0.1 isolume.
-
-```{r}
-knitr::include_graphics(here("graphs", "png", "fig02c.png"))
-```
-
 ### Figure 3
+
+-   Contrary to what can observed in @Hill2013 (see Fig. 8), we can see *underice* sub-surface chla maximum in the Greenedge data.
+
+-   The phytoplankton biomass (chla) under the ice seems to represent an important source of primary production (see Appendix 4).
 
 ```{r}
 knitr::include_graphics(here("graphs", "png", "fig03.png"))
@@ -491,78 +474,104 @@ knitr::include_graphics(here("graphs", "png", "fig03.png"))
 
 ### Figure 4
 
-Rosette pigments were summed as follow:
-
--   `Photoprotection`: Zeaxanthin, Diatoxanthin, Diadinoxanthin, Antheraxanthin, Violaxanthin
-
--   `Photosynthetic`: Sum 19HF-like, Sum 19BF-like, Peridinin, Fucoxanthin, Chlorophyll c3, Chlorophyll c1+c2+MgDVP, Chlorophyll b, Lutein
+- Depth of maximum values for chla, Cp and bbp.
+- Only showing proxies measured at high vertical resolution. It is unreliable to calculate SM for POC.
 
 ```{r}
 knitr::include_graphics(here("graphs", "png", "fig04.png"))
 ```
 
+This kind of graphic could be interesting to understand the co-variability between max-depth layers.
+
+```{r}
+knitr::include_graphics(here("graphs", "png", "fig04b.png"))
+```
+
 ### Figure 5
 
--   Comparison between total chla from the CTD vs all the pigment groups defined by Joséphine.
+For this figure, I have integrated the data in the water column:
 
--   Pigment groups:
-
-    -   photoprotection = Zeaxanthin + Diatoxanthin + Diadinoxanthin + Antheraxanthin + Violaxanthin
-    -   photosynthetic_pigments = Sum 19HF-like + Sum 19BF-like + Peridinin + Fucoxanthin + Chlorophyll c3 + Chlorophyll c1+c2+MgDVP + Chlorophyll b + Lutein
-    -   tchla = Total Chlorophyll a
-    -   phaeophytin_a = Sum Phaeophytin a
-    -   phaeophorbide_a = sum Phbd a
-    -   chlorophyllide_a = sum Chld a
+-   NO~3~ was integrated between the surface and h~BD~.
+-   Other values (B-C-D) have been integrated between the surface and 0.1 isolume.
 
 ```{r}
 knitr::include_graphics(here("graphs", "png", "fig05.png"))
 ```
 
-### Figure 6
+<!-- ### Figure 4 -->
 
--   Panel B shows the determination coefficients of the regression between aphy and chla between 400 and 700 nm.
+<!-- Rosette pigments were summed as follow: -->
 
-```{r}
-knitr::include_graphics(here("graphs", "png", "fig06.png"))
-```
+<!-- -   `Photoprotection`: Zeaxanthin, Diatoxanthin, Diadinoxanthin, Antheraxanthin, Violaxanthin -->
 
-### Figure 7
+<!-- -   `Photosynthetic`: Sum 19HF-like, Sum 19BF-like, Peridinin, Fucoxanthin, Chlorophyll c3, Chlorophyll c1+c2+MgDVP, Chlorophyll b, Lutein -->
 
-Correlations with POC.
+<!-- ```{r} -->
+<!-- knitr::include_graphics(here("graphs", "png", "fig04.png")) -->
+<!-- ``` -->
 
-```{r}
-knitr::include_graphics(here("graphs", "png", "fig07.png"))
-```
+<!-- ### Figure 5 -->
 
-### Figure 8
+<!-- -   Comparison between total chla from the CTD vs all the pigment groups defined by Joséphine. -->
 
--   In this figure, the total particle count is defined as the sum of all particles under 2.05 mm.
+<!-- -   Pigment groups: -->
 
--   0.5-20 μm (0.0005 - 0.02 mm): most of the size domain occupied by marine phytoplankton.
+<!--     -   photoprotection = Zeaxanthin + Diatoxanthin + Diadinoxanthin + Antheraxanthin + Violaxanthin -->
+<!--     -   photosynthetic_pigments = Sum 19HF-like + Sum 19BF-like + Peridinin + Fucoxanthin + Chlorophyll c3 + Chlorophyll c1+c2+MgDVP + Chlorophyll b + Lutein -->
+<!--     -   tchla = Total Chlorophyll a -->
+<!--     -   phaeophytin_a = Sum Phaeophytin a -->
+<!--     -   phaeophorbide_a = sum Phbd a -->
+<!--     -   chlorophyllide_a = sum Chld a -->
 
-```{r, fig.align='center'}
-knitr::include_graphics(here("graphs", "png", "fig08.png"))
-```
+<!-- ```{r} -->
+<!-- knitr::include_graphics(here("graphs", "png", "fig05.png")) -->
+<!-- ``` -->
 
-### Figure 9
+<!-- ### Figure 6 -->
 
-> The ratio bbp(532)/cp(660) could be considered as a proxy of particle size and composition, increasing when small or inorganic particles become relatively more abundant than large or organic particles [@Xing2014].
+<!-- -   Panel B shows the determination coefficients of the regression between aphy and chla between 400 and 700 nm. -->
 
--   At high bbp/cp (i.e. higher contribution of small particle to the total pool):
+<!-- ```{r} -->
+<!-- knitr::include_graphics(here("graphs", "png", "fig06.png")) -->
+<!-- ``` -->
 
-    -   There are less particles.
-    -   Chlorophyll-a concentration is lower.
-    -   There are less particles in open water than in ice-covered stations.
+<!-- ### Figure 7 -->
 
--   In this figure, the total particle count is defined as the sum of all particles under 2.05 mm.
+<!-- Correlations with POC. -->
 
--   **Using all the data** (not only \<= 100 meters).
+<!-- ```{r} -->
+<!-- knitr::include_graphics(here("graphs", "png", "fig07.png")) -->
+<!-- ``` -->
 
-    -   I used a threshold of 5 meters to discard ctd, uvp and hydroscat measurements that were too far apart.
+<!-- ### Figure 8 -->
 
-```{r, fig.align='center'}
-knitr::include_graphics(here("graphs", "png", "fig09.png"))
-```
+<!-- -   In this figure, the total particle count is defined as the sum of all particles under 2.05 mm. -->
+
+<!-- -   0.5-20 μm (0.0005 - 0.02 mm): most of the size domain occupied by marine phytoplankton. -->
+
+<!-- ```{r, fig.align='center'} -->
+<!-- knitr::include_graphics(here("graphs", "png", "fig08.png")) -->
+<!-- ``` -->
+
+<!-- ### Figure 9 -->
+
+<!-- > The ratio bbp(532)/cp(660) could be considered as a proxy of particle size and composition, increasing when small or inorganic particles become relatively more abundant than large or organic particles [@Xing2014]. -->
+
+<!-- -   At high bbp/cp (i.e. higher contribution of small particle to the total pool): -->
+
+<!--     -   There are less particles. -->
+<!--     -   Chlorophyll-a concentration is lower. -->
+<!--     -   There are less particles in open water than in ice-covered stations. -->
+
+<!-- -   In this figure, the total particle count is defined as the sum of all particles under 2.05 mm. -->
+
+<!-- -   **Using all the data** (not only \<= 100 meters). -->
+
+<!--     -   I used a threshold of 5 meters to discard ctd, uvp and hydroscat measurements that were too far apart. -->
+
+<!-- ```{r, fig.align='center'} -->
+<!-- knitr::include_graphics(here("graphs", "png", "fig09.png")) -->
+<!-- ``` -->
 
 ## Appendix
 
@@ -578,64 +587,8 @@ knitr::include_graphics(here("graphs", "png", "appendix01.png"))
 
 ### Appendix 2
 
-Co-variability of subsurface maximums for bbp, cp and chla. At each OWD, the depth of the maximum value (ex.: chla) was extracted. Note that the depths at which each variable is maximum was calculated on *raw* data and not the interpolated data from Fig. 02. The points are the raw data and the lines represent values fitted using loess.
-
 ```{r}
 knitr::include_graphics(here("graphs", "png", "appendix02.png"))
 ```
-
-### Appendix 3
-
--   It was previously shown that chla/cp was a good indicator of phytoplankton photoacclimation (Ek) and physiology (Fv/Fm).
-
--   Very weak relations with either Ek or Fv/Fm based on the Greenedge data.
-
-```{r}
-knitr::include_graphics(here("graphs", "png", "appendix03.png"))
-```
-
-### Appendix 4
-
-This figure is quite interesting:
-
--   We can see that high PP occurred before OWD = 0.
-
-    -   PP is almost the same in open/ice covered water, but the chla is much high in open water (see panel **B**).
-
--   The correlation between PP and Chl-a is much higher for ice-covered stations compared to open water stations.
-
-    -   Any ideas why in situ PP is not correlated to the phytoplankton biomass for stations located in open water? This is in contradiction with what is shown by @Hill2013.
-
-    -   Could it be related to nutrients depletion?
-    
-    -   Change in community composition?
-
-```{r}
-knitr::include_graphics(here("graphs", "png", "appendix04.png"))
-```
-
-This is the daily integrated PP (surface to isolume).
-
-```{r}
-knitr::include_graphics(here("graphs", "png", "appendix04b.png"))
-```
-
-## TODO
-
--   Determine if CP correction (baseline shift) should be performed or not.
-
-    -   See script `33_visualize_effect_baseline_correction_cp.R`.
-
--   Check if there is a relation between particle size ratio and bbp/cp ratio.
-
--   Continue the exploration of nutrients vs pp/chla.
-
--   Add isolume and hBD *legends* on 3D plots.
-
--   Check for packaging effect and correlation with aphi443 vs 670?
-
--   If confidence intervals needed on the estimates, check `37_cp_or_bbp_to_predict_chla.R`.
-
--   Autocorrelation (see `ccf` function).
 
 ## References
