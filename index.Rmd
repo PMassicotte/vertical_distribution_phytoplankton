@@ -475,7 +475,9 @@ knitr::include_graphics(here("graphs", "png", "fig03.png"))
 ### Figure 4
 
 - Depth of maximum values for chla, Cp and bbp.
-- Only showing proxies measured at high vertical resolution. It is unreliable to calculate SM for POC.
+- Only showing proxies measured at high vertical resolution. It is unreliable to calculate SM for POC because there are not enought data points.
+
+This figure shows that all SMs are located between the nitracline and the isolume where there are optimal conditions to sustain primary production.
 
 ```{r}
 knitr::include_graphics(here("graphs", "png", "fig04.png"))
@@ -498,88 +500,21 @@ For this figure, I have integrated the data in the water column:
 knitr::include_graphics(here("graphs", "png", "fig05.png"))
 ```
 
-<!-- ### Figure 4 -->
+### Figure 6
 
-<!-- Rosette pigments were summed as follow: -->
+- The photosynthetic potential of microalgae was assessed by measuring Fv/Fm, namely the maximum photochemical efficiency of Photosystem II (PSII), via dynamic chl a fluorescence. 
 
-<!-- -   `Photoprotection`: Zeaxanthin, Diatoxanthin, Diadinoxanthin, Antheraxanthin, Violaxanthin -->
+- For each OWD, I have calculated the averaged depth where the FV/Fm ratio was between 0.4 and 0.75 (often considered the optimal range) in the absence of cyanobacteria. Below, algal growth is considered to be limited by nutrient availability and/or light stress.
 
-<!-- -   `Photosynthetic`: Sum 19HF-like, Sum 19BF-like, Peridinin, Fucoxanthin, Chlorophyll c3, Chlorophyll c1+c2+MgDVP, Chlorophyll b, Lutein -->
+- The Fv/Fm ratio follows the SMs and therefore suggest that, contrary to the claim of some studies, this phytoplankton biomass is not just a result of accumulation, but rather active and also able to produce new biomass.
 
-<!-- ```{r} -->
-<!-- knitr::include_graphics(here("graphs", "png", "fig04.png")) -->
-<!-- ``` -->
-
-<!-- ### Figure 5 -->
-
-<!-- -   Comparison between total chla from the CTD vs all the pigment groups defined by Joséphine. -->
-
-<!-- -   Pigment groups: -->
-
-<!--     -   photoprotection = Zeaxanthin + Diatoxanthin + Diadinoxanthin + Antheraxanthin + Violaxanthin -->
-<!--     -   photosynthetic_pigments = Sum 19HF-like + Sum 19BF-like + Peridinin + Fucoxanthin + Chlorophyll c3 + Chlorophyll c1+c2+MgDVP + Chlorophyll b + Lutein -->
-<!--     -   tchla = Total Chlorophyll a -->
-<!--     -   phaeophytin_a = Sum Phaeophytin a -->
-<!--     -   phaeophorbide_a = sum Phbd a -->
-<!--     -   chlorophyllide_a = sum Chld a -->
-
-<!-- ```{r} -->
-<!-- knitr::include_graphics(here("graphs", "png", "fig05.png")) -->
-<!-- ``` -->
-
-<!-- ### Figure 6 -->
-
-<!-- -   Panel B shows the determination coefficients of the regression between aphy and chla between 400 and 700 nm. -->
-
-<!-- ```{r} -->
-<!-- knitr::include_graphics(here("graphs", "png", "fig06.png")) -->
-<!-- ``` -->
-
-<!-- ### Figure 7 -->
-
-<!-- Correlations with POC. -->
-
-<!-- ```{r} -->
-<!-- knitr::include_graphics(here("graphs", "png", "fig07.png")) -->
-<!-- ``` -->
-
-<!-- ### Figure 8 -->
-
-<!-- -   In this figure, the total particle count is defined as the sum of all particles under 2.05 mm. -->
-
-<!-- -   0.5-20 μm (0.0005 - 0.02 mm): most of the size domain occupied by marine phytoplankton. -->
-
-<!-- ```{r, fig.align='center'} -->
-<!-- knitr::include_graphics(here("graphs", "png", "fig08.png")) -->
-<!-- ``` -->
-
-<!-- ### Figure 9 -->
-
-<!-- > The ratio bbp(532)/cp(660) could be considered as a proxy of particle size and composition, increasing when small or inorganic particles become relatively more abundant than large or organic particles [@Xing2014]. -->
-
-<!-- -   At high bbp/cp (i.e. higher contribution of small particle to the total pool): -->
-
-<!--     -   There are less particles. -->
-<!--     -   Chlorophyll-a concentration is lower. -->
-<!--     -   There are less particles in open water than in ice-covered stations. -->
-
-<!-- -   In this figure, the total particle count is defined as the sum of all particles under 2.05 mm. -->
-
-<!-- -   **Using all the data** (not only \<= 100 meters). -->
-
-<!--     -   I used a threshold of 5 meters to discard ctd, uvp and hydroscat measurements that were too far apart. -->
-
-<!-- ```{r, fig.align='center'} -->
-<!-- knitr::include_graphics(here("graphs", "png", "fig09.png")) -->
-<!-- ``` -->
+```{r}
+knitr::include_graphics(here("graphs", "png", "fig06.png"))
+```
 
 ## Appendix
 
 ### Appendix 1
-
--   I have calculated the number of open water days using the same SIC data as Achim used in his paper (resolution of 3.125 km). I have used a SIC threshold of 15% that lasted at least 3 consecutive days to determine the melting and freezing of sea ice.
-
--   On the next plot, we can see that there are not many observations with negative OWD because the MVP was deployed in open water.
 
 ```{r}
 knitr::include_graphics(here("graphs", "png", "appendix01.png"))
@@ -587,8 +522,34 @@ knitr::include_graphics(here("graphs", "png", "appendix01.png"))
 
 ### Appendix 2
 
+-   I have calculated the number of open water days using the same SIC data as Achim used in his paper (resolution of 3.125 km). I have used a SIC threshold of 15% that lasted at least 3 consecutive days to determine the melting and freezing of sea ice.
+
+-   On the next plot, we can see that there are not many observations with negative OWD because the MVP was deployed in open water.
+
 ```{r}
 knitr::include_graphics(here("graphs", "png", "appendix02.png"))
+```
+
+### Appendix 3
+
+```{r}
+knitr::include_graphics(here("graphs", "png", "appendix03.png"))
+```
+
+### Appendix 4
+
+```{r}
+knitr::include_graphics(here("graphs", "png", "appendix04.png"))
+```
+
+### Appendix 5
+
+- Z~0.1~ calculated from the bio-argo data.
+
+- The vertical dashed lines correspond to the averaged Z~0.1~ isolume.
+
+```{r}
+knitr::include_graphics(here("graphs", "png", "appendix05.png"))
 ```
 
 ## References
